@@ -1,0 +1,424 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
+from bs4 import BeautifulSoup
+import re
+import time
+import os
+import random
+from functools import wraps
+import uuid
+
+# Import new modules for improved error handling and logging
+from log_manager import get_logger, with_logging
+from error_handler import (
+    retry_with_backoff,
+    ResourceGuard,
+    safe_cleanup_webdriver,
+    handle_network_error
+)
+
+class ContactExtractor:
+    def __init__(self, headless=True, timeout=30):
+        self.timeout = timeout
+        self.headless = headless
+        self.logger = get_logger('contact_extractor')
+        self.setup_chrome_options(headless)
+        self.setup_driver()
+        self.extraction_id = str(uuid.uuid4())[:8]  # Short ID for tracking related operations
+    
+    def setup_chrome_options(self, headless=True):
+        """Configure Chrome options for PythonAnywhere compatibility with anti-blocking enhancements"""
+        self.chrome_options = Options()
+        if headless:
+            self.chrome_options.add_argument('--headless')
+        
+        # PythonAnywhere-specific options
+        self.chrome_options.add_argument('--no-sandbox')
+        self.chrome_options.add_argument('--disable-dev-shm-usage')
+        self.chrome_options.add_argument('--disable-gpu')
+        self.chrome_options.add_argument('--disable-software-rasterizer')
+        self.chrome_options.add_argument('--disable-extensions')
+        self.chrome_options.add_argument('--disable-infobars')
+        
+        # Anti-blocking measures - randomized user agent
+        user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36'
+        ]
+        self.chrome_options.add_argument(f'--user-agent={random.choice(user_agents)}')
+        
+        # Additional anti-detection measures
+        self.chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        self.chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        self.chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    @retry_with_backoff(max_retries=2, initial_backoff=2)
+    def setup_driver(self):
+        """Initialize the Chrome WebDriver with improved error recovery"""
+        try:
+            # PythonAnywhere-specific path
+            chrome_driver_path = '/usr/bin/chromedriver'
+            if os.path.exists(chrome_driver_path):
+                service = Service(chrome_driver_path)
+            else:
+                # Local development fallback
+                from webdriver_manager.chrome import ChromeDriverManager
+                service = Service(ChromeDriverManager().install())
+            
+            self.driver = webdriver.Chrome(service=service, options=self.chrome_options)
+            self.driver.set_page_load_timeout(self.timeout)
+            
+            # Set custom properties to mask automation
+            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
+            self.logger.info(f"[{self.extraction_id}] Chrome WebDriver initialized successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"[{self.extraction_id}] Failed to initialize Chrome WebDriver: {str(e)}")
+            raise
+
+    @retry_with_backoff(max_retries=3, initial_backoff=2)
+    def extract_contacts(self, url):
+        """Extract contact information from the given URL with improved error handling"""
+        contacts = {
+            'emails': set(),
+            'phones': set(),
+            'address': None
+        }
+        
+        # Create a resource guard for the driver to ensure cleanup
+        with ResourceGuard(cleanup_func=lambda resources: self.cleanup()):
+            try:
+                self.logger.info(f"[{self.extraction_id}] Attempting to extract contacts from: {url}")
+                
+                # Add jitter to timing to appear more human-like
+                time.sleep(random.uniform(0.5, 1.5))
+                
+                # Load the page with retry capability
+                self._load_page_with_retry(url)
+                
+                # Random pause to simulate human browsing
+                time.sleep(random.uniform(2, 4))
+                
+                # Get page source and create BeautifulSoup object
+                soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+                
+                # Extract emails
+                self._extract_emails(soup, contacts)
+                
+                # Extract phone numbers
+                self._extract_phones(soup, contacts)
+                
+                # Extract address
+                self._extract_address(soup, contacts)
+                
+                # Validate extracted data
+                self._validate_contact_data(contacts)
+                
+                self.logger.info(f"[{self.extraction_id}] Successfully extracted contacts from {url}")
+                
+            except TimeoutException as e:
+                self.logger.error(f"[{self.extraction_id}] Timeout while loading {url}: {str(e)}")
+                raise
+            except WebDriverException as e:
+                self.logger.error(f"[{self.extraction_id}] WebDriver error for {url}: {str(e)}")
+                raise
+            except Exception as e:
+                self.logger.error(f"[{self.extraction_id}] Unexpected error while extracting contacts from {url}: {str(e)}")
+                raise
+        
+        return {
+            'emails': list(contacts['emails']),
+            'phones': list(contacts['phones']),
+            'address': contacts['address']
+        }
+
+    @retry_with_backoff(max_retries=2, initial_backoff=1)
+    def _load_page_with_retry(self, url):
+        """Load a page with retry logic and proper error handling"""
+        try:
+            self.driver.get(url)
+            
+            # Wait for page to load
+            WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            )
+            
+            # Check for common blocking scenarios
+            if any(text in self.driver.page_source.lower() for text in [
+                'access denied', 'captcha', 'blocked', 'security check'
+            ]):
+                self.logger.warning(f"[{self.extraction_id}] Possible blocking detected on {url}")
+                # Allow an extra pause to potentially bypass simple timing-based blocks
+                time.sleep(random.uniform(3, 5))
+                
+                # If we still see blocking indicators, raise an exception
+                if any(text in self.driver.page_source.lower() for text in [
+                    'access denied', 'captcha', 'blocked', 'security check'
+                ]):
+                    raise WebDriverException("Detected anti-scraping measures")
+                    
+            return True
+            
+        except TimeoutException as e:
+            self.logger.warning(f"[{self.extraction_id}] Timeout while loading {url}, retrying: {str(e)}")
+            raise
+        except WebDriverException as e:
+            self.logger.warning(f"[{self.extraction_id}] WebDriver error for {url}, retrying: {str(e)}")
+            raise
+
+    def _extract_emails(self, soup, contacts):
+        """Extract email addresses from the page"""
+        try:
+            # Enhanced email pattern with validation
+            email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+            
+            # Look for emails in text content
+            for element in soup.find_all(string=re.compile(email_pattern)):
+                emails = re.findall(email_pattern, element.strip())
+                for email in emails:
+                    if self._validate_email(email):
+                        contacts['emails'].add(email.lower())
+            
+            # Look for mailto links
+            for link in soup.find_all('a', href=re.compile(r'mailto:')):
+                email = link['href'].replace('mailto:', '').strip()
+                if re.match(email_pattern, email) and self._validate_email(email):
+                    contacts['emails'].add(email.lower())
+                    
+            # Look for obfuscated emails (common technique to hide from scrapers)
+            self._extract_obfuscated_emails(soup, contacts)
+            
+        except Exception as e:
+            self.logger.error(f"[{self.extraction_id}] Error extracting emails: {str(e)}")
+
+    def _extract_obfuscated_emails(self, soup, contacts):
+        """Extract emails that might be obfuscated to avoid scrapers"""
+        try:
+            # Check for emails in data attributes
+            for element in soup.find_all(attrs={"data-email": True}):
+                email = element.get("data-email")
+                if self._validate_email(email):
+                    contacts['emails'].add(email.lower())
+                    
+            # Check for reversed emails
+            for script in soup.find_all("script"):
+                if script.string and "mail" in script.string.lower():
+                    # Look for patterns like: '".moc.elpmaxe@olleh".split("").reverse().join("")'
+                    matches = re.findall(r'[\'"]([-_.a-zA-Z0-9@]+)[\'"].+?reverse\(\)', str(script.string))
+                    for match in matches:
+                        reversed_email = match[::-1]
+                        if '@' in reversed_email and self._validate_email(reversed_email):
+                            contacts['emails'].add(reversed_email.lower())
+                            
+            # Check for emails with HTML entity encoding
+            for element in soup.find_all(string=re.compile(r'&#[0-9]+;')):
+                text = element.strip()
+                # Convert HTML entities to characters
+                decoded = re.sub(r'&#([0-9]+);', lambda m: chr(int(m.group(1))), text)
+                if '@' in decoded:
+                    emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', decoded)
+                    for email in emails:
+                        if self._validate_email(email):
+                            contacts['emails'].add(email.lower())
+                            
+        except Exception as e:
+            self.logger.error(f"[{self.extraction_id}] Error extracting obfuscated emails: {str(e)}")
+
+    def _validate_email(self, email):
+        """Validate email format and filter out common non-valid patterns"""
+        if not email or '@' not in email:
+            return False
+            
+        # Check for common invalid patterns
+        invalid_patterns = [
+            'example.com',
+            'domain.com',
+            'email@example',
+            'yourdomain',
+            'yourname',
+            '@.'
+        ]
+        
+        if any(pattern in email.lower() for pattern in invalid_patterns):
+            return False
+            
+        # Validate basic email format
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return bool(re.match(email_regex, email))
+
+    def _extract_phones(self, soup, contacts):
+        """Extract phone numbers from the page with improved validation"""
+        try:
+            # Enhanced phone pattern for North American numbers
+            phone_pattern = r'(?:\+?1[-. ]?)?(?:\(?([0-9]{3})\)?[-. ]?)?([0-9]{3})[-. ]?([0-9]{4})'
+            
+            # Look for phone numbers in text content
+            for element in soup.find_all(string=re.compile(phone_pattern)):
+                text = element.strip()
+                phones = re.findall(phone_pattern, text)
+                for phone in phones:
+                    # Format phone number consistently
+                    formatted_phone = self._format_phone_number(phone)
+                    if formatted_phone:
+                        contacts['phones'].add(formatted_phone)
+            
+            # Look for tel: links
+            for link in soup.find_all('a', href=re.compile(r'tel:')):
+                phone = link['href'].replace('tel:', '').strip()
+                # Extract digits only
+                digits = re.sub(r'[^0-9]', '', phone)
+                if len(digits) >= 10:
+                    # Format the phone number
+                    if len(digits) == 10:
+                        formatted = digits
+                    elif len(digits) == 11 and digits.startswith('1'):
+                        formatted = digits[1:]
+                    else:
+                        formatted = digits[-10:]
+                    
+                    contacts['phones'].add(formatted)
+                    
+        except Exception as e:
+            self.logger.error(f"[{self.extraction_id}] Error extracting phone numbers: {str(e)}")
+
+    def _format_phone_number(self, phone_tuple):
+        """Format phone number tuples consistently"""
+        # Extract area code, prefix, and line number from tuple
+        if len(phone_tuple) == 3:
+            area_code, prefix, line = phone_tuple
+            
+            # Handle missing area code
+            if not area_code and prefix and line:
+                if len(prefix) == 3 and len(line) == 4:
+                    return f"{prefix}{line}"
+            
+            # Format complete phone number
+            if area_code and prefix and line:
+                return f"{area_code}{prefix}{line}"
+        
+        # Handle as raw digits if tuple format doesn't match expectations
+        raw = ''.join(phone_tuple)
+        if len(raw) >= 10:
+            return raw[-10:]
+            
+        return None
+
+    def _extract_address(self, soup, contacts):
+        """Extract physical address from the page with improved pattern matching"""
+        try:
+            # Common address patterns
+            address_keywords = ['address', 'location', 'directions', 'find us', 'visit us', 'our dealership']
+            state_pattern = r'\b[A-Z]{2}\b'
+            zip_pattern = r'\b\d{5}(?:-\d{4})?\b'
+            
+            # First check for structured address data
+            address_elements = soup.find_all(['div', 'p', 'span'], 
+                                           class_=lambda c: c and any(k in c.lower() for k in ['address', 'location']))
+            
+            for elem in address_elements:
+                text = elem.get_text()
+                if re.search(state_pattern, text) and re.search(zip_pattern, text):
+                    contacts['address'] = self._clean_address(text)
+                    return
+            
+            # Look for elements containing address information
+            for keyword in address_keywords:
+                elements = soup.find_all(string=re.compile(keyword, re.IGNORECASE))
+                for element in elements:
+                    parent = element.parent
+                    if parent:
+                        # Look for nearby elements that might contain the address
+                        container = parent.parent if parent.parent else parent
+                        text = container.get_text()
+                        
+                        # Look for text containing state abbreviation and zip code
+                        if re.search(state_pattern, text) and re.search(zip_pattern, text):
+                            contacts['address'] = self._clean_address(text)
+                            return
+                        
+            # If we still don't have an address, look for schema.org address markup
+            address_schema = soup.find('div', {'itemtype': 'http://schema.org/PostalAddress'})
+            if address_schema:
+                street = address_schema.find('span', {'itemprop': 'streetAddress'})
+                city = address_schema.find('span', {'itemprop': 'addressLocality'})
+                state = address_schema.find('span', {'itemprop': 'addressRegion'})
+                zip_code = address_schema.find('span', {'itemprop': 'postalCode'})
+                
+                address_parts = []
+                if street and street.text:
+                    address_parts.append(street.text.strip())
+                if city and city.text:
+                    address_parts.append(city.text.strip())
+                if state and state.text:
+                    address_parts.append(state.text.strip())
+                if zip_code and zip_code.text:
+                    address_parts.append(zip_code.text.strip())
+                    
+                if address_parts:
+                    contacts['address'] = ', '.join(address_parts)
+                    
+        except Exception as e:
+            self.logger.error(f"[{self.extraction_id}] Error extracting address: {str(e)}")
+
+    def _clean_address(self, text):
+        """Clean and format extracted address text"""
+        # Remove extra whitespace and line breaks
+        text = re.sub(r'\s+', ' ', text.strip())
+        
+        # Remove common non-address content
+        text = re.sub(r'(?i)(address|location|directions|find us|hours|email).*?:', '', text)
+        
+        # Limit to reasonable length for an address
+        if len(text) > 200:
+            # Try to extract just the address portion with state and zip
+            state_zip_match = re.search(r'\b[A-Z]{2}\b.*?\b\d{5}(?:-\d{4})?\b', text)
+            if state_zip_match:
+                # Get the portion of text around the state/zip
+                match_index = state_zip_match.start()
+                start_index = max(0, match_index - 100)
+                end_index = min(len(text), match_index + 100)
+                text = text[start_index:end_index]
+            else:
+                # Just truncate if we can't find a good anchor
+                text = text[:200]
+        
+        return text.strip()
+
+    def _validate_contact_data(self, contacts):
+        """Validate and filter extracted contact data"""
+        # Filter out invalid emails
+        contacts['emails'] = {email for email in contacts['emails'] if self._validate_email(email)}
+        
+        # Filter phone numbers (must be 10 or 11 digits)
+        pattern = r'^\d{10,11}$'
+        contacts['phones'] = {phone for phone in contacts['phones'] if phone and re.match(pattern, phone)}
+        
+        # Check if address looks valid (contains state code and zip)
+        if contacts['address']:
+            if not re.search(r'\b[A-Z]{2}\b.*?\b\d{5}(?:-\d{4})?\b', contacts['address']):
+                contacts['address'] = None
+
+    def cleanup(self):
+        """Clean up resources with improved error handling"""
+        safe_cleanup_webdriver(getattr(self, 'driver', None))
+        self.logger.info(f"[{self.extraction_id}] Chrome WebDriver cleaned up")
+
+# Example usage
+if __name__ == "__main__":
+    # Test URL
+    test_url = "https://example-dealership.com"
+    
+    try:
+        extractor = ContactExtractor(headless=True)
+        contacts = extractor.extract_contacts(test_url)
+        print("Extracted contacts:", contacts)
+    finally:
+        extractor.cleanup() 

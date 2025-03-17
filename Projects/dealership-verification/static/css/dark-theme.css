@@ -1,0 +1,352 @@
+/* dark-theme.css - Dark theme with red accents for Dealership Contact Finder */
+
+:root {
+  --primary-bg: #121212;
+  --secondary-bg: #1e1e1e;
+  --card-bg: #232323;
+  --text-color: #ffffff;
+  --text-muted: #a0a0a0;
+  --accent-color: #ff3b30;
+  --accent-color-hover: #ff6259;
+  --success-color: #28c840;
+  --warning-color: #ffcc00;
+  --info-color: #0a84ff;
+  --border-color: #333333;
+  --input-bg: #2a2a2a;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styling */
+.navbar {
+  background: linear-gradient(to right, #2b2b2b, #1a1a1a);
+  border-bottom: 1px solid #333;
+}
+
+.navbar-brand {
+  color: #ff4444 !important;
+  font-weight: bold;
+}
+
+.nav-link {
+  color: #e0e0e0 !important;
+}
+
+.nav-link:hover {
+  color: #ff4444 !important;
+}
+
+/* Card Styling */
+.card {
+  background-color: #2b2b2b;
+  border: 1px solid #333;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background: linear-gradient(to right, #2b2b2b, #1a1a1a);
+  color: #ff4444;
+  border-bottom: 1px solid #333;
+}
+
+.card-body {
+  color: #e0e0e0;
+}
+
+/* Card Headers for Different Actions */
+.upload-section .card-header {
+  background: linear-gradient(90deg, #400000, #900000);
+  border-bottom: none;
+}
+
+.lookup-section .card-header {
+  background: linear-gradient(90deg, #003040, #005080);
+  border-bottom: none;
+}
+
+/* Form Elements */
+.form-control {
+  background-color: #333;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.form-control:focus {
+  background-color: #404040;
+  border-color: #ff4444;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 0.2rem rgba(255, 68, 68, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.input-group-text {
+  background-color: #3a3a3a;
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.form-label {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.form-text {
+  color: var(--text-muted);
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: #ff4444;
+  border-color: #ff4444;
+}
+
+.btn-primary:hover {
+  background-color: #ff6666;
+  border-color: #ff6666;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.btn-outline-primary {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: white;
+}
+
+.btn-outline-success {
+  color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.btn-outline-success:hover {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  color: var(--primary-bg);
+}
+
+/* File Upload */
+.file-input-ui {
+  border: 2px dashed var(--border-color);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-input-ui:hover {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 59, 48, 0.05);
+}
+
+.upload-icon {
+  color: var(--accent-color);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Job Cards */
+.job-card {
+  background-color: var(--card-bg);
+  border-left-width: 4px;
+}
+
+.running {
+  border-left-color: var(--warning-color);
+}
+
+.completed {
+  border-left-color: var(--success-color);
+}
+
+.failed {
+  border-left-color: var(--accent-color);
+}
+
+/* Badges */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+.bg-light {
+  background-color: #3a3a3a !important;
+  color: var(--text-color) !important;
+}
+
+.stat-badge {
+  background-color: #3a3a3a;
+  color: var(--text-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-badge i {
+  color: var(--accent-color);
+}
+
+/* Alerts */
+.alert {
+  background-color: #2b2b2b;
+  border: 1px solid #333;
+}
+
+.alert-success {
+  background-color: #1e4620;
+  border-color: #255625;
+  color: #98c699;
+}
+
+.alert-danger {
+  background-color: #461e1e;
+  border-color: #562525;
+  color: #c69898;
+}
+
+/* Job Progress */
+.progress {
+  background-color: #333;
+}
+
+.progress-bar {
+  background-color: #ff4444;
+}
+
+/* Section Headers */
+.section-title {
+  color: var(--text-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title i {
+  color: var(--accent-color);
+}
+
+/* Footer */
+.footer {
+  background-color: #2b2b2b;
+  color: #888;
+  padding: 1rem 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #333;
+}
+
+/* Spinner Animation */
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-color);
+}
+
+/* Data Tables Styling */
+.dataTables_wrapper .dataTables_length, 
+.dataTables_wrapper .dataTables_filter, 
+.dataTables_wrapper .dataTables_info, 
+.dataTables_wrapper .dataTables_processing, 
+.dataTables_wrapper .dataTables_paginate {
+  color: #e0e0e0 !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+table.dataTable tbody tr {
+  background-color: var(--card-bg);
+}
+
+table.dataTable.stripe tbody tr.odd {
+  background-color: #2a2a2a;
+}
+
+table.dataTable.hover tbody tr:hover, 
+table.dataTable.hover tbody tr.odd:hover {
+  background-color: #333333;
+}
+
+table.dataTable thead th, 
+table.dataTable thead td,
+table.dataTable tbody td {
+  border-color: var(--border-color);
+}
+
+/* Custom Font Loading */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.stats-card {
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+}
+
+.stats-number {
+  font-size: 2em;
+  font-weight: bold;
+  color: #ff4444;
+}
+
+.custom-file-label {
+  background-color: #333;
+  border: 1px solid #444;
+  color: #e0e0e0;
+}
+
+.custom-file-label::after {
+  background-color: #444;
+  color: #e0e0e0;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: #e0e0e0 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: #ff4444 !important;
+  border-color: #ff4444 !important;
+  color: white !important;
+} 

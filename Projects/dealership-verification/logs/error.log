@@ -1,0 +1,46 @@
+2025-03-13 20:58:55,718 | ERROR | 92212 | 8264403008 | __main__ | Error during CRUD tests: Instance <Dealership at 0x106624f90> is not bound to a Session; attribute refresh operation cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)
+2025-03-13 20:58:55,718 | ERROR | 92212 | 8264403008 | __main__ | CRUD tests failed
+2025-03-13 20:59:18,809 | ERROR | 92245 | 8264403008 | __main__ | Error during CRUD tests: Instance <Dealership at 0x106baa390> is not bound to a Session; attribute refresh operation cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)
+2025-03-13 20:59:18,809 | ERROR | 92245 | 8264403008 | __main__ | CRUD tests failed
+2025-03-13 20:59:34,863 | ERROR | 92276 | 8264403008 | __main__ | Error during CRUD tests: 'dict' object has no attribute 'is_active'
+2025-03-13 20:59:34,863 | ERROR | 92276 | 8264403008 | __main__ | CRUD tests failed
+2025-03-13 20:59:44,253 | ERROR | 92307 | 8264403008 | __main__ | Error during CRUD tests: Instance <VerificationJob at 0x10317a690> is not bound to a Session; attribute refresh operation cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)
+2025-03-13 20:59:44,253 | ERROR | 92307 | 8264403008 | __main__ | CRUD tests failed
+2025-03-13 21:00:08,850 | ERROR | 92338 | 8264403008 | database | Error in database session: name 'ErrorLog' is not defined
+2025-03-13 21:00:08,850 | ERROR | 92338 | 8264403008 | __main__ | Error during CRUD tests: name 'ErrorLog' is not defined
+2025-03-13 21:00:08,850 | ERROR | 92338 | 8264403008 | __main__ | CRUD tests failed
+2025-03-16 21:33:26,675 | ERROR | 42677 | 8526678080 | verification_test | Error during extraction test: 'ContactExtractor' object has no attribute 'extraction_id'
+2025-03-16 21:33:41,797 | ERROR | 42874 | 8526678080 | verification_test | Error during extraction test: 'ContactExtractor' object has no attribute 'extraction_id'
+2025-03-16 21:34:20,719 | ERROR | 43293 | 8526678080 | verification_test | Error during extraction test: 'ContactExtractor' object has no attribute 'extraction_id'
+2025-03-16 21:34:45,681 | ERROR | 43583 | 8526678080 | contact_extractor | [253cb936-a38d-496b-af7c-9034816338df] Failed to initialize Chrome WebDriver: [Errno 8] Exec format error: '/Users/copp1723/.wdm/drivers/chromedriver/mac64/134.0.6998.88/chromedriver-mac-arm64/THIRD_PARTY_NOTICES.chromedriver'
+2025-03-16 21:34:45,681 | ERROR | 43583 | 8526678080 | verification_test | Error during extraction test: [Errno 8] Exec format error: '/Users/copp1723/.wdm/drivers/chromedriver/mac64/134.0.6998.88/chromedriver-mac-arm64/THIRD_PARTY_NOTICES.chromedriver'
+2025-03-16 21:35:03,393 | ERROR | 43797 | 8526678080 | contact_extractor | [bdd7aee2-c64e-4d08-8311-a9c68a0cb95b] Failed to initialize Chrome WebDriver: [Errno 8] Exec format error: '/Users/copp1723/.wdm/drivers/chromedriver/mac64/134.0.6998.88/chromedriver-mac-arm64/THIRD_PARTY_NOTICES.chromedriver'
+2025-03-16 21:35:03,393 | ERROR | 43797 | 8526678080 | verification_test | Error during extraction test: [Errno 8] Exec format error: '/Users/copp1723/.wdm/drivers/chromedriver/mac64/134.0.6998.88/chromedriver-mac-arm64/THIRD_PARTY_NOTICES.chromedriver'
+2025-03-16 21:35:29,406 | ERROR | 44074 | 8526678080 | contact_extractor | [faf3b09c-f00f-4785-ae0b-6dacbbb1fb19] Failed to initialize Chrome WebDriver: Message: 'chromedriver' executable may have wrong permissions.
+
+2025-03-16 21:35:31,586 | ERROR | 44074 | 8526678080 | contact_extractor | [faf3b09c-f00f-4785-ae0b-6dacbbb1fb19] Failed to initialize Chrome WebDriver: Message: 'chromedriver' executable may have wrong permissions.
+
+2025-03-16 21:35:35,048 | ERROR | 44074 | 8526678080 | contact_extractor | [faf3b09c-f00f-4785-ae0b-6dacbbb1fb19] Failed to initialize Chrome WebDriver: Message: 'chromedriver' executable may have wrong permissions.
+
+2025-03-16 21:35:35,048 | ERROR | 44074 | 8526678080 | error_handler | Failed after 2 retries: Message: 'chromedriver' executable may have wrong permissions.
+
+2025-03-16 21:35:35,048 | ERROR | 44074 | 8526678080 | verification_test | Error during extraction test: Message: 'chromedriver' executable may have wrong permissions.
+
+2025-03-16 21:36:14,392 | ERROR | 44353 | 8526678080 | error_handler | Failed after 2 retries: Message: Detected anti-scraping measures
+
+2025-03-16 21:36:14,392 | ERROR | 44353 | 8526678080 | contact_extractor | [bb9805ab-42b2-4f56-9f08-b61757b98dd6] WebDriver error for https://www.legendstoyota.com: Message: Detected anti-scraping measures
+
+2025-03-16 21:36:16,778 | ERROR | 44353 | 8526678080 | contact_extractor | [bb9805ab-42b2-4f56-9f08-b61757b98dd6] Unexpected error while extracting contacts from https://www.legendstoyota.com: HTTPConnectionPool(host='localhost', port=57207): Max retries exceeded with url: /session/3248849e6e33f17ac20b2e09936ab840/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x108f2c750>: Failed to establish a new connection: [Errno 61] Connection refused'))
+2025-03-16 21:36:16,790 | ERROR | 44353 | 8526678080 | verification_test | Error during extraction test: HTTPConnectionPool(host='localhost', port=57207): Max retries exceeded with url: /session/3248849e6e33f17ac20b2e09936ab840/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x108f2c750>: Failed to establish a new connection: [Errno 61] Connection refused'))
+2025-03-16 21:36:53,493 | ERROR | 44870 | 8526678080 | error_handler | Failed after 2 retries: Message: Detected anti-scraping measures
+
+2025-03-16 21:36:53,494 | ERROR | 44870 | 8526678080 | contact_extractor | [c8c04a22-2480-4e61-aab8-e25980d49e93] WebDriver error for https://www.legendstoyota.com: Message: Detected anti-scraping measures
+
+2025-03-16 21:36:56,393 | ERROR | 44870 | 8526678080 | contact_extractor | [c8c04a22-2480-4e61-aab8-e25980d49e93] Unexpected error while extracting contacts from https://www.legendstoyota.com: HTTPConnectionPool(host='localhost', port=57399): Max retries exceeded with url: /session/4b5ecf1af58b33b7d0dbac31b49688fc/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104deff10>: Failed to establish a new connection: [Errno 61] Connection refused'))
+2025-03-16 21:36:56,396 | ERROR | 44870 | 8526678080 | verification_test | Error during extraction test: HTTPConnectionPool(host='localhost', port=57399): Max retries exceeded with url: /session/4b5ecf1af58b33b7d0dbac31b49688fc/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x104deff10>: Failed to establish a new connection: [Errno 61] Connection refused'))
+2025-03-16 21:53:51,790 | ERROR | 51763 | 8526678080 | error_handler | Failed after 2 retries: Message: Detected anti-scraping measures
+
+2025-03-16 21:53:51,790 | ERROR | 51763 | 8526678080 | contact_extractor | [12639db1-e563-4ada-b372-8c1a03592553] WebDriver error for https://www.legendstoyota.com/: Message: Detected anti-scraping measures
+
+2025-03-16 21:53:54,590 | ERROR | 51763 | 8526678080 | contact_extractor | [12639db1-e563-4ada-b372-8c1a03592553] Unexpected error while extracting contacts from https://www.legendstoyota.com/: HTTPConnectionPool(host='localhost', port=58020): Max retries exceeded with url: /session/73c2515cc20838fdef2b4bf40a3d3977/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x102537e10>: Failed to establish a new connection: [Errno 61] Connection refused'))
+2025-03-16 21:53:54,594 | ERROR | 51763 | 8526678080 | verification_test | Error during extraction test: HTTPConnectionPool(host='localhost', port=58020): Max retries exceeded with url: /session/73c2515cc20838fdef2b4bf40a3d3977/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x102537e10>: Failed to establish a new connection: [Errno 61] Connection refused'))

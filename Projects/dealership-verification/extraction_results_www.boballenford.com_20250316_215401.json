@@ -1,0 +1,27 @@
+{
+  "url": "https://www.boballenford.com/",
+  "timestamp": "20250316_215401",
+  "elapsed_time": 7.2932517528533936,
+  "emails": [
+    "9cdb553051984480bbeca1838bd78433@o422891.ingest.sentry.io"
+  ],
+  "phones": [
+    "9133813000",
+    "6870337564",
+    "9134042012",
+    "5530519844",
+    "4413991452",
+    "8163009913",
+    "9999999999",
+    "9136008140",
+    "9724790009"
+  ],
+  "address": "9239 Metcalf Ave Overland Park, KS 66212-1405",
+  "extraction_stats": {
+    "emails_found": 0,
+    "mailto_links": 0,
+    "email_me_text": 0,
+    "js_events": 0,
+    "raw_text": 0
+  }
+}

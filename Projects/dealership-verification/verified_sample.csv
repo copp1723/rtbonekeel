@@ -1,0 +1,6 @@
+Dealership,Website,City,State,is_active,verified_url,manufacturer
+Subaru of Minneapolis,subarumpls.com,Minneapolis,MN,False,,Subaru
+Volkswagen Audi of Atlanta,vwaudiatlanta.com,Atlanta,GA,False,,VW
+Dodge of Albuquerque,dodgeabq.com,Albuquerque,NM,False,,Stellantis
+BMW of San Francisco,bmwsf.com,San Francisco,CA,False,https://www.bmwsf.com/,BMW
+Toyota of Springfield,toyotaspringfield.com,Springfield,IL,False,,Toyota
