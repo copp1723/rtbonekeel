@@ -1,0 +1,54 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build
+      run: npm run build
+    
+    - name: Run tests with coverage
+      run: npm test -- --coverage
+    
+    - name: Run integration tests
+      run: npm run test:integration
+    
+    # Uncomment when you have E2E tests
+    # - name: Run E2E tests
+    #   run: npm run test:e2e
+
+  check-coverage:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - run: npm ci
+    - run: npm test -- --coverage
+    
+    - name: Verify coverage thresholds
+      run: |
+        npx vitest run --coverage --coverage.reporter=text --coverage.all=false
+
+# Require all jobs to pass before merge
+required_status_checks:
+  strict: true
+  contexts:
+    - build-and-test
+    - check-coverage
