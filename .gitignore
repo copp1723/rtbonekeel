@@ -1,7 +1,16 @@
+# Python
+venv/
+*.pyc
+__pycache__/
+.python-version
+
 # Dependencies
 node_modules/
 .pnp/
 .pnp.js
+.npm
+.pnpm
+.yarn-integrity
 
 # Build outputs
 dist/
@@ -35,14 +44,17 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
-.DS_Store
+*.swp
+*.swo
 
 # Temporary files
 tmp/
 temp/
 .cache/
 .history/
+*.egg-info/
 
-# Misc
+# System files
 .DS_Store
+Thumbs.db
 *.pem
