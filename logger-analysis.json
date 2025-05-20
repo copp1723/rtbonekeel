@@ -1,0 +1,14 @@
+{
+  "totalIssues": 0,
+  "errors": 0,
+  "warnings": 0,
+  "totalLoggerCalls": 29,
+  "filesWithLoggerCalls": [
+    "/Users/joshcopp/Desktop/rowtheboat-main/src/shared/logger.ts",
+    "/Users/joshcopp/Desktop/rowtheboat-main/src/shared/errorHandler.ts",
+    "/Users/joshcopp/Desktop/rowtheboat-main/src/utils/errorHandling.ts",
+    "src/utils/errors.ts",
+    "src/utils/logger.ts"
+  ],
+  "issues": []
+}
