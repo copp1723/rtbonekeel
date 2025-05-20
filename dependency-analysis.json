@@ -1,0 +1,139 @@
+{
+  "summary": {
+    "totalIssues": 6,
+    "issuesByType": {
+      "incorrect-import": 6
+    },
+    "issuesBySeverity": {
+      "warning": 6
+    },
+    "issuesByPackage": {
+      "bullmq": 6
+    },
+    "bullmqIssuesCount": 6
+  },
+  "bullmqIssues": [
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullQueue",
+      "code": "Queue as BullQueue",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullQueueScheduler",
+      "code": "QueueScheduler as BullQueueScheduler",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullWorker",
+      "code": "Worker as BullWorker",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullMQJob",
+      "code": "Job as BullMQJob",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullConnectionOptions",
+      "code": "ConnectionOptions as BullConnectionOptions",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullJobOptions",
+      "code": "JobOptions as BullJobOptions",
+      "severity": "warning"
+    }
+  ],
+  "allIssues": [
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullQueue",
+      "code": "Queue as BullQueue",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullQueueScheduler",
+      "code": "QueueScheduler as BullQueueScheduler",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullWorker",
+      "code": "Worker as BullWorker",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullMQJob",
+      "code": "Job as BullMQJob",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullConnectionOptions",
+      "code": "ConnectionOptions as BullConnectionOptions",
+      "severity": "warning"
+    },
+    {
+      "fileName": "/Users/joshcopp/Desktop/rowtheboat-main/src/services/jobQueue.ts",
+      "line": 10,
+      "column": 1,
+      "packageName": "bullmq",
+      "issueType": "incorrect-import",
+      "message": "Unexpected BullMQ import: BullJobOptions",
+      "code": "JobOptions as BullJobOptions",
+      "severity": "warning"
+    }
+  ]
+}
