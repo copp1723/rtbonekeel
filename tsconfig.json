@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ES2022",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types",
+      "./types"
+    ],
+    "types": ["bullmq"],
+    "paths": {
+      "@shared/*": ["shared/*"],
+      "@utils/*": ["utils/*"],
+      "@/*": ["./*"],
+      "bullmq-service-standardized": ["./src/services/bullmqService.standardized"],
+      "bullmq-config": ["./src/config/bullmq.config"]
+    }
+  },
+  "include": ["src/index.ts", "src/**/*.ts", "src/types/bullmq/index.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/vitest.setup.ts"]
+}
