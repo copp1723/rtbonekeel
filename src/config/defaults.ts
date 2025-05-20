@@ -1,6 +1,6 @@
 /**
  * Default Configuration Values
- * 
+ *
  * Provides default values for configuration options
  * These values are used when environment variables are not set
  */
@@ -57,13 +57,7 @@ export const DEFAULT_EMAIL = {
   fromName: 'AgentFlow',
 };
 
-// Default OTP email configuration
-export const DEFAULT_OTP_EMAIL = {
-  port: 993,
-  secure: true,
-  pattern: 'OTP is: (\\d{6})',
-  subject: 'Your OTP Code',
-};
+// Default OTP email configuration has been removed
 
 // Default Redis configuration
 export const DEFAULT_REDIS = {
@@ -81,7 +75,7 @@ export const INSECURE_DEFAULT_VALUES = {
     'default-dev-key-do-not-use-in-production-environment',
     'temporary-encryption-key',
   ],
-  
+
   // API keys
   SENDGRID_API_KEY: [
     'SG.your-sendgrid-api-key',
@@ -96,23 +90,16 @@ export const INSECURE_DEFAULT_VALUES = {
   //   'eko-your-api-key',
   //   'test-eko-api-key',
   // ],
-  
+
   // Database credentials
   DATABASE_URL: [
     'postgresql://user:password@localhost:5432/dbname',
     'postgresql://test:test@localhost:5432/test',
   ],
-  
+
   // Email credentials
-  OTP_EMAIL_USER: [
-    'your_email_username',
-    'test@example.com',
-  ],
-  OTP_EMAIL_PASS: [
-    'your_email_password',
-    'test-password',
-  ],
-  
+  // OTP email credentials removed
+
   // JWT and session secrets
   JWT_SECRET: [
     'your-jwt-secret-key-should-be-long-and-secure',

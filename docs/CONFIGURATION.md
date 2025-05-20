@@ -13,7 +13,7 @@ The configuration is organized into the following sections:
 - **Environment**: The current environment (development, test, production)
 - **Database**: Database connection settings
 - **Email**: Email service configuration for sending notifications
-- **OTP Email**: Email configuration for OTP retrieval
+<!-- OTP Email configuration removed -->
 - **Security**: Security-related settings (encryption, rate limiting, etc.)
 - **Server**: Web server configuration
 - **Application**: General application settings
@@ -52,8 +52,7 @@ These variables are required for the application to function properly:
 | `EMAIL_USER` | Email account for sending notifications | String | None |
 | `EMAIL_PASS` | Password for email account | String | None |
 | `EMAIL_HOST` | SMTP server hostname | String | None |
-| `OTP_EMAIL_USER` | Email account for OTP retrieval | String | None |
-| `OTP_EMAIL_PASS` | Password for OTP email account | String | None |
+<!-- OTP email configuration removed -->
 
 ### Optional Environment Variables
 
@@ -66,8 +65,7 @@ These variables are optional and have default values:
 | `LOG_LEVEL` | Logging level | `error`, `warn`, `info`, `debug`, or `trace` | `info` |
 | `EMAIL_PORT` | SMTP server port | Integer | `587` |
 | `DOWNLOAD_DIR` | Directory for downloaded reports | Path | `./downloads` |
-| `OTP_PATTERN` | Regex pattern for OTP extraction | Regex string | `OTP is: (\\d{6})` |
-| `OTP_SUBJECT` | Subject line for OTP emails | String | `Your OTP Code` |
+<!-- OTP configuration removed -->
 | `HEALTH_CHECK_INTERVAL` | Health check interval in minutes | Integer | `15` |
 | `ADMIN_EMAILS` | Comma-separated list of admin emails | String | None |
 
@@ -169,7 +167,7 @@ Configures browser automation steps for each platform:
 {
   "VinSolutions": {
     "baseUrl": "https://crm.vinsolutions.com/login",
-    "hasOTP": true,
+    "hasOTP": false, <!-- OTP verification removed -->
     "loginSteps": [
       { "action": "goto", "args": ["https://crm.vinsolutions.com/login"] },
       { "action": "fill", "selector": "#username", "value": "{{VIN_SOLUTIONS_USERNAME}}" }

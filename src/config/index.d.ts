@@ -1,6 +1,6 @@
 /**
  * Configuration Module Type Declarations
- * 
+ *
  * This file provides TypeScript type declarations for the configuration module.
  */
 import {
@@ -19,14 +19,14 @@ import {
 
 /**
  * Load and validate configuration
- * 
+ *
  * @returns Validated configuration object
  */
 export function loadConfig(): Config;
 
 /**
  * Validate required environment variables
- * 
+ *
  * @returns Validation result with missing variables
  */
 export function validateRequiredEnvVars(): { valid: boolean; missing: string[] };
@@ -42,7 +42,7 @@ export default config;
 // Export individual configuration sections
 export const database: DatabaseConfig;
 export const email: EmailConfig | undefined;
-export const otpEmail: OtpEmailConfig | undefined;
+// export const otpEmail: OtpEmailConfig | undefined; // OTP email removed
 export const security: SecurityConfig;
 export const server: ServerConfig;
 export const app: AppConfig;

@@ -39,15 +39,14 @@ Welcome to the AgentFlow project! This guide will help you set up your developme
 
 ## Project Overview
 
-AgentFlow is an AI agent backend that executes various tasks including web crawling, flight status checking, and dealer interactions. It's specifically designed for automotive dealerships to analyze CRM reports, generate insights, and distribute them via email to different stakeholders.
+AgentFlow is an AI agent backend that executes various tasks for automotive dealerships to analyze CRM reports, generate insights, and distribute them via email to different stakeholders.
 
 ### Key Features
 
 - Natural language task parsing
-- Web crawling and content extraction
 - CRM report ingestion (VinSolutions, VAUTO, DealerTrack)
 - AI-powered insight generation
-- Email notifications and OTP verification
+- Email notifications
 - Scheduled report processing
 
 ## Setup Instructions
@@ -86,8 +85,7 @@ Required environment variables:
 - `DATABASE_URL`: PostgreSQL connection string
 <!-- EKO_API_KEY removed: Eko integration no longer used -->
 - `SENDGRID_API_KEY`: API key for SendGrid (email)
-- `OTP_EMAIL_USER`: Email for OTP verification
-- `OTP_EMAIL_PASS`: Password for OTP email
+<!-- OTP email configuration removed -->
 
 4. **Set up the database**
 
@@ -115,7 +113,7 @@ AgentFlow follows a modular architecture with several key components:
 
 1. **Task Parser**: Analyzes natural language input to determine task type and parameters
 2. **Agent Engine**: Executes tasks using appropriate tools
-3. **Email Service**: Handles email notifications and OTP verification
+3. **Email Service**: Handles email notifications
 4. **Scheduler**: Manages scheduled tasks and workflows
 5. **Database Layer**: Stores credentials, tasks, and workflow data
 

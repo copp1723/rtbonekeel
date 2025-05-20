@@ -98,12 +98,7 @@ This document provides a comprehensive reference for all environment variables u
 | `EMAIL_FROM` | No | - | Sender email address | `"Row The Boat" <notifications@example.com>` |
 | `EMAIL_SECURE` | No | `true` | Use TLS | `false` |
 | `SENDGRID_API_KEY` | No | - | SendGrid API key (alternative to SMTP) | `SG.abcdefghijklmnopqrstuvwxyz` |
-| `OTP_EMAIL_HOST` | No | - | IMAP server for OTP emails | `imap.gmail.com` |
-| `OTP_EMAIL_PORT` | No | `993` | IMAP port for OTP emails | `993` |
-| `OTP_EMAIL_USER` | No | - | Email for receiving OTPs | `otp@example.com` |
-| `OTP_EMAIL_PASSWORD` | No | - | Password for OTP email | `app-specific-password` |
-| `OTP_PATTERN` | No | `OTP is: (\\d{6})` | Regex pattern for OTP extraction | `Your code is: (\\d{6})` |
-| `OTP_SUBJECT` | No | `Your OTP Code` | Subject line for OTP emails | `Verification Code` |
+<!-- OTP email configuration removed -->
 
 ## Third-Party Services
 

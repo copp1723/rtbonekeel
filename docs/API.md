@@ -61,7 +61,7 @@ POST /api/tasks
 Content-Type: application/json
 
 {
-  "task": "Crawl https://news.ycombinator.com and extract the title, url, and score of the top 5 posts"
+  "task": "Analyze the sales report from last week and summarize the top 5 performing vehicles"
 }
 ```
 
@@ -87,19 +87,20 @@ Response:
 {
   "id": "123e4567-e89b-12d3-a456-426614174000",
   "userId": "user-123",
-  "taskType": "web_crawling",
-  "taskText": "Crawl https://news.ycombinator.com and extract the title, url, and score of the top 5 posts",
+  "taskType": "report_analysis",
+  "taskText": "Analyze the sales report from last week and summarize the top 5 performing vehicles",
   "taskData": {
-    "url": "https://news.ycombinator.com",
+    "reportType": "sales",
+    "period": "last_week",
     "count": 5
   },
   "status": "completed",
   "result": {
-    "posts": [
+    "vehicles": [
       {
-        "title": "Example Post",
-        "url": "https://example.com",
-        "score": 100
+        "model": "Honda Accord",
+        "sales": 42,
+        "revenue": 1260000
       }
     ]
   },
@@ -121,8 +122,8 @@ Response:
   {
     "id": "123e4567-e89b-12d3-a456-426614174000",
     "userId": "user-123",
-    "taskType": "web_crawling",
-    "taskText": "Crawl https://news.ycombinator.com and extract the title, url, and score of the top 5 posts",
+    "taskType": "report_analysis",
+    "taskText": "Analyze the sales report from last week and summarize the top 5 performing vehicles",
     "status": "completed",
     "createdAt": "2023-01-01T00:00:00.000Z"
   }
@@ -136,7 +137,7 @@ POST /submit-task
 Content-Type: application/json
 
 {
-  "task": "Crawl https://news.ycombinator.com and extract the title, url, and score of the top 5 posts"
+  "task": "Analyze the sales report from last week and summarize the top 5 performing vehicles"
 }
 ```
 
@@ -145,11 +146,11 @@ Response:
 ```json
 {
   "result": {
-    "posts": [
+    "vehicles": [
       {
-        "title": "Example Post",
-        "url": "https://example.com",
-        "score": 100
+        "model": "Honda Accord",
+        "sales": 42,
+        "revenue": 1260000
       }
     ]
   },
@@ -269,7 +270,7 @@ const tasksApi = new TasksApi(config);
 async function submitTask() {
   try {
     const response = await tasksApi.submitTask({
-      task: "Crawl https://news.ycombinator.com and extract the title, url, and score of the top 5 posts"
+      task: "Analyze the sales report from last week and summarize the top 5 performing vehicles"
     });
     console.log('Task submitted:', response.data);
   } catch (error) {

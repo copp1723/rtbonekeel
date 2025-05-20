@@ -12,15 +12,23 @@
     "test:ui": "vitest --ui",
     "check-duplicates": "npx jscpd .",
     "test:components": "playwright test -c playwright-ct.config.ts",
-    "test:components:ui": "playwright test -c playwright-ct.config.ts --ui"
+    "test:components:ui": "playwright test -c playwright-ct.config.ts --ui",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.9.1",
+    "@prisma/client": "^6.8.2",
     "@tanstack/react-query": "^5.0.0",
     "@types/uuid": "^10.0.0",
     "axios": "^1.6.0",
+    "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
     "next": "14.0.0",
+    "next-auth": "^5.0.0-beta.28",
+    "prisma": "^6.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^3.3.0",
@@ -31,6 +39,7 @@
     "@playwright/test": "^1.52.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.8.10",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
@@ -41,6 +50,7 @@
     "jsdom": "^26.1.0",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vitest": "^3.1.3"
   }

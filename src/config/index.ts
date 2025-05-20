@@ -13,7 +13,7 @@ import {
   ConfigSchema,
   DatabaseConfigSchema,
   EmailConfigSchema,
-  OtpEmailConfigSchema,
+  // OtpEmailConfigSchema removed
   SecurityConfigSchema,
   ServerConfigSchema,
   AppConfigSchema,
@@ -31,7 +31,7 @@ import {
   DEFAULT_APP,
   DEFAULT_SECURITY,
   DEFAULT_EMAIL,
-  DEFAULT_OTP_EMAIL,
+  // DEFAULT_OTP_EMAIL removed
   DEFAULT_REDIS,
   REQUIRED_VARS
 } from './defaults';
@@ -56,8 +56,7 @@ function loadConfig(): Config {
     // Email configuration
     const email = loadEmailConfig();
 
-    // OTP Email configuration
-    const otpEmail = loadOtpEmailConfig();
+    // OTP Email configuration removed
 
     // Security configuration
     const security = loadSecurityConfig();
@@ -82,7 +81,7 @@ function loadConfig(): Config {
       env,
       database,
       email,
-      otpEmail,
+      // otpEmail removed
       security,
       server,
       app,
@@ -161,28 +160,8 @@ function loadEmailConfig() {
 }
 
 /**
- * Load OTP email configuration from environment variables
+ * OTP email configuration function has been removed
  */
-function loadOtpEmailConfig() {
-  if (!process.env.OTP_EMAIL_USER || !process.env.OTP_EMAIL_PASS) {
-    if (env === 'production') {
-      warn('OTP email configuration is incomplete. OTP functionality may not work correctly.');
-    }
-    return undefined;
-  }
-
-  return OtpEmailConfigSchema.parse({
-    host: process.env.OTP_EMAIL_HOST || process.env.EMAIL_HOST,
-    port: process.env.OTP_EMAIL_PORT ?
-      parseInt(process.env.OTP_EMAIL_PORT, 10) :
-      (process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT, 10) : DEFAULT_OTP_EMAIL.port),
-    secure: process.env.OTP_EMAIL_TLS !== 'false',
-    user: process.env.OTP_EMAIL_USER,
-    password: process.env.OTP_EMAIL_PASS,
-    pattern: process.env.OTP_PATTERN || DEFAULT_OTP_EMAIL.pattern,
-    subject: process.env.OTP_SUBJECT || DEFAULT_OTP_EMAIL.subject,
-  });
-}
 
 /**
  * Load security configuration from environment variables
@@ -328,7 +307,7 @@ export default config;
 // Export individual configuration sections for convenience
 export const database = config.database;
 export const email = config.email;
-export const otpEmail = config.otpEmail;
+// export const otpEmail = config.otpEmail; // OTP email removed
 export const security = config.security;
 export const server = config.server;
 export const app = config.app;

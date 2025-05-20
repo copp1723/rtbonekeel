@@ -26,10 +26,9 @@ Row The Boat is an AI agent backend specifically designed for automotive dealers
 ## Features
 
 - **Natural language task parsing**: Analyze natural language input to determine task type and parameters
-- **Web crawling and content extraction**: Extract data from web sources
 - **CRM report ingestion**: Support for VinSolutions, VAUTO, DealerTrack
 - **AI-powered insight generation**: Generate actionable insights from CRM data
-- **Email notifications and OTP verification**: Secure communication with stakeholders
+- **Email notifications**: Secure communication with stakeholders
 - **Scheduled report processing**: Automate report processing on a schedule
 
 ## Getting Started

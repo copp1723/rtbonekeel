@@ -46,17 +46,7 @@ export const EmailConfigSchema = z.object({
 });
 export type EmailConfig = z.infer<typeof EmailConfigSchema>;
 
-// OTP Email configuration schema
-export const OtpEmailConfigSchema = z.object({
-  host: z.string(),
-  port: z.coerce.number().default(993),
-  secure: z.boolean().default(true),
-  user: z.string().email(),
-  password: z.string(),
-  pattern: z.string().default('OTP is: (\\d{6})'),
-  subject: z.string().default('Your OTP Code'),
-});
-export type OtpEmailConfig = z.infer<typeof OtpEmailConfigSchema>;
+// OTP Email configuration schema has been removed
 
 // Security configuration schema
 export const SecurityConfigSchema = z.object({
@@ -129,7 +119,7 @@ export const ConfigSchema = z.object({
   env: EnvironmentSchema.default('development'),
   database: DatabaseConfigSchema,
   email: EmailConfigSchema.optional(),
-  otpEmail: OtpEmailConfigSchema.optional(),
+  // otpEmail field removed
   security: SecurityConfigSchema,
   server: ServerConfigSchema.default({}),
   app: AppConfigSchema.default({}),

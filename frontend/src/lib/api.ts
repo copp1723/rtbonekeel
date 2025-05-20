@@ -2,12 +2,11 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
   },
-  withCredentials: false,
+  withCredentials: true, // Important for auth cookies
 });
 
 // Add response interceptor for error handling
@@ -20,17 +19,24 @@ api.interceptors.response.use(
 );
 
 // Types
-export interface Credential {
+export interface ApiKey {
   id: string;
-  platform: string;
-  username: string;
-  password: string;
+  service: string;
+  keyName: string;
+  keyValue: string;
+  label?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  additionalData?: Record<string, any>;
 }
 
-export interface CredentialInput {
-  platform: string;
-  username: string;
-  password: string;
+export interface ApiKeyInput {
+  service: string;
+  keyName: string;
+  keyValue: string;
+  label?: string;
+  additionalData?: Record<string, any>;
 }
 
 export interface TaskInput {
@@ -58,24 +64,30 @@ export interface Task {
 }
 
 // API Functions
-export const credentialsApi = {
-  getAll: async (): Promise<Credential[]> => {
-    const { data } = await api.get('/credentials');
+export const apiKeysApi = {
+  getAll: async (service?: string): Promise<ApiKey[]> => {
+    const url = service ? `/api-keys?service=${service}` : '/api-keys';
+    const { data } = await api.get(url);
     return data;
   },
-  
-  create: async (credential: CredentialInput): Promise<Credential> => {
-    const { data } = await api.post('/credentials', credential);
+
+  getById: async (id: string): Promise<ApiKey> => {
+    const { data } = await api.get(`/api-keys/${id}`);
     return data;
   },
-  
-  update: async (id: string, credential: Partial<CredentialInput>): Promise<Credential> => {
-    const { data } = await api.put(`/credentials/${id}`, credential);
+
+  create: async (apiKey: ApiKeyInput): Promise<ApiKey> => {
+    const { data } = await api.post('/api-keys', apiKey);
     return data;
   },
-  
+
+  update: async (id: string, apiKey: Partial<ApiKeyInput>): Promise<ApiKey> => {
+    const { data } = await api.put(`/api-keys/${id}`, apiKey);
+    return data;
+  },
+
   delete: async (id: string): Promise<void> => {
-    await api.delete(`/credentials/${id}`);
+    await api.delete(`/api-keys/${id}`);
   },
 };
 
@@ -84,12 +96,12 @@ export const tasksApi = {
     const { data } = await api.get('/tasks');
     return data;
   },
-  
+
   getById: async (id: string): Promise<Task> => {
     const { data } = await api.get(`/tasks/${id}`);
     return data;
   },
-  
+
   create: async (task: TaskInput): Promise<Task> => {
     const { data } = await api.post('/tasks', task);
     return data;

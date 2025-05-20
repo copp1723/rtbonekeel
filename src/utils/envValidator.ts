@@ -23,8 +23,7 @@ const DEFAULT_VALUES = {
     'postgresql://test:test@localhost:5432/test',
   ],
   // Email credentials
-  OTP_EMAIL_USER: ['your_email_username', 'test@example.com'],
-  OTP_EMAIL_PASS: ['your_email_password', 'test-password'],
+  // OTP email variables removed
   // CRM credentials
   VIN_SOLUTIONS_USERNAME: ['your_vinsolutions_username'],
   VIN_SOLUTIONS_PASSWORD: ['your_vinsolutions_password'],
@@ -38,8 +37,7 @@ const REQUIRED_VARS = {
     'ENCRYPTION_KEY',
     'DATABASE_URL',
     'SENDGRID_API_KEY',
-    'OTP_EMAIL_USER',
-    'OTP_EMAIL_PASS',
+    // OTP email variables removed
   ],
   development: ['DATABASE_URL'],
   test: ['DATABASE_URL'],
@@ -47,7 +45,7 @@ const REQUIRED_VARS = {
 // Optional but recommended environment variables
 const RECOMMENDED_VARS = {
   production: ['OPENAI_API_KEY'], // EKO integration removed
-  development: ['ENCRYPTION_KEY', 'SENDGRID_API_KEY', 'OTP_EMAIL_USER', 'OTP_EMAIL_PASS'],
+  development: ['ENCRYPTION_KEY', 'SENDGRID_API_KEY'],
   test: [],
 };
 /**

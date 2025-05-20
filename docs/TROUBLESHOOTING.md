@@ -253,14 +253,7 @@ Error: jwt malformed
 Error: Invalid API key provided
 ```
 
-### OTP Verification Issues
-
-**Problem:** OTP verification fails.
-
-**Solution:**
-1. Check that the OTP email account is correctly configured
-2. Verify that the OTP pattern regex matches the expected format
-3. Ensure the OTP email is being received and processed correctly
+<!-- OTP verification section removed -->
 
 ## Performance Issues
 
