@@ -5,7 +5,7 @@
  * @fileStubNote This file contains mock implementations for attachment parsers. Replace with real logic for production.
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { info, warn, error } from '../shared/logger.js';
+import { info, warn, error } from '../index.js';
 import path from 'path';
 import fs from 'fs';
 

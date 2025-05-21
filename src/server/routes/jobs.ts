@@ -2,11 +2,11 @@
  * API Routes for Job Management
  */
 import { Router } from 'express';
-import { isError } from '../utils/errorUtils.js';
-import { listJobs, getJobById, retryJob, enqueueJob } from '../../services/jobQueue.js';
-import { isAuthenticated } from '../auth.js';
-import { db } from '../../shared/db.js';
-import { taskLogs } from '../../shared/schema.js';
+import { isError } from '../index.js';
+import { listJobs, getJobById, retryJob, enqueueJob } from '../index.js';
+import { isAuthenticated } from '../index.js';
+import { db } from '../index.js';
+import { taskLogs } from '../index.js';
 import { eq } from 'drizzle-orm';
 const router = Router();
 // Get all jobs with optional filtering by status

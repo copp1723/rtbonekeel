@@ -7,7 +7,7 @@
  * @fileStubNote This file contains mock implementations for workflow step handlers. Replace with real logic for production.
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 /**
  * Step handler interface

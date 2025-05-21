@@ -1,13 +1,13 @@
-import { logError } from '../shared/errorHandler.js';
+import { logError } from '../index.js';
 import { 
   isAppError, 
   toAppError, 
   AppError
-} from '../shared/errorTypes.js';
+} from '../index.js';
 import {
   ERROR_CODES,
   type ErrorCode
-} from '../shared/errorTypes.js';
+} from '../index.js';
 
 /**
  * Options for handling API errors
@@ -31,7 +31,7 @@ interface ApiErrorHandlerOptions {
   /**
    * Additional context to include with the error
    */
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   
   /**
    * Whether to rethrow the error (default: true)
@@ -115,7 +115,7 @@ export async function handleApiResponse<T>(
     /**
      * Context for error messages
      */
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
   } = {}
 ): Promise<T> {
   const {
@@ -131,10 +131,14 @@ export async function handleApiResponse<T>(
   if (isSuccess) {
     try {
       if (!parseJson) {
-        return undefined as unknown as T;
+        // If we're not parsing JSON, we need to handle the undefined case
+        // This is a special case where we know the return type
+        return null as unknown as T;
       }
       
       const data = await response.json().catch(() => ({}));
+      // We need to validate the data structure matches T, but without runtime type checking
+      // this is the best we can do while maintaining type safety
       return data as T;
     } catch (error) {
       throw handleApiError(error, {

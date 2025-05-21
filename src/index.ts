@@ -1,6 +1,6 @@
 // Main entry point for the AI Agent API server
 import dotenv from 'dotenv';
-import { startServer } from '@/api/server';
+import { startServer } from './api/server';
 
 // Load environment variables
 dotenv.config();

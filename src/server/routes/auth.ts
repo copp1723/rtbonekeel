@@ -1,6 +1,6 @@
-import { Router, Request, Response, RequestHandler } from 'express';
-import { isAuthenticated } from '../auth.js';
-import { storage } from '../storage.js';
+import type { Router, Request, Response, RequestHandler } from 'express';
+import { isAuthenticated } from '../index.js';
+import { storage } from '../index.js';
 // Define custom Request interface with user property
 interface AuthRequest extends Request {
   user?: {

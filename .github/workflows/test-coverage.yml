@@ -1,0 +1,225 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for accurate coverage comparison
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create test environment file
+        run: |
+          echo "NODE_ENV=test" > .env.test
+          echo "TEST_DATABASE_URL=postgresql://test:test@localhost:5432/test_db" >> .env.test
+          echo "TEST_REDIS_URL=redis://localhost:6379/1" >> .env.test
+          echo "JWT_SECRET=test-jwt-secret" >> .env.test
+          echo "ENCRYPTION_KEY=01234567890123456789012345678901" >> .env.test
+          echo "LOG_LEVEL=error" >> .env.test
+          echo "LOG_FORMAT=json" >> .env.test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Generate coverage summary
+        run: |
+          echo "# Test Coverage Summary" > coverage-summary.md
+          echo "Generated on $(date)" >> coverage-summary.md
+          echo "" >> coverage-summary.md
+          
+          # Extract coverage data from the JSON summary
+          node -e "
+            const fs = require('fs');
+            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
+            const total = coverage.total;
+            
+            let markdown = '## Overall Coverage\n\n';
+            markdown += '| Category | Coverage |\n';
+            markdown += '|----------|----------|\n';
+            markdown += `| Statements | ${total.statements.pct}% |\n`;
+            markdown += `| Branches | ${total.branches.pct}% |\n`;
+            markdown += `| Functions | ${total.functions.pct}% |\n`;
+            markdown += `| Lines | ${total.lines.pct}% |\n\n`;
+            
+            fs.appendFileSync('coverage-summary.md', markdown);
+          "
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage/
+            coverage-summary.md
+            
+      - name: Add coverage badge to README
+        if: github.ref == 'refs/heads/main'
+        run: |
+          COVERAGE=$(node -e "
+            const fs = require('fs');
+            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
+            console.log(coverage.total.lines.pct);
+          ")
+          
+          # Generate badge URL
+          COLOR=$(node -e "
+            const coverage = $COVERAGE;
+            if (coverage >= 80) console.log('brightgreen');
+            else if (coverage >= 70) console.log('green');
+            else if (coverage >= 60) console.log('yellowgreen');
+            else if (coverage >= 50) console.log('yellow');
+            else console.log('red');
+          ")
+          
+          BADGE_URL="https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}"
+          
+          # Update README.md with coverage badge
+          if grep -q "!\[Coverage\]" README.md; then
+            sed -i "s|!\[Coverage\]([^)]*)|![Coverage](${BADGE_URL})|" README.md
+          else
+            # Find the first heading and add the badge after it
+            sed -i "0,/^# / s/^# \(.*\)/# \\1\\n\\n![Coverage](${BADGE_URL})/" README.md
+          fi
+
+      - name: Post coverage summary as PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('coverage-summary.md', 'utf8');
+            
+            // Get previous coverage data if available
+            let previousCoverage = null;
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number
+              });
+              
+              // Find the most recent coverage comment
+              const coverageComments = comments.filter(comment => 
+                comment.body.includes('## Test Coverage Summary')
+              );
+              
+              if (coverageComments.length > 0) {
+                const latestComment = coverageComments[coverageComments.length - 1];
+                
+                // Extract coverage percentages from the comment
+                const statementsMatch = latestComment.body.match(/Statements \| (\d+\.?\d*)%/);
+                const branchesMatch = latestComment.body.match(/Branches \| (\d+\.?\d*)%/);
+                const functionsMatch = latestComment.body.match(/Functions \| (\d+\.?\d*)%/);
+                const linesMatch = latestComment.body.match(/Lines \| (\d+\.?\d*)%/);
+                
+                if (statementsMatch && branchesMatch && functionsMatch && linesMatch) {
+                  previousCoverage = {
+                    statements: parseFloat(statementsMatch[1]),
+                    branches: parseFloat(branchesMatch[1]),
+                    functions: parseFloat(functionsMatch[1]),
+                    lines: parseFloat(linesMatch[1])
+                  };
+                }
+              }
+            } catch (error) {
+              console.log('Error fetching previous comments:', error);
+            }
+            
+            // Get current coverage data
+            const currentCoverage = {};
+            const statementsMatch = summary.match(/Statements \| (\d+\.?\d*)%/);
+            const branchesMatch = summary.match(/Branches \| (\d+\.?\d*)%/);
+            const functionsMatch = summary.match(/Functions \| (\d+\.?\d*)%/);
+            const linesMatch = summary.match(/Lines \| (\d+\.?\d*)%/);
+            
+            if (statementsMatch && branchesMatch && functionsMatch && linesMatch) {
+              currentCoverage.statements = parseFloat(statementsMatch[1]);
+              currentCoverage.branches = parseFloat(branchesMatch[1]);
+              currentCoverage.functions = parseFloat(functionsMatch[1]);
+              currentCoverage.lines = parseFloat(linesMatch[1]);
+            }
+            
+            // Generate comparison if previous coverage exists
+            let comparisonTable = '';
+            if (previousCoverage) {
+              comparisonTable = '## Coverage Changes\n\n';
+              comparisonTable += '| Category | Previous | Current | Change |\n';
+              comparisonTable += '|----------|----------|---------|--------|\n';
+              
+              const formatChange = (current, previous) => {
+                const diff = (current - previous).toFixed(2);
+                return diff >= 0 ? `+${diff}%` : `${diff}%`;
+              };
+              
+              comparisonTable += `| Statements | ${previousCoverage.statements}% | ${currentCoverage.statements}% | ${formatChange(currentCoverage.statements, previousCoverage.statements)} |\n`;
+              comparisonTable += `| Branches | ${previousCoverage.branches}% | ${currentCoverage.branches}% | ${formatChange(currentCoverage.branches, previousCoverage.branches)} |\n`;
+              comparisonTable += `| Functions | ${previousCoverage.functions}% | ${currentCoverage.functions}% | ${formatChange(currentCoverage.functions, previousCoverage.functions)} |\n`;
+              comparisonTable += `| Lines | ${previousCoverage.lines}% | ${currentCoverage.lines}% | ${formatChange(currentCoverage.lines, previousCoverage.lines)} |\n\n`;
+            }
+            
+            const comment = `## Test Coverage Summary
+
+${summary}
+
+${comparisonTable}
+
+[View full coverage report](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

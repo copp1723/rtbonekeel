@@ -6,7 +6,7 @@
  * options and return types.
  */
 
-import { FileType, ParserOptions, ParserResult } from './types.js';
+import type { FileType, ParserOptions, ParserResult } from './types.js';
 
 /**
  * Interface for all file parsers

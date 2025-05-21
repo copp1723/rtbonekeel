@@ -5,11 +5,11 @@
  * It configures Sentry SDK, sets up error handlers, and provides utility functions
  * for capturing errors and custom events.
  */
-import { AppError } from '../shared/errorTypes.js';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { AppError } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 import * as Sentry from '@sentry/node';
-import { isError } from '../utils/errorUtils.js';
-import { ProfilingIntegration } from '@sentry/profiling-node';
+import { isError } from '../index.js';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 /**
  * Custom error type for application errors
@@ -50,11 +50,11 @@ export function initializeSentry(dsn?: string): boolean {
       environment: SENTRY_ENVIRONMENT,
       integrations: [
         // Enable HTTP capturing
-        new Sentry.Integrations.Http({ tracing: true }),
+        Sentry.httpIntegration(),
         // Enable Express.js middleware tracing
-        new Sentry.Integrations.Express(),
+        Sentry.expressIntegration(),
         // Enable Node.js profiling
-        new ProfilingIntegration(),
+        nodeProfilingIntegration(),
       ],
       // Performance monitoring
       tracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
@@ -177,14 +177,14 @@ export function captureMessage(
  * Create Express middleware for Sentry request handler
  */
 export function createSentryRequestHandler() {
-  return Sentry.Handlers.requestHandler();
+  return Sentry.requestHandler();
 }
 
 /**
  * Create Express middleware for Sentry error handler
  */
 export function createSentryErrorHandler() {
-  return Sentry.Handlers.errorHandler();
+  return Sentry.errorHandler();
 }
 
 /**
@@ -217,5 +217,5 @@ export default {
 };
 
 function isSentryInitialized(): boolean {
-  return Sentry.getCurrentHub().getClient() !== null;
+  return Sentry.getClient() !== null;
 }

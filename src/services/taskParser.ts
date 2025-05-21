@@ -1,6 +1,6 @@
 // Eko integration fully removed
-import { Logger } from '../shared/logger.js';
-import { getErrorMessage } from '../utils/errorUtils.js';
+import { Logger } from '../index.js';
+import { getErrorMessage } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
 export interface ParsedTask {
   id: string;

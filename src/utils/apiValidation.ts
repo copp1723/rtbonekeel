@@ -3,9 +3,9 @@
  * 
  * Provides middleware and utilities for validating API requests using Zod schemas
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import { isError } from './errorUtils.js';
 
 /**

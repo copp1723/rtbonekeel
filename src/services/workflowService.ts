@@ -10,9 +10,9 @@ interface Recipient {
  * Workflow Service
  * Handles multi-step workflows with memory, state transitions, and resumability
  */
-import { db } from '../shared/db.js';
-import { isError } from '../utils/errorUtils.js';
-import { workflows, WorkflowStatus, WorkflowStep, Workflow } from '../shared/schema.js';
+import { db } from '../index.js';
+import { isError } from '../index.js';
+import { workflows, WorkflowStatus, WorkflowStep, Workflow } from '../index.js';
 import { eq, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 // Import step handlers
@@ -20,7 +20,7 @@ import { stepHandlers } from './stepHandlers.js';
 // Import email service
 import { sendWorkflowCompletionEmail } from './workflowEmailServiceFixed.js';
 // Import logger
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 export interface WorkflowContext {
   [key: string]: unknown;

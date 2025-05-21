@@ -51,7 +51,7 @@ export function isEmptyString(str: string | null | undefined): boolean {
 /**
  * Check if a value is null or undefined
  */
-export function isNullOrUndefined(value: any): boolean {
+export function isNullOrUndefined(value: unknown): boolean {
   return value === null || value === undefined;
 }
 
@@ -76,14 +76,17 @@ export function isValidUsername(username: string): boolean {
 /**
  * Validate if a value is a number
  */
-export function isNumber(value: any): boolean {
-  return !isNaN(Number(value));
+export function isNumber(value: unknown): boolean {
+  return typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)));
 }
 
 /**
  * Validate if a value is a positive number
  */
-export function isPositiveNumber(value: any): boolean {
+export function isPositiveNumber(value: unknown): boolean {
+  if (typeof value !== 'number' && typeof value !== 'string') {
+    return false;
+  }
   const num = Number(value);
   return !isNaN(num) && num > 0;
 }
@@ -91,7 +94,10 @@ export function isPositiveNumber(value: any): boolean {
 /**
  * Validate if a value is a non-negative number (zero or positive)
  */
-export function isNonNegativeNumber(value: any): boolean {
+export function isNonNegativeNumber(value: unknown): boolean {
+  if (typeof value !== 'number' && typeof value !== 'string') {
+    return false;
+  }
   const num = Number(value);
   return !isNaN(num) && num >= 0;
 }
@@ -120,7 +126,7 @@ export function isOneOf<T>(value: T, allowedValues: T[]): boolean {
 /**
  * Create a validation schema for an object
  */
-export type ValidationRule = (value: any) => boolean | string;
+export type ValidationRule = (value: unknown) => boolean | string;
 
 export type ValidationSchema<T> = {
   [K in keyof T]?: ValidationRule | ValidationRule[];
@@ -134,7 +140,7 @@ export type ValidationResult = {
 /**
  * Validate an object against a schema
  */
-export function validateObject<T extends Record<string, any>>(
+export function validateObject<T extends Record<string, unknown>>(
   obj: T,
   schema: ValidationSchema<T>
 ): ValidationResult {

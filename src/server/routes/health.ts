@@ -4,8 +4,8 @@
  * Exposes endpoints for checking system health and viewing health metrics
  */
 import express from 'express';
-import { isError } from '../../utils/errorUtils.js';
-import { debug, info, warn, error } from '../../shared/logger.js';
+import { isError } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 import {
   runAllHealthChecks,
   runHealthCheck,
@@ -17,8 +17,8 @@ import {
   checkEmailService,
   checkAIService,
   checkSchedulerService,
-} from '../../services/healthService';
-import { checkRedisHealth } from '../../services/redisHealthCheck.js';
+} from '../index.js';
+import { checkRedisHealth } from '../index.js';
 
 const router = express.Router();
 
@@ -105,7 +105,7 @@ router.get('/logs/:checkId', async (req, res) => {
 router.get('/queues', async (_req, res) => {
   try {
     // @ts-ignore - Will add types when implementing enhancedBullmqService
-    const { healthCheck } = await import('../../features/scheduler/services/enhancedBullmqService.js');
+    const { healthCheck } = await import('../.js');
     const status = await healthCheck();
 
     res.json({

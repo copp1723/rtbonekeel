@@ -3,7 +3,7 @@
  * Handles email notification configuration and management
  */
 import { Router } from 'express';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import {
   sendWorkflowEmail,
   getEmailLogs,
@@ -11,7 +11,7 @@ import {
   configureNotification,
   getNotificationSettings,
   deleteNotification,
-} from '../../services/workflowEmailService.js';
+} from '../index.js';
 const router = Router();
 /**
  * Configure email notifications for a workflow

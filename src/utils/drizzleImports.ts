@@ -30,4 +30,4 @@ export type InferInsertModel<TTable extends PgTable> = {
 };
 
 // Re-export schema for convenience
-export * from '../shared/schema.js';
+export * from '../index.js';

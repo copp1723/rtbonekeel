@@ -1,13 +1,13 @@
-import { db } from '../shared/db.js';
+import { db } from '../index.js';
 import type { PgTable } from './drizzleImports.js';
 import type { QueryResultRow } from 'pg';
-import { sql } from '../utils/drizzleImports.js';
+import { sql } from '../index.js';
 
 // Export QueryCondition type for use in other files
 export type QueryCondition = {
   key: string;
   operator: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN';
-  value: any;
+  value: unknown;
 };
 
 interface QueryResult<R> {
@@ -27,7 +27,15 @@ export class DrizzleWrapper<T extends PgTable, R extends QueryResultRow> {
 
     // Execute the query
     const result = await db.execute(sqlQuery);
-    return result as unknown as R[];
+    
+    // We need to cast the result to the expected type
+    // This is a type assertion that should be replaced with proper type checking
+    // when we fully integrate with Drizzle ORM
+    if (!Array.isArray(result)) {
+      return [];
+    }
+    
+    return result as R[];
   }
 
   async findOne(conditions: QueryCondition[]): Promise<R | null> {

@@ -1,0 +1,18 @@
+   1118 
+     12  "import" } })'.
+      4  string; parseDate
+      2  string; temperature
+      2  string | undefined; temperature
+      2  number; role
+      2  BufferEncoding | undefined, callback?
+      1  true'. Consider adding 'undefined' to the types of the target's properties.
+      1  string; }'.
+      1  string; status
+      1  string; cronExpression
+      1  string | undefined; }' is not assignable to parameter of type 'User' with 'exactOptionalPropertyTypes
+      1  string | undefined; keyId
+      1  string | undefined; intent?
+      1  string | undefined; html
+      1  string | undefined; autoRotationDays
+      1  string | undefined; alertThresholds
+      1  number; password

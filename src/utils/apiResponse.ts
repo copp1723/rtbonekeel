@@ -3,7 +3,7 @@
  * 
  * Provides consistent response formatting for API endpoints
  */
-import { Response } from 'express';
+import type { Response } from 'express';
 import { getErrorMessage } from './errorHandling.js';
 
 /**

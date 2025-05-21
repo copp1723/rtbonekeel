@@ -1,0 +1,6 @@
+src/utils/apiErrorHandler.ts:        return null as unknown as T;
+src/services/workflowService.ts:      : (JSON.parse(updatedWorkflow.steps as unknown as string) as WorkflowStep[]);
+src/services/jobQueue.ts:    }) as unknown as Queue<TaskJobData>;
+src/services/jobQueue.ts:      }) as unknown as Queue<TaskJobData>;
+src/tests/healthCheckScheduler.test.ts:      } as unknown as ScheduledTask)),
+src/tests/healthCheckScheduler.test.ts:      } as unknown as ScheduledTask;

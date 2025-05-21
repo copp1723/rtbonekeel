@@ -3,13 +3,13 @@
  * 
  * Initializes all security-related services
  */
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import { initializeKmsService } from './awsKmsService.js';
 import { initializeKmsEncryption } from './kmsEncryptionService.js';
 import { initializeKeyRotation } from './keyRotationService.js';
 import { initializeSecurityMonitoring } from './securityMonitoringService.js';
-import { runMigrations } from '../migrations/run-migrations.js';
+import { runMigrations } from '../index.js';
 
 /**
  * Initialize all security services

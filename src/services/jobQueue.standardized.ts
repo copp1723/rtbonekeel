@@ -5,25 +5,20 @@
  * Uses BullMQ for Redis-based queues with fallback to in-memory queues.
  */
 
-import { sql, and, eq, isNull } from '../utils/drizzleImports.js';
-// [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { isAppError, isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
-import { jobs as jobQueueTable, taskLogs as tasks } from '../shared/schema.js';
+import { sql, and, eq, isNull } from '../index.js';
+import { isAppError, isError } from '../index.js';
+import { db } from '../index.js';
+import { jobs as jobQueueTable, taskLogs as tasks } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
-// [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Import BullMQ types from their individual files
-import type { Queue } from '../types/bullmq/queueTypes.js';
-import type { Worker } from '../types/bullmq/workerTypes.js';
-import type { JobOptions } from '../types/bullmq/jobTypes.js';
-import type { Job } from '../types/bullmq/jobTypes.js';
+import type { Queue, Worker, JobsOptions, Job, QueueScheduler } from 'bullmq';
 import type { Redis } from 'ioredis';
 
 // Import standardized BullMQ service
-import * as bullmqService from '../types/bullmq-service.js';
-import { isInMemoryMode, getRedisClient } from '../types/bullmq-config.js';
+import * as bullmqService from '../index.js';
+import { isInMemoryMode, getRedisClient } from '../index.js';
 
 // Local types
 interface TaskJobData {
@@ -88,7 +83,7 @@ export async function initializeJobQueue(): Promise<void> {
 
     if (!isInMemoryMode()) {
       // Create task queue
-      taskQueue = bullmqService.createQueue(TASK_PROCESSOR_QUEUE as any, {
+      taskQueue = bullmqService.createQueue(TASK_PROCESSOR_QUEUE as keyof typeof bullmqService.QUEUE_NAMES, {
         defaultJobOptions: {
           removeOnComplete: 1000,
           removeOnFail: 5000,
@@ -98,22 +93,22 @@ export async function initializeJobQueue(): Promise<void> {
             delay: 1000,
           },
         },
-      } as QueueOptions);
+      });
 
       // Create scheduler
       taskScheduler = bullmqService.createScheduler(TASK_QUEUE_NAME);
 
-      info('Job queue system initialized with Redis', {
+      info({
         event: 'job_queue_initialized',
         mode: 'redis',
         timestamp: new Date().toISOString()
-      });
+      }, 'Job queue system initialized with Redis');
     } else {
-      info('Job queue system initialized in in-memory mode', {
+      info({
         event: 'job_queue_initialized',
         mode: 'in-memory',
         timestamp: new Date().toISOString()
-      });
+      }, 'Job queue system initialized in in-memory mode');
 
       // Start in-memory job processor
       setInterval(processInMemoryJobs, 5000);
@@ -123,11 +118,11 @@ export async function initializeJobQueue(): Promise<void> {
     await setupWorker();
   } catch (err) {
     const errorMessage = isError(err) ? err.message : String(err);
-    error(`Failed to initialize job queue: ${errorMessage}`, {
+    error({
       event: 'job_queue_initialization_failed',
       error: errorMessage,
       timestamp: new Date().toISOString()
-    });
+    }, `Failed to initialize job queue: ${errorMessage}`);
     throw err;
   }
 }
@@ -140,7 +135,7 @@ async function setupWorker(): Promise<void> {
     try {
       // Create worker using standardized service
       const worker = bullmqService.createWorker(
-        TASK_PROCESSOR_QUEUE,
+        TASK_PROCESSOR_QUEUE as keyof typeof bullmqService.QUEUE_NAMES,
         async (job: Job<TaskJobData>) => {
           if (job?.id && job?.data?.taskId) {
             await processJob(job.id, job.data.taskId);
@@ -156,7 +151,7 @@ async function setupWorker(): Promise<void> {
       worker.on('completed', async (job: Job<TaskJobData>) => {
         if (job?.id) {
           await updateJobStatus(job.id, 'completed');
-          info(`Job ${job.id} completed successfully`);
+          info({}, `Job ${job.id} completed successfully`);
         }
       });
 
@@ -172,18 +167,18 @@ async function setupWorker(): Promise<void> {
         }
       });
 
-      info('Job worker initialized', {
+      info({
         event: 'job_worker_initialized',
         queue: TASK_PROCESSOR_QUEUE,
         timestamp: new Date().toISOString()
-      });
+      }, 'Job worker initialized');
     } catch (err) {
       const errorMessage = isError(err) ? err.message : String(err);
-      error(`Failed to initialize job worker: ${errorMessage}`, {
+      error({
         event: 'job_worker_initialization_failed',
         error: errorMessage,
         timestamp: new Date().toISOString()
-      });
+      }, `Failed to initialize job worker: ${errorMessage}`);
       throw err;
     }
   }
@@ -213,20 +208,24 @@ async function processInMemoryJobs(): Promise<void> {
     try {
       job.status = 'processing';
       job.lastError = undefined;
-      await processJob(job.id, job.taskId);
+      if (job.taskId !== null) {
+        await processJob(job.id, job.taskId);
+      }
       job.status = 'completed';
       job.updatedAt = new Date();
     } catch (err) {
       const processError = err instanceof Error ? err.message : String(err);
-      error(`Error processing job: ${processError}`, {
+      error({
         originalError: err,
         taskId: job.taskId
-      });
+      }, `Error processing job: ${processError}`);
 
-      await db.update(tasks).set({
-        status: 'failed',
-        error: processError,
-      }).where(eq(tasks.id, job.taskId));
+      if (job.taskId !== null) {
+        await db.update(tasks).set({
+          status: 'failed',
+          error: processError,
+        }).where(eq(tasks.id, job.taskId));
+      }
 
       throw err;
     }
@@ -236,7 +235,7 @@ async function processInMemoryJobs(): Promise<void> {
 /**
  * Process a job
  */
-async function processJob(jobId: string, taskId: string | null): Promise<boolean> {
+async function processJob(jobId: string, taskId: string): Promise<boolean> {
   if (!taskId) {
     throw new Error('Task ID is required');
   }
@@ -248,7 +247,7 @@ async function processJob(jobId: string, taskId: string | null): Promise<boolean
 
   try {
     const taskData = await db.select().from(tasks).where(
-      eq(tasks.id, taskId as string) // Explicit cast since we already did null check
+      eq(tasks.id, taskId)
     );
     const task = taskData[0];
 
@@ -256,7 +255,7 @@ async function processJob(jobId: string, taskId: string | null): Promise<boolean
       throw new Error(`Task ${taskId} not found`);
     }
 
-    info(`Processing job ${jobId} for task ${taskId}`);
+    info({}, `Processing job ${jobId} for task ${taskId}`);
 
     job.status = 'completed';
     job.updatedAt = new Date();

@@ -3,8 +3,8 @@
  * 
  * This middleware tracks request performance metrics and logs them.
  */
-import { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error } from '../shared/logger.js';
+import type { Request, Response, NextFunction } from 'express';
+import { debug, info, warn, error } from '../index.js';
 
 // Performance metrics storage
 interface PerformanceMetrics {

@@ -9,7 +9,7 @@ export default tseslint.config(
   // Configuration for TypeScript files
   {
     files: ["**/*.ts", "**/*.tsx"], // Only apply type-aware linting to TS/TSX files
-    extends: [...tseslint.configs.recommendedTypeChecked],
+    extends: [...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.strictTypeChecked],
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.eslint.json", // Use the new tsconfig for ESLint
@@ -21,21 +21,52 @@ export default tseslint.config(
       }
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-explicit-any": "warn",
+      // Error level rules for strict type safety
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/explicit-function-return-type": ["error", {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true,
+        "allowHigherOrderFunctions": true
+      }],
+      "@typescript-eslint/consistent-type-imports": ["error", {
+        "prefer": "type-imports",
+        "disallowTypeAnnotations": false
+      }],
+      "@typescript-eslint/consistent-type-exports": ["error", {
+        "fixMixedExportsWithInlineTypeSpecifier": true
+      }],
       "no-undef": "error",
+      
+      // Security-related rules
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-param-reassign": "error",
+      "no-return-assign": "error",
+      "no-script-url": "error",
+      "no-useless-escape": "error"
     },
   },
   // Configuration for JS files (including eslint.config.mjs itself)
   {
-    files: ["**/*.js", "**/*.mjs"],
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     rules: {
-      // Add any JS-specific rules here if needed
-      // For now, ensure type-aware rules are not applied
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-param-reassign": "error",
+      "no-return-assign": "error",
+      "no-script-url": "error",
+      "no-useless-escape": "error"
     },
     languageOptions: {
       globals: {
-        ...globals.node, // eslint.config.mjs uses node globals like `import.meta.dirname`
+        ...globals.node,
         ...globals.es2021,
       }
     }
@@ -49,7 +80,6 @@ export default tseslint.config(
       "coverage/",
       "frontend/",
       "**/*.d.ts",
-      // "eslint.config.mjs", // No longer needed here as it's handled by the JS/MJS specific config
     ]
   }
 );

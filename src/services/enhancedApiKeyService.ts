@@ -5,10 +5,10 @@
  * Uses AWS KMS for encryption and implements RBAC
  */
 import { eq, and } from 'drizzle-orm';
-import { db } from '../shared/db.js';
-import { apiKeys } from '../shared/schema.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { db } from '../index.js';
+import { apiKeys } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import { encryptData, decryptData, isEncryptionConfigured } from './kmsEncryptionService.js';
 import { logSecurityEvent } from './awsKmsService.js';
 import { updateApiKeyPermissions } from './rbacService.js';

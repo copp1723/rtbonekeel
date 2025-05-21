@@ -6,7 +6,7 @@
  * for capturing performance data and system metrics.
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import os from 'os';
 
 // Track initialization status

@@ -1,6 +1,6 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
-import { SecretVault } from '../entities/SecretVault.js';
-import { encrypt, deriveKey } from '../utils/crypto.js';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
+import { SecretVault } from '../index.js';
+import { encrypt, deriveKey } from '../index.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

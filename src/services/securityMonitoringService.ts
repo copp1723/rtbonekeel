@@ -3,15 +3,28 @@
  * 
  * Provides security monitoring and alerting functionality
  */
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
-import { securityAuditLogs } from '../shared/schema.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { db } from '../index.js';
+import { securityAuditLogs } from '../index.js';
 import { eq, and, gte, lte, count, sql } from 'drizzle-orm';
 import cron from 'node-cron';
 
+// Define types for security monitoring configuration
+interface SecurityMonitoringConfig {
+  enabled: boolean;
+  schedule: string;
+  alertThresholds: {
+    failedLogins: number;
+    apiKeyCreation: number;
+    permissionDenied: number;
+    encryptionFailures: number;
+  };
+  timeWindowMinutes: number;
+}
+
 // Security monitoring configuration
-let securityMonitoringConfig = {
+let securityMonitoringConfig: SecurityMonitoringConfig = {
   enabled: process.env.SECURITY_MONITORING_ENABLED === 'true',
   schedule: process.env.SECURITY_MONITORING_SCHEDULE || '*/15 * * * *', // Every 15 minutes by default
   alertThresholds: {
@@ -56,20 +69,20 @@ export async function initializeSecurityMonitoring(options?: {
         ...options,
         alertThresholds: {
           ...securityMonitoringConfig.alertThresholds,
-          ...options.alertThresholds,
+          ...(options.alertThresholds || {}),
         },
       };
     }
 
     // Check if security monitoring is enabled
     if (!securityMonitoringConfig.enabled) {
-      info('Security monitoring is disabled');
+      info({}, 'Security monitoring is disabled');
       return true;
     }
 
     // Validate cron schedule
     if (!cron.validate(securityMonitoringConfig.schedule)) {
-      error(`Invalid cron schedule: ${securityMonitoringConfig.schedule}`);
+      error({}, `Invalid cron schedule: ${securityMonitoringConfig.schedule}`);
       return false;
     }
 
@@ -77,8 +90,8 @@ export async function initializeSecurityMonitoring(options?: {
     scheduledJob = cron.schedule(securityMonitoringConfig.schedule, async () => {
       try {
         await checkSecurityEvents();
-      } catch (error) {
-        const errorMessage = isError(error) ? error.message : String(error);
+      } catch (err) {
+        const errorMessage = isError(err) ? err.message : String(err);
         error({
           event: 'security_monitoring_error',
           error: errorMessage,
@@ -95,8 +108,8 @@ export async function initializeSecurityMonitoring(options?: {
     }, 'Security monitoring service initialized');
 
     return true;
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'security_monitoring_initialization_error',
       error: errorMessage,
@@ -111,7 +124,7 @@ export async function initializeSecurityMonitoring(options?: {
  */
 async function checkSecurityEvents(): Promise<void> {
   try {
-    debug('Running security event check');
+    debug({}, 'Running security event check');
 
     // Calculate the time window
     const timeWindow = new Date();
@@ -129,9 +142,9 @@ async function checkSecurityEvents(): Promise<void> {
     // Check for encryption failures
     await checkEncryptionFailures(timeWindow);
 
-    debug('Security event check completed');
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    debug({}, 'Security event check completed');
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'security_event_check_error',
       error: errorMessage,
@@ -165,20 +178,19 @@ async function checkFailedLogins(timeWindow: Date): Promise<void> {
     // Alert if any IP address exceeds the threshold
     if (failedLogins.length > 0) {
       for (const ip of failedLogins) {
-        warn({
-          event: 'security_alert_failed_logins',
-          ipAddress: ip.ipAddress,
-          count: ip.count,
-          threshold: securityMonitoringConfig.alertThresholds.failedLogins,
-          timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
-        }, `Security Alert: Excessive failed login attempts from IP ${ip.ipAddress}`);
-
-        // In a real implementation, you would send an alert to administrators
-        // For example, via email, Slack, or a monitoring system
+        if (ip.ipAddress) {
+          warn({
+            event: 'security_alert_failed_logins',
+            ipAddress: ip.ipAddress,
+            count: ip.count,
+            threshold: securityMonitoringConfig.alertThresholds.failedLogins,
+            timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
+          }, `Security Alert: Excessive failed login attempts from IP ${ip.ipAddress}`);
+        }
       }
     }
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'failed_logins_check_error',
       error: errorMessage,
@@ -212,19 +224,19 @@ async function checkApiKeyCreation(timeWindow: Date): Promise<void> {
     // Alert if any user exceeds the threshold
     if (apiKeyCreation.length > 0) {
       for (const user of apiKeyCreation) {
-        warn({
-          event: 'security_alert_api_key_creation',
-          userId: user.userId,
-          count: user.count,
-          threshold: securityMonitoringConfig.alertThresholds.apiKeyCreation,
-          timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
-        }, `Security Alert: Excessive API key creation by user ${user.userId}`);
-
-        // In a real implementation, you would send an alert to administrators
+        if (user.userId) {
+          warn({
+            event: 'security_alert_api_key_creation',
+            userId: user.userId,
+            count: user.count,
+            threshold: securityMonitoringConfig.alertThresholds.apiKeyCreation,
+            timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
+          }, `Security Alert: Excessive API key creation by user ${user.userId}`);
+        }
       }
     }
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'api_key_creation_check_error',
       error: errorMessage,
@@ -258,19 +270,19 @@ async function checkPermissionDenied(timeWindow: Date): Promise<void> {
     // Alert if any user exceeds the threshold
     if (permissionDenied.length > 0) {
       for (const user of permissionDenied) {
-        warn({
-          event: 'security_alert_permission_denied',
-          userId: user.userId,
-          count: user.count,
-          threshold: securityMonitoringConfig.alertThresholds.permissionDenied,
-          timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
-        }, `Security Alert: Excessive permission denied events for user ${user.userId}`);
-
-        // In a real implementation, you would send an alert to administrators
+        if (user.userId) {
+          warn({
+            event: 'security_alert_permission_denied',
+            userId: user.userId,
+            count: user.count,
+            threshold: securityMonitoringConfig.alertThresholds.permissionDenied,
+            timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
+          }, `Security Alert: Excessive permission denied events for user ${user.userId}`);
+        }
       }
     }
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'permission_denied_check_error',
       error: errorMessage,
@@ -306,11 +318,9 @@ async function checkEncryptionFailures(timeWindow: Date): Promise<void> {
         threshold: securityMonitoringConfig.alertThresholds.encryptionFailures,
         timeWindowMinutes: securityMonitoringConfig.timeWindowMinutes,
       }, `Security Alert: Excessive encryption failures detected`);
-
-      // In a real implementation, you would send an alert to administrators
     }
-  } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+  } catch (err) {
+    const errorMessage = isError(err) ? err.message : String(err);
     error({
       event: 'encryption_failures_check_error',
       error: errorMessage,
@@ -325,7 +335,7 @@ export function stopSecurityMonitoring(): void {
   if (scheduledJob) {
     scheduledJob.stop();
     scheduledJob = null;
-    info('Security monitoring service stopped');
+    info({}, 'Security monitoring service stopped');
   }
 }
 

@@ -1,0 +1,76 @@
+name: TypeScript Error Tracking
+
+on:
+  schedule:
+    # Run weekly on Monday at 7:00 AM UTC
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  track-ts-errors:
+    name: Track TypeScript Errors
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate TypeScript error report
+        run: npm run ts-error-report:weekly
+      
+      - name: Upload error report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts-error-report
+          path: |
+            ts-error-reports/weekly-report-*.md
+            ts-errors-summary.md
+            ts-errors.log
+      
+      - name: Create or update error history
+        id: error-history
+        run: |
+          # Create directories if they don't exist
+          mkdir -p ts-error-data
+          
+          # Initialize error history file if it doesn't exist
+          if [ ! -f ts-error-data/error-counts.json ]; then
+            echo "{}" > ts-error-data/error-counts.json
+          fi
+          
+          # Extract error count from summary
+          ERROR_COUNT=$(grep -o "Total errors: [0-9]*" ts-errors-summary.md | awk '{print $3}')
+          DATE=$(date +"%m/%d/%Y")
+          
+          # Update error history
+          node -e "
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('ts-error-data/error-counts.json', 'utf8'));
+            data['$DATE'] = $ERROR_COUNT;
+            fs.writeFileSync('ts-error-data/error-counts.json', JSON.stringify(data, null, 2));
+            console.log('::set-output name=error_count::' + $ERROR_COUNT);
+          "
+      
+      - name: Commit and push error history
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add ts-error-data/error-counts.json
+          git commit -m "Update TypeScript error history [skip ci]" || echo "No changes to commit"
+          git push
+      
+      - name: Send notification
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: node scripts/notify-ts-errors.js $SLACK_WEBHOOK_URL

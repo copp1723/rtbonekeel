@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 
-import { db } from '../../../../shared/db.js';
-import { plans } from '../../../../shared/schema.js';
+import { db } from '../index.js';
+import { plans } from '../index.js';
 import { eq, sql } from 'drizzle-orm';
 // Define steps table schema inline until added to main schema
 const steps = {

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "test-email-1",
+    "from": "sender1@example.com",
+    "to": ["recipient1@example.com"],
+    "cc": [],
+    "bcc": [],
+    "subject": "Test Email 1",
+    "text": "This is a test email for testing email ingestion.",
+    "html": "<p>This is a test email for testing email ingestion.</p>",
+    "attachments": [],
+    "headers": {
+      "message-id": "<test-message-id-1@example.com>",
+      "date": "Wed, 1 Jan 2025 00:00:00 +0000",
+      "content-type": "text/html; charset=UTF-8"
+    },
+    "date": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "test-email-2",
+    "from": "sender2@example.com",
+    "to": ["recipient1@example.com", "recipient2@example.com"],
+    "cc": ["cc1@example.com"],
+    "bcc": ["bcc1@example.com"],
+    "subject": "Test Email 2 with Attachments",
+    "text": "This is a test email with attachments for testing email ingestion.",
+    "html": "<p>This is a test email with attachments for testing email ingestion.</p>",
+    "attachments": [
+      {
+        "filename": "test.pdf",
+        "contentType": "application/pdf",
+        "size": 1024,
+        "content": "base64encodedcontent"
+      },
+      {
+        "filename": "test.xlsx",
+        "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 2048,
+        "content": "base64encodedcontent"
+      }
+    ],
+    "headers": {
+      "message-id": "<test-message-id-2@example.com>",
+      "date": "Wed, 2 Jan 2025 00:00:00 +0000",
+      "content-type": "multipart/mixed; boundary=boundary"
+    },
+    "date": "2025-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "test-email-3",
+    "from": "sender3@example.com",
+    "to": ["recipient3@example.com"],
+    "cc": [],
+    "bcc": [],
+    "subject": "Test Email 3 with HTML",
+    "text": "This is a test email with HTML content for testing email ingestion.",
+    "html": "<div><h1>Test Email</h1><p>This is a <strong>test email</strong> with <em>HTML content</em> for testing email ingestion.</p><ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>",
+    "attachments": [],
+    "headers": {
+      "message-id": "<test-message-id-3@example.com>",
+      "date": "Wed, 3 Jan 2025 00:00:00 +0000",
+      "content-type": "text/html; charset=UTF-8"
+    },
+    "date": "2025-01-03T00:00:00.000Z"
+  }
+]

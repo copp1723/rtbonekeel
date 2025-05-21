@@ -3,32 +3,35 @@
  *
  * Exposes endpoints for monitoring dashboards and alerts.
  */
-import express from 'express';
-import { isError } from '../../utils/errorUtils.js';
-import { debug, info, warn, error } from '../../shared/logger.js';
-import * as dashboardService from '../../services/dashboardService.js';
+import express, { Request, Response, Application } from 'express';
+import { isError } from '../index.js';
+import { debug, info, warn, error as logError } from '../index.js';
+import * as dashboardService from '../index.js';
 import {
   runAllHealthChecks,
   runHealthCheck,
   getLatestHealthChecks,
   getHealthLogs,
   getHealthSummary,
-} from '../../services/healthService';
+} from '../index.js';
 
 const router = express.Router();
 
 /**
  * Get overall system health summary
  */
-router.get('/health/summary', async (req, res) => {
+router.get('/health/summary', async (req: Request, res: Response) => {
   try {
     const summary = await getHealthSummary();
     res.json(summary);
-  } catch (error) {
-    error('Failed to get health summary:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get health summary');
+    
     res.status(500).json({
       error: 'Failed to get health summary',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -36,15 +39,18 @@ router.get('/health/summary', async (req, res) => {
 /**
  * Get all health checks
  */
-router.get('/health/checks', async (req, res) => {
+router.get('/health/checks', async (req: Request, res: Response) => {
   try {
     const checks = await getLatestHealthChecks();
     res.json(checks);
-  } catch (error) {
-    error('Failed to get health checks:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get health checks');
+    
     res.status(500).json({
       error: 'Failed to get health checks',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -52,15 +58,18 @@ router.get('/health/checks', async (req, res) => {
 /**
  * Run all health checks
  */
-router.post('/health/checks/run', async (req, res) => {
+router.post('/health/checks/run', async (req: Request, res: Response) => {
   try {
     const results = await runAllHealthChecks();
     res.json(results);
-  } catch (error) {
-    error('Failed to run health checks:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to run health checks');
+    
     res.status(500).json({
       error: 'Failed to run health checks',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -68,7 +77,7 @@ router.post('/health/checks/run', async (req, res) => {
 /**
  * Run a specific health check
  */
-router.post('/health/checks/:id/run', async (req, res) => {
+router.post('/health/checks/:id/run', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await runHealthCheck(id);
@@ -81,11 +90,14 @@ router.post('/health/checks/:id/run', async (req, res) => {
     }
     
     res.json(result);
-  } catch (error) {
-    error('Failed to run health check:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to run health check');
+    
     res.status(500).json({
       error: 'Failed to run health check',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -93,18 +105,21 @@ router.post('/health/checks/:id/run', async (req, res) => {
 /**
  * Get health logs for a specific check
  */
-router.get('/health/logs/:id', async (req, res) => {
+router.get('/health/logs/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
     
     const logs = await getHealthLogs(id, limit);
     res.json(logs);
-  } catch (error) {
-    error('Failed to get health logs:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get health logs');
+    
     res.status(500).json({
       error: 'Failed to get health logs',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -112,16 +127,19 @@ router.get('/health/logs/:id', async (req, res) => {
 /**
  * Get error rate data for dashboard
  */
-router.get('/dashboard/error-rates', async (req, res) => {
+router.get('/dashboard/error-rates', async (req: Request, res: Response) => {
   try {
     const timeRange = req.query.timeRange ? parseInt(req.query.timeRange as string, 10) : 24;
     const data = await dashboardService.getErrorRateData(timeRange);
     res.json(data);
-  } catch (error) {
-    error('Failed to get error rate data:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get error rate data');
+    
     res.status(500).json({
       error: 'Failed to get error rate data',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -129,16 +147,19 @@ router.get('/dashboard/error-rates', async (req, res) => {
 /**
  * Get performance metrics for dashboard
  */
-router.get('/dashboard/performance', async (req, res) => {
+router.get('/dashboard/performance', async (req: Request, res: Response) => {
   try {
     const timeRange = req.query.timeRange ? parseInt(req.query.timeRange as string, 10) : 24;
     const data = await dashboardService.getPerformanceMetrics(timeRange);
     res.json(data);
-  } catch (error) {
-    error('Failed to get performance metrics:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get performance metrics');
+    
     res.status(500).json({
       error: 'Failed to get performance metrics',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -146,16 +167,19 @@ router.get('/dashboard/performance', async (req, res) => {
 /**
  * Get database performance metrics for dashboard
  */
-router.get('/dashboard/database', async (req, res) => {
+router.get('/dashboard/database', async (req: Request, res: Response) => {
   try {
     const timeRange = req.query.timeRange ? parseInt(req.query.timeRange as string, 10) : 24;
     const data = await dashboardService.getDatabasePerformanceMetrics(timeRange);
     res.json(data);
-  } catch (error) {
-    error('Failed to get database performance metrics:', isError(error) ? error : String(error));
+  } catch (err) {
+    logError({
+      error: isError(err) ? err.message : String(err)
+    }, 'Failed to get database performance metrics');
+    
     res.status(500).json({
       error: 'Failed to get database performance metrics',
-      message: isError(error) ? error.message : String(error),
+      message: isError(err) ? err.message : String(err),
     });
   }
 });
@@ -164,9 +188,9 @@ router.get('/dashboard/database', async (req, res) => {
  * Register monitoring routes with an Express app
  * @param app Express application
  */
-export function registerMonitoringRoutes(app: any) {
+export function registerMonitoringRoutes(app: Application): void {
   app.use('/api/monitoring', router);
-  info('Monitoring routes registered');
+  info({}, 'Monitoring routes registered');
 }
 
 export default {

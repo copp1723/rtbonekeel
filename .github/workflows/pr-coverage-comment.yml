@@ -1,0 +1,131 @@
+name: PR Coverage Comment
+
+on:
+  pull_request:
+    branches: [ main ]
+    
+jobs:
+  coverage-comment:
+    name: Add Coverage Comment to PR
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for accurate coverage comparison
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create test environment file
+        run: |
+          echo "NODE_ENV=test" > .env.test
+          echo "TEST_DATABASE_URL=postgresql://test:test@localhost:5432/test_db" >> .env.test
+          echo "TEST_REDIS_URL=redis://localhost:6379/1" >> .env.test
+          echo "JWT_SECRET=test-jwt-secret" >> .env.test
+          echo "ENCRYPTION_KEY=01234567890123456789012345678901" >> .env.test
+          echo "LOG_LEVEL=error" >> .env.test
+          echo "LOG_FORMAT=json" >> .env.test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Generate coverage report
+        id: coverage
+        run: |
+          # Extract coverage data from the JSON summary
+          COVERAGE_SUMMARY=$(node -e "
+            const fs = require('fs');
+            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
+            const total = coverage.total;
+            
+            console.log(JSON.stringify({
+              statements: total.statements.pct,
+              branches: total.branches.pct,
+              functions: total.functions.pct,
+              lines: total.lines.pct
+            }));
+          ")
+          
+          echo "coverage_data=$COVERAGE_SUMMARY" >> $GITHUB_OUTPUT
+          
+          # Generate HTML report summary
+          echo "<details><summary>📊 <b>Coverage Report</b></summary>" > coverage-comment.html
+          echo "<br>" >> coverage-comment.html
+          echo "<table>" >> coverage-comment.html
+          echo "<tr><th>Category</th><th>Coverage</th><th>Threshold</th><th>Status</th></tr>" >> coverage-comment.html
+          
+          # Get thresholds from vitest.config.ts
+          STATEMENTS_THRESHOLD=$(grep -o "statements: [0-9]*" vitest.config.ts | awk '{print $2}')
+          BRANCHES_THRESHOLD=$(grep -o "branches: [0-9]*" vitest.config.ts | awk '{print $2}')
+          FUNCTIONS_THRESHOLD=$(grep -o "functions: [0-9]*" vitest.config.ts | awk '{print $2}')
+          LINES_THRESHOLD=$(grep -o "lines: [0-9]*" vitest.config.ts | awk '{print $2}')
+          
+          # Extract values from coverage data
+          STATEMENTS=$(node -e "console.log(${COVERAGE_SUMMARY}.statements)")
+          BRANCHES=$(node -e "console.log(${COVERAGE_SUMMARY}.branches)")
+          FUNCTIONS=$(node -e "console.log(${COVERAGE_SUMMARY}.functions)")
+          LINES=$(node -e "console.log(${COVERAGE_SUMMARY}.lines)")
+          
+          # Generate status emojis
+          STATEMENTS_STATUS=$([ $(echo "$STATEMENTS >= $STATEMENTS_THRESHOLD" | bc -l) -eq 1 ] && echo "✅" || echo "❌")
+          BRANCHES_STATUS=$([ $(echo "$BRANCHES >= $BRANCHES_THRESHOLD" | bc -l) -eq 1 ] && echo "✅" || echo "❌")
+          FUNCTIONS_STATUS=$([ $(echo "$FUNCTIONS >= $FUNCTIONS_THRESHOLD" | bc -l) -eq 1 ] && echo "✅" || echo "❌")
+          LINES_STATUS=$([ $(echo "$LINES >= $LINES_THRESHOLD" | bc -l) -eq 1 ] && echo "✅" || echo "❌")
+          
+          # Add rows to table
+          echo "<tr><td>Statements</td><td>${STATEMENTS}%</td><td>${STATEMENTS_THRESHOLD}%</td><td>${STATEMENTS_STATUS}</td></tr>" >> coverage-comment.html
+          echo "<tr><td>Branches</td><td>${BRANCHES}%</td><td>${BRANCHES_THRESHOLD}%</td><td>${BRANCHES_STATUS}</td></tr>" >> coverage-comment.html
+          echo "<tr><td>Functions</td><td>${FUNCTIONS}%</td><td>${FUNCTIONS_THRESHOLD}%</td><td>${FUNCTIONS_STATUS}</td></tr>" >> coverage-comment.html
+          echo "<tr><td>Lines</td><td>${LINES}%</td><td>${LINES_THRESHOLD}%</td><td>${LINES_STATUS}</td></tr>" >> coverage-comment.html
+          
+          echo "</table>" >> coverage-comment.html
+          echo "<br>" >> coverage-comment.html
+          echo "<a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Full Report</a>" >> coverage-comment.html
+          echo "</details>" >> coverage-comment.html
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Coverage Report'
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: coverage-comment.html
+          edit-mode: replace

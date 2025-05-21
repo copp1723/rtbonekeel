@@ -4,11 +4,11 @@
  * This middleware integrates monitoring with Express.
  * It tracks API requests, response times, and errors.
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import * as Sentry from '@sentry/node';
-import { trackApiRequest, trackError } from '../services/monitoringService.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import type { trackApiRequest, trackError } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 
 /**
  * Create Sentry request handler middleware

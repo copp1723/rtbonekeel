@@ -1,0 +1,29 @@
+[
+  {
+    "id": "test-user-1",
+    "email": "test-user-1@example.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "role": "user",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "test-user-2",
+    "email": "test-user-2@example.com",
+    "firstName": "Admin",
+    "lastName": "User",
+    "role": "admin",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "test-user-3",
+    "email": "test-user-3@example.com",
+    "firstName": "Guest",
+    "lastName": "User",
+    "role": "guest",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

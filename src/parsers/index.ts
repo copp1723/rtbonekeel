@@ -6,8 +6,8 @@
  */
 
 // Export interfaces and types
-export { FileType, ParserOptions, ParserResult } from './base/types';
-export { IParser } from './base/IParser';
+export { FileType, ParserOptions, ParserResult } from './base/types.js';
+export { IParser } from './base/IParser.js';
 
 // Export error classes
 export {
@@ -17,25 +17,25 @@ export {
   UnsupportedFileTypeError,
   ParseError,
   DuplicateFileError,
-} from './errors/ParserError';
+} from './errors/ParserError.js';
 
 // Export base parser
-export { BaseParser } from './base/BaseParser';
+export { BaseParser } from './base/BaseParser.js';
 
 // Export specific parsers
-export { CSVParser, CSVParserOptions } from './implementations/CSVParser';
-export { XLSXParser, XLSXParserOptions } from './implementations/XLSXParser';
-export { PDFParser, PDFParserOptions, PDFExtractionMode } from './implementations/PDFParser';
+export { CSVParser, CSVParserOptions } from './implementations/CSVParser.js';
+export { XLSXParser, XLSXParserOptions } from './implementations/XLSXParser.js';
+export { PDFParser, PDFParserOptions, PDFExtractionMode } from './implementations/PDFParser.js';
 
 // Export factory
-export { ParserFactory } from './factory/ParserFactory';
+export { ParserFactory } from './factory/ParserFactory.js';
 
 // Export utilities
-export * from './utils/fileUtils';
+export * from './utils/fileUtils.js';
 
 // Import parsers for registration
 import { ParserFactory } from './factory/ParserFactory.js';
-import { FileType } from './base/types.js';
+import type { FileType } from './base/types.js';
 import { CSVParser } from './implementations/CSVParser.js';
 import { XLSXParser } from './implementations/XLSXParser.js';
 import { PDFParser } from './implementations/PDFParser.js';

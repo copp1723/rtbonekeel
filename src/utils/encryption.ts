@@ -5,10 +5,10 @@
  * and environment validation for production security.
  */
 import crypto from 'crypto';
-import { isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
-import { securityAuditLogs } from '../shared/schema.js';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { isError } from '../index.js';
+import { db } from '../index.js';
+import { securityAuditLogs } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 // Constants for encryption
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for AES
@@ -283,7 +283,7 @@ export function legacyDecryptData(encryptedData: string, iv: string): Record<str
     // For backward compatibility, derive key the same way
     const legacyKey = process.env.ENCRYPTION_KEY || DEFAULT_KEY;
     // Use the crypto-js library for backward compatibility
-    const CryptoJS = require('crypto-js');
+    import CryptoJS from 'crypto-js';
     // Convert IV from string to WordArray
     const ivParams = CryptoJS.enc.Hex.parse(iv);
     // Decrypt

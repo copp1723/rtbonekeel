@@ -5,10 +5,10 @@
  * during application startup. It provides a robust system for tracking migration status
  * and handling migration failures.
  */
-import { db } from '../shared/db.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

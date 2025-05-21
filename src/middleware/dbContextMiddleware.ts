@@ -4,10 +4,10 @@
  * This middleware sets the current user ID in the PostgreSQL session
  * for Row Level Security (RLS) policies to use.
  */
-import { Request, Response, NextFunction } from 'express';
-import { db } from '../shared/db.js';
+import type { Request, Response, NextFunction } from 'express';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {

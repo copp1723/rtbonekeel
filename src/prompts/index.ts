@@ -8,7 +8,7 @@
 export {
   automotiveAnalystSystemPrompt,
   promptVersion as automotiveAnalystPromptVersion,
-} from './automotiveAnalystPrompt';
+} from './automotiveAnalystPrompt.js';
 // Export prompt router functionality
 export {
   getPromptByIntent,
@@ -18,7 +18,7 @@ export {
   routerVersion,
   type PromptIntent,
   type PromptInfo,
-} from './promptRouter';
+} from './promptRouter.js';
 /**
  * Describes the expected structure of insight responses
  */

@@ -5,9 +5,9 @@
  * reconnection logic, and graceful degradation when Redis is unavailable.
  */
 import type { Redis as RedisClient } from 'ioredis';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import loadConfig from '../config/index.js'; // Changed import path
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import loadConfig from '../index.js'; // Changed import path
 import { EventEmitter } from 'events'; // Added import
 
 // Redis connection options

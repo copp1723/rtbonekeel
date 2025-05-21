@@ -7,7 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { debug, info, warn, error } from '../../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import YAML from 'yaml';
 
 // Get the directory name for the current module

@@ -4,10 +4,10 @@
  * This module provides functionality to run database migrations during application startup.
  * It integrates with the MigrationService to ensure all migrations are applied in the correct order.
  */
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import { migrationService, Migration } from '../services/migrationService.js';
-import { db } from '../shared/db.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { migrationService, Migration } from '../index.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';

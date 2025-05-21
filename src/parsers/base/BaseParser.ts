@@ -14,23 +14,23 @@ import { createReadStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
 
-import { FileType, ParserOptions, ParserResult } from './types.js';
+import type { FileType, ParserOptions, ParserResult } from './types.js';
 import { IParser } from './IParser.js';
 import {
   FileNotFoundError,
   UnsupportedFileTypeError,
   ValidationError,
   ParseError
-} from '../errors/ParserError';
+} from '../index.js';
 
 // Import logger and monitoring utilities
-import { debug, info, warn, error } from '../../shared/logger.js';
-import { getErrorMessage } from '../../utils/errorUtils.js';
+import { debug, info, warn, error } from '../index.js';
+import { getErrorMessage } from '../index.js';
 import {
   recordParseStart,
   recordParseComplete,
   recordDuplicate
-} from '../utils/monitoring';
+} from '../index.js';
 
 /**
  * Abstract base class for all parsers

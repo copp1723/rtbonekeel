@@ -1,5 +1,5 @@
-import { InferSelectModel, InferInsertModel } from 'drizzle-orm';
-import { reports, insights } from '../report-schema.js';
+import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
+import { reports, insights } from '../index.js';
 
 export type Report = InferSelectModel<typeof reports>;
 export type NewReport = InferInsertModel<typeof reports>;

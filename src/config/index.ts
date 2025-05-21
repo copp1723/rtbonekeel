@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import {
   ConfigSchema,
   DatabaseConfigSchema,
@@ -22,7 +22,7 @@ import {
   CrmCredentialsSchema,
   Environment,
   Config
-} from './schema';
+} from './schema.js';
 import {
   DEFAULT_ENV,
   DEFAULT_LOG_LEVELS,
@@ -34,7 +34,7 @@ import {
   // DEFAULT_OTP_EMAIL removed
   DEFAULT_REDIS,
   REQUIRED_VARS
-} from './defaults';
+} from './defaults.js';
 import { initializeSecrets, isDefaultValue } from './secrets.js';
 
 // Load environment variables from .env file

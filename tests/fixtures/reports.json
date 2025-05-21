@@ -1,0 +1,103 @@
+[
+  {
+    "id": "test-report-1",
+    "title": "Test Report 1",
+    "description": "A test report for testing report generation",
+    "status": "draft",
+    "userId": "test-user-1",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "data": {
+      "metrics": [
+        {
+          "name": "Total Users",
+          "value": 1000,
+          "change": 5.2,
+          "period": "monthly"
+        },
+        {
+          "name": "Active Users",
+          "value": 750,
+          "change": 3.1,
+          "period": "monthly"
+        },
+        {
+          "name": "Revenue",
+          "value": 50000,
+          "change": 7.5,
+          "period": "monthly"
+        }
+      ],
+      "charts": [
+        {
+          "type": "line",
+          "title": "User Growth",
+          "data": [
+            { "date": "2025-01-01", "value": 1000 },
+            { "date": "2025-01-02", "value": 1010 },
+            { "date": "2025-01-03", "value": 1025 },
+            { "date": "2025-01-04", "value": 1032 },
+            { "date": "2025-01-05", "value": 1045 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "test-report-2",
+    "title": "Test Report 2",
+    "description": "Another test report for testing report generation",
+    "status": "published",
+    "userId": "test-user-2",
+    "createdAt": "2025-01-02T00:00:00.000Z",
+    "updatedAt": "2025-01-03T00:00:00.000Z",
+    "data": {
+      "metrics": [
+        {
+          "name": "Total Orders",
+          "value": 500,
+          "change": 2.3,
+          "period": "monthly"
+        },
+        {
+          "name": "Average Order Value",
+          "value": 120,
+          "change": 1.5,
+          "period": "monthly"
+        },
+        {
+          "name": "Conversion Rate",
+          "value": 3.2,
+          "change": 0.5,
+          "period": "monthly"
+        }
+      ],
+      "charts": [
+        {
+          "type": "bar",
+          "title": "Orders by Category",
+          "data": [
+            { "category": "Electronics", "value": 150 },
+            { "category": "Clothing", "value": 120 },
+            { "category": "Home", "value": 100 },
+            { "category": "Books", "value": 80 },
+            { "category": "Other", "value": 50 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "test-report-3",
+    "title": "Test Report 3",
+    "description": "A test report with minimal data",
+    "status": "archived",
+    "userId": "test-user-1",
+    "createdAt": "2025-01-03T00:00:00.000Z",
+    "updatedAt": "2025-01-04T00:00:00.000Z",
+    "data": {
+      "metrics": [],
+      "charts": []
+    }
+  }
+]

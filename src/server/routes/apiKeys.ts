@@ -4,19 +4,19 @@
  * Enhanced with aggressive rate limiting and suspicious pattern detection
  */
 import express from 'express';
-import { isAuthenticated } from '../auth.js';
+import { isAuthenticated } from '../index.js';
 import {
   rateLimiters,
   detectSuspiciousPatterns
-} from '../../shared/middleware/rateLimiter';
-import { debug, info, warn, error } from '../../shared/logger.js';
+} from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 import {
   addApiKey,
   getApiKeys,
   getApiKeyById,
   updateApiKey,
   deleteApiKey,
-} from '../../services/apiKeyService';
+} from '../index.js';
 
 const router = express.Router();
 

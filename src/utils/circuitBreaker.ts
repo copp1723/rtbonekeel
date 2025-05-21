@@ -5,9 +5,9 @@
  * allowing them time to recover and preventing cascading failures.
  */
 import { sql } from 'drizzle-orm';
-import { db } from '../shared/db.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { circuitBreakerState } from '../shared/schema.js';
+import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { circuitBreakerState } from '../index.js';
 // Circuit breaker states
 export enum CircuitState {
   CLOSED = 'closed', // Normal operation, requests pass through

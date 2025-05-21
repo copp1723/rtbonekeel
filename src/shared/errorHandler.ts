@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error } from './logger.js';
+import type { Request, Response, NextFunction } from 'express';
+import logger from './logger.js';
 
 /**
  * Custom error class for application errors
@@ -250,12 +250,12 @@ export async function retryWithBackoff<T>(
  * Log warning with context
  */
 export function logWarning(message: string, context: Record<string, unknown> = {}) {
-  warn(message, { event: 'warning_logged', ...context });
+  logger.warn(message, { event: 'warning_logged', ...context });
 }
 
 /**
  * Log info with context
  */
 export function logInfo(message: string, context: Record<string, unknown> = {}) {
-  info(message, { event: 'info_logged', ...context });
+  logger.info(message, { event: 'info_logged', ...context });
 }

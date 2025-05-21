@@ -1,0 +1,56 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 0 * * 0'  # Run weekly on Sundays
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run security audit
+        run: |
+          npm audit --json > audit-results.json || true
+          
+      - name: Check for high or critical vulnerabilities
+        run: |
+          HIGH_OR_CRITICAL=$(cat audit-results.json | jq '.metadata.vulnerabilities.high + .metadata.vulnerabilities.critical')
+          if [ "$HIGH_OR_CRITICAL" -gt "0" ]; then
+            echo "Found $HIGH_OR_CRITICAL high or critical vulnerabilities"
+            npm audit
+            exit 1
+          else
+            echo "No high or critical vulnerabilities found"
+          fi
+          
+      - name: Generate audit report
+        if: success() || failure()
+        run: |
+          echo "# Security Audit Report" > audit-report.md
+          echo "## Date: $(date)" >> audit-report.md
+          echo "## Summary" >> audit-report.md
+          cat audit-results.json | jq '.metadata.vulnerabilities' >> audit-report.md
+          echo "## Details" >> audit-report.md
+          npm audit >> audit-report.md
+          
+      - name: Upload audit report
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-audit-report
+          path: audit-report.md

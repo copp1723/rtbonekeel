@@ -11,9 +11,9 @@
  * - previousKeyId: Reference to previous version of this key
  */
 import { sql } from 'drizzle-orm';
-import { db } from '../shared/db.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 
 /**
  * Run the migration

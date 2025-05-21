@@ -22,6 +22,11 @@ This document outlines the error handling patterns and best practices for the ap
 - `EmailError`: For email sending failures (500)
 - `ConfigurationError`: For configuration issues (500)
 - `InternalError`: For unexpected internal errors (500)
+- `ParserError`: For failures in parsing data (400)
+- `ApiError`: For API-related errors (varies)
+- `CacheError`: For cache operation failures (500)
+- `FileSystemError`: For file system operation failures (500)
+- `TimeoutError`: For operation timeouts (504)
 
 ## Error Codes
 
@@ -57,6 +62,28 @@ throw new CodedError(
   'INVALID_API_KEY',
   401
 );
+
+// With cause (for error chaining)
+throw new ExternalServiceError('Failed to fetch data from API', {
+  service: 'userApi',
+  endpoint: '/users',
+  cause: originalError
+});
+
+// For async operations with timeout
+try {
+  await Promise.race([
+    fetchData(),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new TimeoutError('Operation timed out')), 5000)
+    )
+  ]);
+} catch (error) {
+  if (error instanceof TimeoutError) {
+    // Handle timeout specifically
+  }
+  throw error;
+}
 ```
 
 ### Handling Errors
@@ -144,6 +171,32 @@ describe('UserService', () => {
       expect(error.code).toBe('USER_NOT_FOUND');
     }
   });
+  
+  it('should include context data in error', async () => {
+    await expect(userService.getUser('invalid'))
+      .rejects
+      .toMatchObject({
+        message: expect.stringContaining('User not found'),
+        context: expect.objectContaining({
+          userId: 'invalid'
+        })
+      });
+  });
+  
+  it('should preserve error cause chain', async () => {
+    // Mock the repository to throw a specific error
+    userRepository.findById = jest.fn().mockRejectedValue(
+      new DatabaseError('Database connection failed')
+    );
+    
+    try {
+      await userService.getUser('valid-id');
+      fail('Expected error was not thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ExternalServiceError);
+      expect(error.cause).toBeInstanceOf(DatabaseError);
+    }
+  });
 });
 ```
 
@@ -153,3 +206,34 @@ describe('UserService', () => {
 2. Add appropriate error code in `src/utils/errors.ts`
 3. Document the error type in this guide
 4. Add tests for the new error type
+5. Update error handling middleware if needed
+6. Add appropriate logging for the new error type
+
+### Example of Adding a New Error Type
+
+```typescript
+// In src/shared/errorTypes.ts
+export class ResourceLockError extends CodedError {
+  constructor(message: string, context?: Record<string, unknown>) {
+    super(message, 'RESOURCE_LOCKED', 423, context);
+    this.name = 'ResourceLockError';
+  }
+}
+
+// In src/utils/errors.ts
+export const ERROR_CODES = {
+  // ... existing codes
+  RESOURCE_LOCKED: 'resource_locked',
+};
+
+// In your service
+import { ResourceLockError } from '../shared/errorTypes';
+
+async function acquireResource(resourceId: string): Promise<Resource> {
+  const isLocked = await checkLock(resourceId);
+  if (isLocked) {
+    throw new ResourceLockError('Resource is currently locked', { resourceId });
+  }
+  // Continue with resource acquisition
+}
+```

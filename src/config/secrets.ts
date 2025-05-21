@@ -4,7 +4,7 @@
  * Provides utilities for handling sensitive configuration values
  */
 import crypto from 'crypto';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import { INSECURE_DEFAULT_VALUES } from './defaults.js';
 
 // Encryption key for secrets

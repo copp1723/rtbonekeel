@@ -3,11 +3,11 @@
  * 
  * Provides middleware for role-based access control
  */
-import { Request, Response, NextFunction } from 'express';
-import { error, warn } from '../logger.js';
-import { isError } from '../../utils/errorUtils.js';
-import { checkApiKeyPermission } from '../../services/rbacService.js';
-import { logSecurityEvent } from '../../services/awsKmsService.js';
+import type { Request, Response, NextFunction } from 'express';
+import { error, warn } from '../index.js';
+import { isError } from '../index.js';
+import { checkApiKeyPermission } from '../index.js';
+import { logSecurityEvent } from '../index.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {

@@ -19,11 +19,21 @@ The AgentFlow API provides endpoints for task submission, workflow management, j
 ### Base URL
 
 - Development: `http://localhost:5000`
+- Staging: `https://api-staging.agentflow.example.com`
 - Production: `https://api.agentflow.example.com`
+
+### API Versioning
+
+All API endpoints are versioned to ensure backward compatibility:
+
+- V1 endpoints: `/api/v1/...` (stable)
+- V2 endpoints: `/api/v2/...` (latest)
+
+When developing integrations, always specify the API version to avoid breaking changes.
 
 ### API Documentation
 
-Interactive API documentation is available at `/api-docs` when the server is running.
+Interactive API documentation is available at `/api-docs` when the server is running. This documentation is generated from OpenAPI specifications located in the `docs/openapi/` directory.
 
 ## Authentication
 
@@ -188,9 +198,42 @@ Health and monitoring endpoints provide information about the system's health an
 ### Health and Monitoring Endpoints
 
 - `GET /api/health` - Basic health check
+- `GET /api/health/detailed` - Detailed health check with component status
 - `GET /api/performance` - Performance metrics
 - `GET /api/monitoring/health/summary` - Monitoring dashboard summary
 - `GET /api/monitoring/dashboard/error-rates` - Error rates dashboard
+- `GET /api/monitoring/metrics` - Prometheus-compatible metrics endpoint
+- `GET /api/monitoring/logs` - Recent log entries (requires admin privileges)
+- `GET /api/monitoring/alerts` - Current system alerts
+
+### Health Check Response Format
+
+The health check endpoints follow a standardized format:
+
+```json
+{
+  "status": "up", // "up", "degraded", or "down"
+  "version": "2.3.1",
+  "components": {
+    "database": {
+      "status": "up",
+      "latency": 5,
+      "message": "Connected to PostgreSQL"
+    },
+    "redis": {
+      "status": "up",
+      "latency": 2,
+      "message": "Connected to Redis"
+    },
+    "openai": {
+      "status": "up",
+      "latency": 150,
+      "message": "OpenAI API responding"
+    }
+  },
+  "message": "All systems operational"
+}
+```
 
 ### Health Check
 
@@ -255,36 +298,104 @@ npm install agentflow-client
 ### Usage
 
 ```typescript
-import { Configuration, TasksApi } from 'agentflow-client';
+import { Configuration, TasksApi, WorkflowsApi } from 'agentflow-client';
 
 // Create a configuration with your API key or other authentication
 const config = new Configuration({
   basePath: 'http://localhost:5000',
-  accessToken: 'your-jwt-token'
+  accessToken: 'your-jwt-token',
+  apiVersion: 'v2' // Specify API version
 });
 
-// Create an instance of the API client
+// Create instances of the API clients
 const tasksApi = new TasksApi(config);
+const workflowsApi = new WorkflowsApi(config);
 
 // Submit a new task
 async function submitTask() {
   try {
     const response = await tasksApi.submitTask({
-      task: "Analyze the sales report from last week and summarize the top 5 performing vehicles"
+      task: "Analyze the sales report from last week and summarize the top 5 performing vehicles",
+      priority: "high",
+      notifyOnCompletion: true
     });
     console.log('Task submitted:', response.data);
+    return response.data.id;
   } catch (error) {
     console.error('Error submitting task:', error);
+    throw error;
   }
 }
 
 // Get task status
-async function getTaskStatus(taskId) {
+async function getTaskStatus(taskId: string) {
   try {
     const response = await tasksApi.getTaskStatus(taskId);
     console.log('Task status:', response.data);
+    return response.data;
   } catch (error) {
     console.error('Error getting task status:', error);
+    throw error;
+  }
+}
+
+// Create and execute a workflow
+async function createWorkflow() {
+  try {
+    const response = await workflowsApi.createWorkflow({
+      name: "Sales Analysis Workflow",
+      description: "Analyze sales data and generate reports",
+      steps: [
+        {
+          name: "data-extraction",
+          taskTemplate: "Extract sales data from the last week",
+          dependsOn: []
+        },
+        {
+          name: "data-analysis",
+          taskTemplate: "Analyze the extracted sales data and identify trends",
+          dependsOn: ["data-extraction"]
+        },
+        {
+          name: "report-generation",
+          taskTemplate: "Generate a PDF report with the analysis results",
+          dependsOn: ["data-analysis"]
+        }
+      ]
+    });
+    console.log('Workflow created:', response.data);
+    return response.data.id;
+  } catch (error) {
+    console.error('Error creating workflow:', error);
+    throw error;
+  }
+}
+
+// Error handling with the SDK
+async function safeApiCall() {
+  try {
+    const result = await tasksApi.submitTask({
+      task: "Process sales data"
+    });
+    return result.data;
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with an error status
+      console.error('API error:', error.response.status, error.response.data);
+      
+      if (error.response.status === 429) {
+        // Handle rate limiting
+        const retryAfter = error.response.headers['retry-after'] || 60;
+        console.log(`Rate limited. Retry after ${retryAfter} seconds`);
+      }
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error('Network error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Request error:', error.message);
+    }
+    throw error;
   }
 }
 ```

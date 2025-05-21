@@ -4,7 +4,7 @@
  * This module provides fallback logic for LLM models,
  * allowing the system to gracefully degrade when primary models are unavailable.
  */
-import { debug, info, warn, error } from '../../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import { OpenAIService } from './openai.js';
 
 /**

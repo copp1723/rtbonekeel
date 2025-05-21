@@ -4,8 +4,8 @@
  * This module provides utility functions for working with errors,
  * including type guards, error transformation, and error enrichment.
  */
-import { BaseError, ErrorCode } from '../types/BaseError.js';
-import { InternalError } from '../types/DomainErrors.js';
+import { BaseError, ErrorCode } from '../index.js';
+import { InternalError } from '../index.js';
 
 /**
  * Interface for objects with a message property

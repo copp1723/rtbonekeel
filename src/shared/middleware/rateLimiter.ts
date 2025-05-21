@@ -4,9 +4,9 @@
  * This middleware implements configurable rate limiting for API endpoints
  * to prevent abuse and ensure fair usage of the API.
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
-import { error, warn } from '../logger.js';
+import { error, warn } from '../index.js';
 // Default rate limit settings
 const DEFAULT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_MAX_REQUESTS = 100; // 100 requests per window
@@ -91,5 +91,11 @@ export const rateLimiters = {
     windowMs: 60 * 1000,
     max: 30,
     message: 'Too many health check requests, please try again after 1 minute',
+  }),
+  // API ingestion rate limiter (10 requests per 5 minutes)
+  apiIngestion: createRateLimiter({
+    windowMs: 5 * 60 * 1000,
+    max: 10,
+    message: 'Too many API ingestion requests, please try again after 5 minutes',
   }),
 };

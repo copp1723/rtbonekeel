@@ -1,0 +1,25 @@
+[
+  {
+    "id": "missing-email-user",
+    "firstName": "Missing",
+    "lastName": "Email",
+    "role": "user"
+  },
+  {
+    "email": "missing-id@example.com",
+    "firstName": "Missing",
+    "lastName": "ID"
+  },
+  {
+    "id": "missing-name-user",
+    "email": "missing-name@example.com",
+    "role": "user"
+  },
+  {
+    "id": "empty-fields-user",
+    "email": "",
+    "firstName": "",
+    "lastName": "",
+    "role": ""
+  }
+]

@@ -4,9 +4,9 @@
  * This module provides comprehensive logging for LLM interactions,
  * including prompts, responses, and metadata for compliance and analysis.
  */
-import { db } from '../../shared/db.js';
-import { insightLogs } from '../../shared/schema.js';
-import { debug, info, warn, error } from '../../shared/logger.js';
+import { db } from '../index.js';
+import { insightLogs } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 import { sql } from 'drizzle-orm';
 
 /**

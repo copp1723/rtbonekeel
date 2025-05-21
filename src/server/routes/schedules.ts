@@ -3,9 +3,9 @@
  * Handles CRUD operations for schedules and schedule execution
  */
 import express from 'express';
-import { isError } from '../utils/errorUtils.js';
+import { isError } from '../index.js';
 import { z } from 'zod';
-import { isAuthenticated } from '../auth.js';
+import { isAuthenticated } from '../index.js';
 import {
   createSchedule,
   getSchedule,
@@ -14,7 +14,7 @@ import {
   deleteSchedule,
   retrySchedule,
   getScheduleLogs,
-} from '../../services/scheduler';
+} from '../index.js';
 const router = express.Router();
 // Validation schemas
 const createScheduleSchema = z.object({

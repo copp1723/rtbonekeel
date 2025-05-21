@@ -10,7 +10,7 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
@@ -19,15 +19,16 @@
       "./src/types",
       "./types"
     ],
-    "types": ["bullmq"],
+    "types": ["bullmq", "node"],
     "paths": {
       "@shared/*": ["shared/*"],
       "@utils/*": ["utils/*"],
-      "@/*": ["./*"],
-      "bullmq-service-standardized": ["./src/services/bullmqService.standardized"],
-      "bullmq-config": ["./src/config/bullmq.config"]
-    }
+      "@/*": ["./*"]
+    },
+    "verbatimModuleSyntax": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true
   },
-  "include": ["src/index.ts", "src/**/*.ts", "src/types/bullmq/index.d.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/vitest.setup.ts"]
+  "include": ["src/index.ts", "src/**/*.ts", "src/**/*.js", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", "node_modules_old", "dist", "**/*.test.ts", "**/vitest.setup.ts"]
 }

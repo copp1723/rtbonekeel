@@ -5,13 +5,13 @@
  * including custom error classes, error boundaries, and error formatting.
  */
 
-import { debug, info, warn, error } from '../shared/logger.js';
-import { AppError, isAppError, toAppError } from '../shared/errorTypes.js';
-import { Request, Response, NextFunction } from 'express';
+import { debug, info, warn, error } from '../index.js';
+import { AppError, isAppError, toAppError } from '../index.js';
+import type { Request, Response, NextFunction } from 'express';
 import React from 'react';
 
 // Re-export error types for convenience
-export * from '../shared/errorTypes.js';
+export * from '../index.js';
 
 /**
  * Error codes for common error scenarios

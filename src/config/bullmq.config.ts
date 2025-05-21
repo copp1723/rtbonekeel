@@ -6,9 +6,9 @@
  */
 
 import IORedis from 'ioredis';
-import type { ConnectionOptions, JobsOptions } from '../types/bullmq/index.standardized.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import type { ConnectionOptions, JobsOptions } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 
 // Redis client instance
 let redisClient: IORedis | null = null;

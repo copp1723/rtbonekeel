@@ -4,10 +4,10 @@
  * This module provides functions for handling errors in different contexts,
  * including Express middleware, global error handlers, and function wrappers.
  */
-import { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error as logError, fatal } from '../../shared/logger.js';
-import { BaseError } from '../types/BaseError.js';
-import { toBaseError, formatError } from '../utils/errorUtils.js';
+import type { Request, Response, NextFunction } from 'express';
+import { debug, info, warn, error as logError, fatal } from '../index.js';
+import { BaseError } from '../index.js';
+import { toBaseError, formatError } from '../index.js';
 
 /**
  * Log an error with appropriate level based on error type

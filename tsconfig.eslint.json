@@ -1,19 +1,18 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
-    "tests/**/*.ts", // If you have a top-level 'tests' folder
-    "*.ts"           // For root-level .ts files like vitest.config.ts
+    "tests/**/*.ts",
+    "scripts/**/*.ts",
+    "*.js",
+    "*.mjs",
+    "*.cjs",
+    "eslint.config.mjs"
   ],
   "exclude": [
     "node_modules",
+    "node_modules_old",
     "dist",
-    "frontend/",
-    "coverage/"
-    // We don't exclude .test.ts or vitest.setup.ts here
+    "frontend"
   ]
 }

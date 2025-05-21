@@ -384,7 +384,7 @@ export const circuitBreakerState = pgTable('circuit_breaker_state', {
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });
 // Types
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 export type UpsertUser = InferInsertModel<typeof users>;
 export type User = InferSelectModel<typeof users>;

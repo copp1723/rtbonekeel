@@ -5,11 +5,11 @@
  * Implements type-safe queue operations using the defined job types.
  */
 
-import { Queue, Worker, QueueScheduler, QueueEvents } from 'bullmq';
-import type { ConnectionOptions, JobsOptions } from '../types/bullmq/index.standardized.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import { QUEUE_NAMES } from '../shared/constants.js';
+import { Queue, Worker, QueueScheduler, QueueEvents, Job, JobsOptions, WorkerOptions, QueueSchedulerOptions, QueueEventsOptions } from 'bullmq';
+import type { ConnectionOptions } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { QUEUE_NAMES } from '../index.js';
 import type {
   BaseJobData,
   QueueRegistry,
@@ -18,7 +18,7 @@ import type {
   WorkflowJobData,
   ReportJobData,
   TaskJobData
-} from '../types/bullmq/index.standardized';
+} from '../index.js';
 import {
   initializeRedis,
   getRedisClient,
@@ -27,7 +27,7 @@ import {
   getWorkerConfig,
   getSchedulerConfig,
   closeRedisConnection
-} from '../config/bullmq.config';
+} from '../index.js';
 
 // Queue instances registry
 const queues: Map<string, Queue> = new Map();
@@ -65,7 +65,7 @@ export const JOB_TYPES = {
 
   // Health check jobs
   HEALTH_CHECK: 'health-check',
-};
+} as const;
 
 /**
  * Initialize the BullMQ service
@@ -97,19 +97,25 @@ export async function initialize(options?: ConnectionOptions): Promise<boolean> 
  */
 export function createQueue<T extends keyof QueueRegistry>(
   queueName: T,
-  options?: Record<string, any>
+  options?: Record<string, unknown>
 ): Queue<QueueRegistry[T]> {
   if (isInMemoryMode()) {
     throw new Error('Cannot create queue in in-memory mode');
   }
 
-  if (queues.has(queueName as string)) {
-    return queues.get(queueName as string) as Queue<QueueRegistry[T]>;
+  const queueNameStr = String(queueName);
+  
+  if (queues.has(queueNameStr)) {
+    const existingQueue = queues.get(queueNameStr);
+    if (!existingQueue) {
+      throw new Error(`Queue ${queueNameStr} exists in registry but is undefined`);
+    }
+    return existingQueue as Queue<QueueRegistry[T]>;
   }
 
-  const queue = new Queue(queueName as string, getQueueConfig(options));
+  const queue = new Queue<QueueRegistry[T]>(queueNameStr, getQueueConfig(options));
 
-  queues.set(queueName as string, queue);
+  queues.set(queueNameStr, queue);
 
   info({
     event: 'queue_created',
@@ -117,7 +123,7 @@ export function createQueue<T extends keyof QueueRegistry>(
     timestamp: new Date().toISOString(),
   }, `Created queue: ${queueName}`);
 
-  return queue as Queue<QueueRegistry[T]>;
+  return queue;
 }
 
 /**
@@ -130,20 +136,26 @@ export function createQueue<T extends keyof QueueRegistry>(
  */
 export function createWorker<T extends keyof QueueRegistry>(
   queueName: T,
-  processor: (job: any) => Promise<any>,
-  options?: Record<string, any>
+  processor: (job: Job<QueueRegistry[T]>) => Promise<unknown>,
+  options?: Partial<WorkerOptions>
 ): Worker<QueueRegistry[T]> {
   if (isInMemoryMode()) {
     throw new Error('Cannot create worker in in-memory mode');
   }
 
-  if (workers.has(queueName as string)) {
-    return workers.get(queueName as string) as Worker<QueueRegistry[T]>;
+  const queueNameStr = String(queueName);
+  
+  if (workers.has(queueNameStr)) {
+    const existingWorker = workers.get(queueNameStr);
+    if (!existingWorker) {
+      throw new Error(`Worker ${queueNameStr} exists in registry but is undefined`);
+    }
+    return existingWorker as Worker<QueueRegistry[T]>;
   }
 
-  const worker = new Worker(queueName as string, processor, getWorkerConfig(options));
+  const worker = new Worker<QueueRegistry[T]>(queueNameStr, processor, getWorkerConfig(options));
 
-  workers.set(queueName as string, worker);
+  workers.set(queueNameStr, worker);
 
   info({
     event: 'worker_created',
@@ -151,7 +163,7 @@ export function createWorker<T extends keyof QueueRegistry>(
     timestamp: new Date().toISOString(),
   }, `Created worker for queue: ${queueName}`);
 
-  return worker as Worker<QueueRegistry[T]>;
+  return worker;
 }
 
 /**
@@ -163,14 +175,18 @@ export function createWorker<T extends keyof QueueRegistry>(
  */
 export function createScheduler(
   queueName: string,
-  options?: Record<string, any>
+  options?: Partial<QueueSchedulerOptions>
 ): QueueScheduler {
   if (isInMemoryMode()) {
     throw new Error('Cannot create scheduler in in-memory mode');
   }
 
   if (schedulers.has(queueName)) {
-    return schedulers.get(queueName) as QueueScheduler;
+    const existingScheduler = schedulers.get(queueName);
+    if (!existingScheduler) {
+      throw new Error(`Scheduler ${queueName} exists in registry but is undefined`);
+    }
+    return existingScheduler;
   }
 
   const scheduler = new QueueScheduler(queueName, getSchedulerConfig(options));
@@ -195,14 +211,18 @@ export function createScheduler(
  */
 export function createQueueEvents(
   queueName: string,
-  options?: Record<string, any>
+  options?: Partial<QueueEventsOptions>
 ): QueueEvents {
   if (isInMemoryMode()) {
     throw new Error('Cannot create queue events in in-memory mode');
   }
 
   if (queueEvents.has(queueName)) {
-    return queueEvents.get(queueName) as QueueEvents;
+    const existingEvents = queueEvents.get(queueName);
+    if (!existingEvents) {
+      throw new Error(`Queue events ${queueName} exists in registry but is undefined`);
+    }
+    return existingEvents;
   }
 
   const events = new QueueEvents(queueName, {
@@ -230,7 +250,9 @@ export function createQueueEvents(
 export function getQueue<T extends keyof QueueRegistry>(
   queueName: T
 ): Queue<QueueRegistry[T]> | null {
-  return (queues.get(queueName as string) as Queue<QueueRegistry[T]>) || null;
+  const queueNameStr = String(queueName);
+  const queue = queues.get(queueNameStr);
+  return queue ? (queue as Queue<QueueRegistry[T]>) : null;
 }
 
 /**
@@ -294,4 +316,4 @@ export async function closeConnections(): Promise<void> {
 
 // Export queue names and default options for convenience
 export { QUEUE_NAMES };
-export { defaultJobOptions } from '../config/bullmq.config';
+export { defaultJobOptions } from '../index.js';

@@ -3,10 +3,10 @@
  *
  * Provides role-based access control for API keys
  */
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
-import { apiKeys, SelectApiKey } from '../shared/schema.js'; // Added SelectApiKey
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { db } from '../index.js';
+import { apiKeys, SelectApiKey } from '../index.js'; // Added SelectApiKey
 import { eq, and } from 'drizzle-orm';
 import { logSecurityEvent } from './awsKmsService.js'; // Corrected import path
 

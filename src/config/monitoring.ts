@@ -4,7 +4,7 @@
  * This module provides configuration for monitoring and alerting services.
  */
 import { z } from 'zod';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Sentry configuration schema
 export const SentryConfigSchema = z.object({

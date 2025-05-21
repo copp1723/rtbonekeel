@@ -1,6 +1,6 @@
-import type { Workflow } from '../types/workflow.js';
+import type { Workflow } from '../index.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info } from '../shared/logger.js';
+import { debug, info } from '../index.js';
 
 export const emailService = {
   /**

@@ -9,10 +9,10 @@ import { Queue, Worker, QueueScheduler } from 'bullmq';
 import type { ConnectionOptions, JobsOptions } from 'bullmq';
 import IORedis from 'ioredis';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { isError } from '../utils/errorUtils.js';
-import { QUEUE_NAMES } from '../shared/constants.js';
+import { isError } from '../index.js';
+import { QUEUE_NAMES } from '../index.js';
 import type {
   BaseJobData,
   QueueRegistry,
@@ -21,7 +21,7 @@ import type {
   WorkflowJobData,
   ReportJobData,
   TaskJobData
-} from '../types/bullmq/index';
+} from '../index.js';
 
 // Redis client instance
 let redisClient: IORedis | null = null;

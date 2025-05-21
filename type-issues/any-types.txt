@@ -1,0 +1,349 @@
+src/config/bullmq.config.ts:export function getQueueConfig(options?: Record<string, any>): Record<string, any> {
+src/config/bullmq.config.ts:export function getWorkerConfig(options?: Record<string, any>): Record<string, any> {
+src/config/bullmq.config.ts:export function getSchedulerConfig(options?: Record<string, any>): Record<string, any> {
+src/config/index.ts:    securityAuditLevel: (process.env.SECURITY_AUDIT_LEVEL || DEFAULT_SECURITY.securityAuditLevel) as any,
+src/config/index.ts:    logLevel: (process.env.LOG_LEVEL || DEFAULT_LOG_LEVELS[env]) as any,
+src/utils/drizzleWrapper.ts:  async findMany(conditions: QueryCondition[] = [], limit = 100): Promise<R[]> {
+src/utils/drizzleWrapper.ts:  async getManyByKey<K extends keyof R>(key: K, value: R[K]): Promise<R[]> {
+src/utils/rateLimiter.ts:      // Notify waiting promises if any
+src/utils/rateLimiter.ts:    // Calculate how many requests we can process
+src/utils/routeHandler.ts:export interface ApiResponse<T = any> {
+src/utils/routeHandler.ts:export function asyncHandler<T = any>(
+src/utils/routeHandler.ts:export function createRouteHandler<T = any>(
+src/utils/errorHandling.ts: * Get a clean error message from any error type
+src/utils/errorHandling.ts:export function formatError(error: unknown): Record<string, any> {
+src/utils/errorHandling.ts:  context: Record<string, any> = {},
+src/utils/errorHandling.ts:  context: Record<string, any> = {}
+src/utils/errorHandling.ts:    context?: Record<string, any>;
+src/utils/pdfExtractor.ts:  tables: Record<string, any>[][];
+src/utils/pdfExtractor.ts:  const tables: Record<string, any>[][] = [];
+src/utils/pdfExtractor.ts:  // Simple heuristic: Look for lines with many separator characters
+src/utils/pdfExtractor.ts:  // Process any remaining table
+src/utils/pdfExtractor.ts:): Record<string, any>[] {
+src/utils/pdfExtractor.ts:  const records: Record<string, any>[] = [];
+src/utils/pdfExtractor.ts:      const record: Record<string, any> = {};
+src/utils/pdfExtractor.ts:      // Add any remaining values to an "extra" field
+src/utils/pdfExtractor.ts:function calculateLatticeConfidence(tables: Record<string, any>[][]): number {
+src/utils/pdfExtractor.ts:  const tables: Record<string, any>[][] = [];
+src/utils/pdfExtractor.ts:  // Process any remaining table
+src/utils/pdfExtractor.ts:): Record<string, any>[] {
+src/utils/pdfExtractor.ts:  const records: Record<string, any>[] = [];
+src/utils/pdfExtractor.ts:      const record: Record<string, any> = {};
+src/utils/pdfExtractor.ts:      // Add any remaining values to an "extra" field
+src/utils/pdfExtractor.ts:function calculateStreamConfidence(tables: Record<string, any>[][]): number {
+src/utils/encryption.ts:  data: Record<string, any> | string,
+src/utils/encryption.ts:): any {
+src/utils/encryption.ts:export function legacyDecryptData(encryptedData: string, iv: string): Record<string, any> {
+src/utils/encryption.ts:  [key: string]: any;
+src/utils/encryption.ts:  eventData: Record<string, any> = {},
+src/utils/encryption.ts:          // Skip if any required field is missing
+src/utils/encryption.ts:): any {
+src/utils/encryption.ts:  data: Record<string, any> | string,
+src/utils/errors.ts:  // ANY AUDIT [2023-05-19]: Using 'any' for error response as structure varies by error type
+src/utils/errors.ts:  const response: any = { // ANY AUDIT [2023-05-19]: Error response needs flexibility for different error types
+src/utils/errors.ts:export function logError(error: unknown, context: Record<string, any> = {}) { // ANY AUDIT [2023-05-19]: Log context can contain any type of data
+src/utils/errors.ts:  handler: (req: Request, res: Response, next: NextFunction) => Promise<any>
+src/utils/errors.ts:// ANY AUDIT [2023-05-19]: Using 'any' in generic constraint to allow for maximum flexibility in function signatures
+src/utils/errors.ts:export function withErrorHandling<T extends any[], R>( // ANY AUDIT [2023-05-19]: Generic type T needs to accept any array of arguments
+src/utils/errors.ts:  condition: any, // ANY AUDIT [2023-05-19]: Assert needs to accept any condition to be flexible
+src/utils/apiResponse.ts:    meta?: Record<string, any>;
+src/utils/apiResponse.ts:    meta?: Record<string, any>;
+src/utils/apiResponse.ts:  const errorResponse: Record<string, any> = {
+src/utils/apiResponse.ts:  meta: Record<string, any> = {}
+src/utils/apiResponse.ts:  meta: Record<string, any> = {}
+src/utils/apiResponse.ts:  meta: Record<string, any> = {}
+src/utils/apiResponse.ts:  meta: Record<string, any> = {}
+src/utils/errorUtils.ts:  context: Record<string, any> = {}
+src/utils/errorUtils.ts:): Record<string, any> {
+src/utils/circuitBreaker.ts:  isFailure?: (error: any) => boolean;
+src/utils/retry.ts:  retryIf?: (error: any) => boolean;
+src/utils/retry.ts:  onRetry?: (error: any, attempt: number) => void;
+src/utils/retry.ts:  error?: any;
+src/utils/retry.ts:  let lastError: any;
+src/utils/retry.ts:export function retryable<T, Args extends any[]>(
+src/services/stepHandlers.ts:  (config: Record<string, any>, context: Record<string, any>): Promise<any>;
+src/services/enhancedApiKeyService.ts:): Promise<any> { // ANY AUDIT [2023-05-19]: Return type varies based on API key structure
+src/services/enhancedApiKeyService.ts:export async function getApiKeys(userId: string, service?: string): Promise<any[]> { // ANY AUDIT [2023-05-19]: Return type is an array of API keys with varying structures
+src/services/enhancedApiKeyService.ts:export async function getApiKeyById(id: string, userId: string): Promise<any> { // ANY AUDIT [2023-05-19]: Return type varies based on API key structure and additional data
+src/services/enhancedApiKeyService.ts:): Promise<any> { // ANY AUDIT [2023-05-19]: Return type varies based on updated API key structure
+src/services/enhancedApiKeyService.ts:    // ANY AUDIT [2023-05-19]: Using 'any' for update data as structure varies by update type
+src/services/enhancedApiKeyService.ts:    const updateData: any = { // ANY AUDIT [2023-05-19]: Dynamic update object needs flexibility
+src/services/stepHandlers.d.ts:  export const stepHandlers: Record<string, (config: Record<string, any>, context: Record<string, any>) => Promise<unknown>>;
+src/services/performanceMonitor.ts:  appMetrics: any,
+src/services/performanceMonitor.ts:  cacheStats: any
+src/services/awsKmsService.ts:  details?: Record<string, any>,
+src/services/insightGenerator.ts:  metrics: Record<string, any>;
+src/services/bullmqService.standardized.ts:  options?: Record<string, any>
+src/services/bullmqService.standardized.ts:  processor: (job: any) => Promise<any>,
+src/services/bullmqService.standardized.ts:  options?: Record<string, any>
+src/services/bullmqService.standardized.ts:  options?: Record<string, any>
+src/services/bullmqService.standardized.ts:  options?: Record<string, any>
+src/services/securityMonitoringService.ts:    // Alert if any IP address exceeds the threshold
+src/services/securityMonitoringService.ts:    // Alert if any user exceeds the threshold
+src/services/securityMonitoringService.ts:    // Alert if any user exceeds the threshold
+src/services/bullmqService.ts:  options?: any
+src/services/bullmqService.ts:  options?: any
+src/services/apiKeyService.ts:): Promise<any> {
+src/services/apiKeyService.ts:export async function getApiKeys(userId: string, service?: string): Promise<any[]> {
+src/services/apiKeyService.ts:export async function getApiKeyById(id: string, userId: string): Promise<any> {
+src/services/apiKeyService.ts:): Promise<any> {
+src/services/apiKeyService.ts:    const updateData: any = {
+src/services/queueManager.ts:async function processInMemoryJob(job: any): Promise<void> {
+src/services/queueManager.ts:      let queue: Queue<any> | null = null;
+src/services/queueManager.ts:      taskId: (data as any).taskId || null,
+src/services/queueManager.ts:      let queue: Queue<any> | null = null;
+src/services/queueManager.ts:      taskId: (data as any).taskId || null,
+src/services/sentryService.ts:export function captureError(err: unknown, context: Record<string, any> = {}): string {
+src/services/sentryService.ts:  context: Record<string, any> = {}
+src/services/healthService.ts:  details?: Record<string, any>;
+src/services/healthService.ts:  details?: Record<string, any>;
+src/services/healthService.ts:      } as any); // @ts-ignore - Ensuring all required properties are provided;
+src/services/healthService.ts:    } as any); // @ts-ignore - Ensuring all required properties are provided;
+src/services/healthService.ts:    // Check if there are any active schedules
+src/services/emailTemplateService.ts:  tableRows?: any[][];
+src/services/emailTemplateService.ts:  [key: string]: any;
+src/services/emailTemplateService.ts:export async function sendTemplatedEmail(options: EmailOptions): Promise<any> {
+src/services/emailTemplateService.ts:): Promise<any> {
+src/services/emailTemplateService.ts:): Promise<any> {
+src/services/emailTemplateService.ts:): Promise<any> {
+src/services/workflowService.ts:    } as any); // Ensuring all required properties are provided.returning();
+src/services/workflowService.ts:                ? context.notifyEmail.map((email: any) => ({ email: String(email) }))
+src/services/workflowService.ts:                ? context.notifyEmail.map((email: any) => ({ email: String(email) }))
+src/services/workflowService.ts:    const conditions: any[] = [];
+src/services/workflowService.ts:    // Apply all conditions if we have any
+src/services/workflowService.ts:      // Cast the query to any to bypass the type error
+src/services/workflowService.ts:      query = (query as any).where(conditions[0]);
+src/services/workflowService.ts:      // Cast the query to any to bypass the type error
+src/services/workflowService.ts:      query = (query as any).where(and(...conditions));
+src/services/jobQueue.ts:export type Queue<T = any> = BullQueue<T>;
+src/services/jobQueue.ts:export type Worker<T = any> = BullWorker<T>;
+src/services/jobQueue.ts:export type Job<T = any> = BullMQJob<T>;
+src/services/jobQueue.ts:  [key: string]: any;
+src/services/jobQueue.ts:      const WorkerClass = (bullmq as any).Worker || ((bullmq as any).default && (bullmq as any).default.Worker);
+src/services/jobQueue.ts:      ) as any;
+src/services/jobQueue.ts:      ;(jobQueue as any).on('completed', (job: { id: string | number | undefined }) => {
+src/services/jobQueue.ts:      ;(jobQueue as any).on('failed', (job: { id: string | number | undefined } | undefined, err: Error) => {
+src/services/jobQueue.ts:    await (jobQueue as any)?.clean(0, 0, 'completed');
+src/services/monitoringService.ts:  context: Record<string, any> = {},
+src/services/monitoringService.ts:      ? (error as any).isOperational
+src/services/mailerService.ts:  attachments?: any[];
+src/services/mailerService.ts:    const message: any = {
+src/services/emailTemplateEngine.ts:  [key: string]: any;
+src/services/emailTemplateEngine.ts:          .map((item: any) => {
+src/services/alertMailer.ts:  details?: Record<string, any>;
+src/services/redisService.ts:  private RedisCtor: any;
+src/services/resultsPersistence.ts:  metadata: Record<string, any>;
+src/services/resultsPersistence.ts:  metadata: Record<string, any>
+src/services/resultsPersistence.ts:  // Check if any of the existing reports have the same file name
+src/services/resultsPersistence.ts:    const reportMetadata = report.metadata as Record<string, any>;
+src/services/resultsPersistence.ts:  metadata?: Record<string, any>;
+src/services/resultsPersistence.ts:  metadata?: Record<string, any>;
+src/services/resultsPersistence.ts:    metadata?: Record<string, any>;
+src/services/jobQueue.standardized.ts:      taskQueue = bullmqService.createQueue(TASK_PROCESSOR_QUEUE as any, {
+src/services/credentialVault.ts:): Promise<{ credential: any; data: CredentialData } | null> {
+src/services/credentialVault.ts:): Promise<any | null> {
+src/services/credentialVault.ts:): Promise<Array<{ credential: any; data: CredentialData }>> {
+src/services/taskParser.ts:  parameters?: Record<string, any>; // ANY AUDIT [2023-05-19]: Task parameters vary by task type and cannot be strictly typed
+src/services/taskParser.ts:  metadata?: Record<string, any>; // ANY AUDIT [2023-05-19]: Metadata varies by task source and integration
+src/services/taskParser.ts:  context?: Record<string, any>; // ANY AUDIT [2023-05-19]: Context contains dynamic data from various sources
+src/services/taskParser.ts:  executionPlan?: any; // ANY AUDIT [2023-05-19]: Execution plans have dynamic structure based on task type
+src/middleware/monitoringMiddleware.ts:  res.end = function(chunk?: any, encoding?: BufferEncoding, callback?: () => void): Response {
+src/middleware/monitoringMiddleware.ts:export function registerMonitoringMiddleware(app: any) {
+src/middleware/cache.ts:export function getCacheStats(): any {
+src/middleware/performance.ts:  res.end = function(chunk?: any, encoding?: BufferEncoding, callback?: () => void): Response {
+src/middleware/dbContextMiddleware.ts:      [key: string]: any;
+src/middleware/dbContextMiddleware.ts:    [key: string]: any;
+src/core/ai/openai.ts:          response_format: responseFormat as any,
+src/core/ai/openai.ts:    rawResponse?: any;
+src/core/ai/index.ts:  variables: Record<string, any>,
+src/core/ai/index.ts:      responseFormat: options.responseFormat || template.responseFormat as any, // ANY AUDIT [2023-05-19]: OpenAI API expects specific format that doesn't match our type
+src/core/ai/index.ts:      responseFormat: options.responseFormat || template.responseFormat as any,
+src/core/ai/llmAuditLogger.ts:  rawResponse?: any;
+src/core/ai/llmAuditLogger.ts:  metadata?: Record<string, any>;
+src/core/ai/promptTemplate.ts:    input: Record<string, any>; // ANY AUDIT [2023-05-19]: Example inputs have dynamic structure based on prompt type
+src/core/ai/promptTemplate.ts:    output: string | Record<string, any>; // ANY AUDIT [2023-05-19]: Example outputs can be text or structured data
+src/core/ai/promptTemplate.ts:  // ANY AUDIT [2023-05-19]: Using 'any' for parsed data as structure varies by template
+src/core/ai/promptTemplate.ts:  let data: any; // ANY AUDIT [2023-05-19]: Template data structure cannot be known at compile time
+src/core/ai/promptTemplate.ts:  variables: Record<string, any> // ANY AUDIT [2023-05-19]: Template variables can be of any type depending on the prompt
+src/core/ai/promptTemplate.ts:    // ANY AUDIT [2023-05-19]: Object.entries returns [string, any] pairs for dynamic objects
+src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
+src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
+src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
+src/tests/healthCheckScheduler.test.ts:    vi.mocked(cron.schedule).mockReturnValueOnce({ stop: mockStop } as any);
+src/api/server.ts:        userId: (req as any).user?.claims?.sub,
+src/api/server.ts:        userId: (req as any).user?.claims?.sub,
+src/shared/logger.ts:function writeToLogFile(filePath: string, level: LogLevel, message: string, meta?: any): void {
+src/shared/logger.ts:  [key: string]: any;
+src/shared/errorTypes.ts:  public readonly context: Record<string, any>;
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:  public withContext(context: Record<string, any>): this {
+src/shared/errorTypes.ts:  constructor(message: string, context: Record<string, any> = {}) {
+src/shared/errorTypes.ts:  constructor(message: string = 'Authentication failed', context: Record<string, any> = {}) {
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:    context: Record<string, any> = {}
+src/shared/errorTypes.ts:export function isAppError(error: any): error is CodedError {
+src/shared/errorTypes.ts:  const context: Record<string, any> = {
+src/shared/middleware/rateLimiter.ts:    message: config.message || 'Too many requests, please try again later.',
+src/shared/middleware/rateLimiter.ts:    handler: (req: Request, res: Response, _next: NextFunction, options: any) => {
+src/shared/middleware/rateLimiter.ts:    message: 'Too many API requests, please try again after 15 minutes',
+src/shared/middleware/rateLimiter.ts:    message: 'Too many authentication attempts, please try again after 1 minute',
+src/shared/middleware/rateLimiter.ts:    message: 'Too many task submissions, please try again after 1 minute',
+src/shared/middleware/rateLimiter.ts:    message: 'Too many health check requests, please try again after 1 minute',
+src/shared/middleware/rbacMiddleware.ts:      [key: string]: any;
+src/shared/middleware/rbacMiddleware.ts:    [key: string]: any;
+src/shared/outputStorage.ts:  result: any,
+src/shared/outputStorage.ts:  metadata?: Record<string, any>
+src/shared/outputStorage.ts:export function loadResult(filepath: string): any {
+src/shared/errorHandler.ts:  context: Record<string, any> = {},
+src/shared/errorHandler.ts:    retryCondition?: (error: any) => boolean;
+src/shared/errorHandler.ts:    context?: Record<string, any>;
+src/shared/schema.ts:  config: Record<string, any>;
+src/features/workflow/services/attachmentParsers.ts:export const BaseRecordSchema = z.record(z.string(), z.any());
+src/features/workflow/services/attachmentParsers.ts:  records: Record<string, any>[];
+src/features/workflow/services/attachmentParsers.ts:    [key: string]: any;
+src/features/workflow/services/attachmentParsers.ts:    const allRecords: Record<string, any>[] = [];
+src/features/workflow/services/attachmentParsers.ts:        const record: Record<string, any> = {};
+src/features/workflow/services/attachmentParsers.ts:function extractTabularDataFromPDF(text: string): Record<string, any>[] {
+src/features/workflow/services/attachmentParsers.ts:    const records: Record<string, any>[] = [];
+src/features/workflow/services/attachmentParsers.ts:        const record: Record<string, any> = {};
+src/features/auth/services/userCredentialService.ts:// Define a type alias that combines the schema type with any additional properties needed
+src/features/auth/services/userCredentialService.ts:  metadata?: Record<string, any>;
+src/features/auth/services/userCredentialService.ts:type CredentialPayload = Record<string, any>;
+src/features/auth/services/userCredentialService.ts:  metadata: Record<string, any> = {},
+src/features/auth/services/userCredentialService.ts:  metadata?: Record<string, any>,
+src/features/auth/services/userCredentialService.ts:          credentialName: credentialName || 'any',
+src/features/auth/services/auth.ts:      [key: string]: any;
+src/features/auth/services/auth.ts:    [key: string]: any;
+src/features/email/services/emailTemplates.ts:  insights?: any[];
+src/features/email/services/emailTemplates.ts:  [key: string]: any;
+src/features/email/services/emailTemplates.ts:function generateInsightsHtml(insights?: any[]): string {
+src/features/email/services/emailIngestService.ts:  parsedData?: any;
+src/features/email/services/emailIngestService.ts:  storageResult?: any;
+src/features/email/services/emailIngestService.ts:  insights?: any;
+src/features/email/services/emailTemplateService.ts:  tableRows?: any[][];
+src/features/email/services/emailTemplateService.ts:  [key: string]: any;
+src/features/email/services/emailTemplateService.ts:export async function sendTemplatedEmail(options: EmailOptions): Promise<any> {
+src/features/email/services/emailTemplateService.ts:): Promise<any> {
+src/features/email/services/emailTemplateService.ts:): Promise<any> {
+src/features/email/services/emailTemplateService.ts:): Promise<any> {
+src/features/scheduler/services/executePlan.ts:  input: Record<string, any>;
+src/features/scheduler/services/executePlan.ts:  output: any;
+src/features/scheduler/services/executePlan.ts:  tools: Record<string, any>
+src/features/scheduler/services/executePlan.ts:): Promise<{ finalOutput: any; stepResults: StepResult[]; planId: string }> {
+src/features/scheduler/services/executePlan.ts:  input: Record<string, any>,
+src/features/scheduler/services/executePlan.ts:): Record<string, any> {
+src/features/scheduler/services/executePlan.ts:  const processed: Record<string, any> = {};
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/credentials.ts:  async (req: any, res: Response) => {
+src/server/routes/credentials.ts:  async (req: any, res: Response) => {
+src/server/routes/credentials.ts:  async (req: any, res: Response) => {
+src/server/routes/credentials.ts:  async (req: any, res: Response) => {
+src/server/routes/credentials.ts:  async (req: any, res: Response) => {
+src/server/routes/credentials.ts:function maskSensitiveData(data: any): any {
+src/server/routes/schedules.ts:router.post('/', isAuthenticated, async (req: any, res) => {
+src/server/routes/schedules.ts:router.get('/', isAuthenticated, async (req: any, res) => {
+src/server/routes/schedules.ts:router.get('/:id', isAuthenticated, validateScheduleId, async (req: any, res) => {
+src/server/routes/schedules.ts:router.put('/:id', isAuthenticated, validateScheduleId, async (req: any, res) => {
+src/server/routes/schedules.ts:router.delete('/:id', isAuthenticated, validateScheduleId, async (req: any, res) => {
+src/server/routes/schedules.ts:router.post('/:id/retry', isAuthenticated, validateScheduleId, async (req: any, res) => {
+src/server/routes/schedules.ts:router.get('/:id/logs', isAuthenticated, validateScheduleId, async (req: any, res) => {
+src/server/routes/schedules.refactored.ts:router.post('/', isAuthenticated, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/schedules.refactored.ts:router.get('/', isAuthenticated, asyncHandler(async (req: any) => {
+src/server/routes/schedules.refactored.ts:router.get('/:id', isAuthenticated, validateScheduleId, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/schedules.refactored.ts:router.put('/:id', isAuthenticated, validateScheduleId, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/schedules.refactored.ts:router.delete('/:id', isAuthenticated, validateScheduleId, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/schedules.refactored.ts:router.post('/:id/retry', isAuthenticated, validateScheduleId, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/schedules.refactored.ts:router.get('/:id/logs', isAuthenticated, validateScheduleId, asyncHandler(async (req: any, res: Response) => {
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/apiKeys.ts:router.get('/', async (req: any, res) => {
+src/server/routes/apiKeys.ts:router.get('/:id', async (req: any, res) => {
+src/server/routes/apiKeys.ts:router.post('/', rateLimiters.apiKeyCreation, async (req: any, res) => {
+src/server/routes/apiKeys.ts:router.put('/:id', async (req: any, res) => {
+src/server/routes/apiKeys.ts:router.delete('/:id', async (req: any, res) => {
+src/server/routes/monitoring.ts:export function registerMonitoringRoutes(app: any) {
+src/server/routes/auth.ts:      [key: string]: any;
+src/server/routes/auth.ts:    [key: string]: any;
+src/types/global.d.ts:  export const stepHandlers: Record<string, (config: Record<string, any>, context: Record<string, any>) => Promise<unknown>>;
+src/types/attachmentParsers.d.ts:    records: Record<string, any>[];
+src/types/attachmentParsers.d.ts:      [key: string]: any;
+src/types/attachmentParsers.d.ts:    schema?: any;
+src/types/attachmentParsers.d.ts:    [key: string]: any;
+src/types/bullmq-service.d.ts:  export function createWorker(name: string, processor: (job: any) => Promise<void>, options?: any): Worker;
+src/types/healthService.d.ts:    details?: Record<string, any>;
+src/types/healthService.d.ts:    details?: Record<string, any>;
+src/types/bullmq/baseTypes.ts:  metadata?: Record<string, any>;
+src/types/bullmq/baseTypes.ts:export interface JobResult<T = any> {
+src/types/bullmq/workerTypes.ts:export interface Worker<T = any> {
+src/types/bullmq/workerTypes.ts:  interface Job<T = any> {
+src/types/bullmq/index.d.ts:    add(name: string, data: any, options?: JobOptions): Promise<Job>;
+src/types/bullmq/index.d.ts:    constructor(name: string, processor: (job: Job) => Promise<any>, options?: WorkerOptions);
+src/types/bullmq/index.d.ts:    on(event: string, callback: (...args: any[]) => void): void;
+src/types/bullmq/index.d.ts:    data: any;
+src/types/bullmq/index.d.ts:    updateData(data: any): Promise<void>;
+src/types/bullmq/index.d.ts:    update(data: any): Promise<void>;
+src/types/bullmq/index.d.ts:    moveToCompleted(returnValue: any, token: string, fetchNext?: boolean): Promise<any>;
+src/types/bullmq/index.d.ts:    moveToFailed(err: Error, token: string, fetchNext?: boolean): Promise<any>;
+src/types/bullmq/jobTypes.ts:  templateVars?: Record<string, any>;
+src/types/bullmq/jobTypes.ts:  queryParams: Record<string, any>;
+src/types/bullmq/jobTypes.ts:  input: Record<string, any>;
+src/types/bullmq/jobTypes.ts:  context?: Record<string, any>;
+src/types/bullmq/jobTypes.ts:  stepResults?: Record<string, any>[];
+src/types/bullmq/jobTypes.ts:  parameters: Record<string, any>;
+src/types/bullmq/jobTypes.ts:  params: Record<string, any>;
+src/types/bullmq/jobTypes.ts:export interface Job<T = any> {
+src/types/bullmq/queueTypes.ts:    opts: any;
+src/types/bullmq/queueTypes.ts:) => Promise<any>;
+src/types/bullmq/queueTypes.ts:  connection?: any;
+src/types/bullmq/queueTypes.ts:export interface Queue<T = any> {
+src/errors/handlers/errorHandlers.ts:    userId: (req as any).user?.id || (req as any).user?.claims?.sub
+src/errors/handlers/errorHandlers.ts:  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+src/errors/utils/errorUtils.ts: * Convert any value to an object with a message property
+src/errors/utils/errorUtils.ts: * Get a clean error message from any error type
+src/errors/utils/errorUtils.ts: * Convert any error to a BaseError
+src/errors/utils/errorUtils.ts:  errorType: new (...args: any[]) => T
+src/parsers/factory/ParserFactory.ts:      metadata?: Record<string, any>
+src/parsers/factory/ParserFactory.ts:  public static async checkForDuplicate(fileHash: string, metadata: Record<string, any> = {}): Promise<boolean> {
+src/parsers/factory/ParserFactory.ts:  public static async storeFileHash(fileHash: string, metadata: Record<string, any> = {}): Promise<void> {
+src/parsers/implementations/PDFParser.ts:  private processText(text: string, options: PDFParserOptions): Record<string, any>[] {
+src/parsers/implementations/PDFParser.ts:    const records: Record<string, any>[] = [];
+src/parsers/implementations/XLSXParser.ts:      const allRecords: Record<string, any>[] = [];
+src/parsers/implementations/XLSXParser.ts:      const sheetResults: Record<string, any> = {};
+src/parsers/implementations/XLSXParser.ts:  private processWorksheet(worksheet: ExcelJS.Worksheet, options: XLSXParserOptions): Record<string, any>[] {
+src/parsers/implementations/XLSXParser.ts:    const records: Record<string, any>[] = [];
+src/parsers/implementations/XLSXParser.ts:      const record: Record<string, any> = {};
+src/parsers/implementations/XLSXParser.ts:  private getCellValue(cell: ExcelJS.Cell): any {
+src/parsers/implementations/CSVParser.ts:        const records: Record<string, any>[] = [];
+src/parsers/implementations/CSVParser.ts:  private configureCsvOptions(options: CSVParserOptions): any {
+src/parsers/index.ts:    metadata?: Record<string, any>
+src/parsers/base/BaseParser.ts:  protected validateWithSchema(records: Record<string, any>[], schema?: z.ZodType): Record<string, any>[] {
+src/parsers/base/BaseParser.ts:    records: Record<string, any>[],
+src/parsers/base/BaseParser.ts:      _metadata?: Record<string, any>;
+src/parsers/base/types.ts:  [key: string]: any;
+src/parsers/base/types.ts:  records: Record<string, any>[];
+src/parsers/base/types.ts:    [key: string]: any;
+src/parsers/errors/ParserError.ts:  public readonly context: Record<string, any>;
+src/parsers/errors/ParserError.ts:  constructor(message: string, code: string = 'PARSER_ERROR', context: Record<string, any> = {}) {
+src/parsers/errors/ParserError.ts:  public withContext(context: Record<string, any>): this {
+src/parsers/errors/ParserError.ts:  public toJSON(): Record<string, any> {
+src/parsers/errors/ParserError.ts:  constructor(message: string, context: Record<string, any> = {}) {
+src/parsers/errors/ParserError.ts:  constructor(filePath: string, context: Record<string, any> = {}) {
+src/parsers/errors/ParserError.ts:  constructor(fileType: string, context: Record<string, any> = {}) {
+src/parsers/errors/ParserError.ts:  constructor(message: string, context: Record<string, any> = {}) {
+src/parsers/errors/ParserError.ts:  constructor(fileHash: string, context: Record<string, any> = {}) {
+src/prompts/index.ts:  dataPoints?: Record<string, any>; // Optional additional structured data
+src/prompts/index.ts:  contextInfo?: Record<string, any>; // Optional additional context

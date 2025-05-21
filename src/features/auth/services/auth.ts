@@ -1,7 +1,7 @@
 /**
  * Authentication middleware for Express routes
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 // Define custom Request interface with user property
 interface AuthRequest extends Request {
   user?: {

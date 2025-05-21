@@ -4,7 +4,7 @@
  * Provides email notification functionality for workflows
  * TODO: Replace with real implementation
  */
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 /**
  * Email result interface

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "malformed-1",
+    "email": "not-an-email",
+    "firstName": 12345,
+    "lastName": true,
+    "role": "invalid-role"
+  },
+  {
+    "id": "malformed-2",
+    "email": "missing-domain@",
+    "firstName": "",
+    "lastName": null,
+    "role": ["user", "admin"]
+  },
+  {
+    "id": "malformed-3",
+    "email": "@no-username.com",
+    "firstName": { "nested": "object" },
+    "lastName": "Valid",
+    "role": ""
+  },
+  {
+    "id": "malformed-4",
+    "email": "test@example.com",
+    "firstName": "Valid",
+    "lastName": "User",
+    "role": "user",
+    "createdAt": "not-a-date",
+    "updatedAt": "2025-13-32T25:61:61.000Z"
+  },
+  "not-an-object",
+  123,
+  null,
+  {
+    "id": { "nested": "id" },
+    "email": ["array", "of", "emails"],
+    "firstName": 0,
+    "lastName": false
+  }
+]

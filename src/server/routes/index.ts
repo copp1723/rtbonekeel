@@ -1,23 +1,29 @@
-import { Express } from 'express';
-import authRouter from './auth.js';
-import credentialsRouter from './credentials.js';
-import workflowRoutes from './workflows.js';
-import scheduleRoutes from './schedules.js';
-import { setupAuth } from '../auth.js';
-import emailRoutes from './emails.js';
 /**
- * Register all auth and credential routes with the Express app
- * @param app Express application instance
+ * API Routes Index
+ * Combines all route modules into a single router
  */
-export async function registerAuthRoutes(app: Express): Promise<void> {
-  // Set up authentication middleware and routes
-  await setupAuth(app);
-  // Register route handlers
-  app.use('/api/auth', authRouter);
-  app.use('/api/credentials', credentialsRouter);
-  app.use('/api/workflows', workflowRoutes);
-  app.use('/api/emails', emailRoutes);
-  // Register schedule routes
-  app.use('/api/schedules', scheduleRoutes);
-  console.log('Auth, workflow, email, and schedule routes registered');
-}
+import express from 'express';
+import apiKeysRouter from './apiKeys';
+import authRouter from './auth';
+import credentialsRouter from './credentials';
+import emailsRouter from './emails';
+import healthRouter from './health';
+import jobsRouter from './jobs';
+import monitoringRouter from './monitoring';
+import schedulesRouter from './schedules.refactored';
+import workflowsRouter from './workflows.refactored';
+
+const router = express.Router();
+
+// Mount all route modules
+router.use('/auth', authRouter);
+router.use('/api-keys', apiKeysRouter);
+router.use('/credentials', credentialsRouter);
+router.use('/emails', emailsRouter);
+router.use('/health', healthRouter);
+router.use('/jobs', jobsRouter);
+router.use('/monitoring', monitoringRouter);
+router.use('/schedules', schedulesRouter);
+router.use('/workflows', workflowsRouter);
+
+export default router;

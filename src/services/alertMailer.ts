@@ -8,7 +8,7 @@
  * TODO: Replace with real implementation
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { info, warn, error } from '../shared/logger.js';
+import { info, warn, error } from '../index.js';
 
 /**
  * Alert severity levels

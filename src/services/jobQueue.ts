@@ -1,10 +1,10 @@
 import { sql } from 'drizzle-orm';
-import { isAppError, isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
-import { tasks, jobQueue as jobQueueTable } from '../shared/schema.js';
+import { isAppError, isError } from '../index.js';
+import { db } from '../index.js';
+import { tasks, jobQueue as jobQueueTable } from '../index.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Import types from bullmq
 import type {

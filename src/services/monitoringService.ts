@@ -7,15 +7,15 @@
  */
 import * as sentryService from './sentryService.js';
 import * as datadogService from './datadogService.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import { sendAdminAlert, sendImmediateAdminAlert } from './alertMailer.js';
-import { db } from '../shared/db.js';
-import { healthChecks, healthLogs } from '../shared/schema.js';
+import { db } from '../index.js';
+import { healthChecks, healthLogs } from '../index.js';
 import { eq } from 'drizzle-orm';
 
 // Import monitoring configuration
-import monitoringConfig from '../config/monitoring.js';
+import monitoringConfig from '../index.js';
 
 // Track initialization status
 let sentryInitialized = false;

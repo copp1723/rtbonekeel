@@ -4,7 +4,7 @@
  * Provides configurable retry mechanisms with exponential backoff for handling
  * transient failures in network operations, API calls, and other error-prone tasks.
  */
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 /**
  * Retry options for configuring retry behavior
  */

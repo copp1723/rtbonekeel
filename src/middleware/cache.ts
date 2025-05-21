@@ -3,7 +3,7 @@
  * 
  * This middleware caches API responses to improve performance.
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import NodeCache from 'node-cache';
 
 // Initialize cache with default TTL of 5 minutes and check period of 1 minute

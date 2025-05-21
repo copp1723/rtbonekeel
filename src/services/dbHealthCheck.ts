@@ -4,9 +4,9 @@
  * This module provides a health check function for PostgreSQL that can be registered
  * with the health monitoring service.
  */
-import { db } from '../shared/db.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
+import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import { HealthCheckResult } from './healthService.js'; // Assuming HealthCheckResult is defined here or in a shared types file
 
 /**

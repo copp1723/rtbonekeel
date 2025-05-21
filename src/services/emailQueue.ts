@@ -1,11 +1,11 @@
-import { db } from '../shared/db.js';
-import { isError } from '../utils/errorUtils.js';
-import { emailQueue as emailQueueTable } from '../shared/schema.js';
+import { db } from '../index.js';
+import { isError } from '../index.js';
+import { emailQueue as emailQueueTable } from '../index.js';
 import { eq } from 'drizzle-orm';
 import { EmailSendOptions, sendEmail as sendEmailService } from './mailerService.js';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { formatError } from '../utils/logger.js';
+import { debug, info, warn, error } from '../index.js';
+import { formatError } from '../index.js';
 interface EmailQueueOptions {
   maxRetries?: number;
   retryDelay?: number;

@@ -5,8 +5,8 @@
  */
 
 import { performance } from 'perf_hooks';
-import { FileType } from '../base/types.js';
-import { debug, info, warn, error } from '../../shared/logger.js';
+import type { FileType } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Metrics storage
 interface ParserMetrics {

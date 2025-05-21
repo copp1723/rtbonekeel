@@ -5,13 +5,13 @@
  * Initializes all components and provides a unified interface
  */
 import { initializeRedis, closeConnections } from './bullmqService.js';
-import { isError } from '../utils/errorUtils.js';
+import { isError } from '../index.js';
 import { initializeQueueManager } from './queueManager.js';
-import { initializeIngestionWorker } from '../workers/ingestionWorker.js';
-import { initializeProcessingWorker } from '../workers/processingWorker.js';
-import { initializeInsightWorker } from '../workers/insightWorker.js';
+import { initializeIngestionWorker } from '../index.js';
+import { initializeProcessingWorker } from '../index.js';
+import { initializeInsightWorker } from '../index.js';
 import { initializeDistributedScheduler } from './distributedScheduler.js';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 /**
  * Initialize the job queue system
  */
@@ -105,9 +105,9 @@ export async function shutdownJobQueueSystem(): Promise<void> {
   }
 }
 // Export all components for direct access
-export * from './bullmqService';
-export * from './queueManager';
-export * from './distributedScheduler';
-export * from '../workers/ingestionWorker';
-export * from '../workers/processingWorker';
-export * from '../workers/insightWorker';
+export * from './bullmqService.js';
+export * from './queueManager.js';
+export * from './distributedScheduler.js';
+export * from '../index.js';
+export * from '../index.js';
+export * from '../index.js';

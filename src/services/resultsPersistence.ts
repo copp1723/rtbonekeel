@@ -7,8 +7,8 @@
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../shared/db.js';
-import { reports, reportSources } from '../shared/report-schema.js';
+import { db } from '../index.js';
+import { reports, reportSources } from '../index.js';
 import { eq, and } from 'drizzle-orm';
 import { ParserResult } from './attachmentParsers.js';
 // Interface for storing results

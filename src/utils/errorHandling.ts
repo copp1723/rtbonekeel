@@ -3,7 +3,7 @@
  * This module provides a cleaner, more consistent approach to error handling
  */
 import { isError, isErrorWithMessage, toErrorWithMessage } from './errorUtils.js';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 
 /**
  * Get a clean error message from any error type

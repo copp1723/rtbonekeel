@@ -4,23 +4,23 @@
  * Handles secure storage and retrieval of user credentials
  * with proper validation and encryption
  */
-import { Router, Request, Response } from 'express';
+import type { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { isAuthenticated } from '../auth.js';
-import { debug, info, warn, error } from '../../shared/logger.js';
-import { isError } from '../../utils/errorUtils.js';
+import { isAuthenticated } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import {
   validateBody,
   validateParams,
   validateQuery
-} from '../../utils/apiValidation.js';
+} from '../index.js';
 import {
   getCredentialById,
   getCredentials,
   addCredential,
   updateCredential,
   deleteCredential
-} from '../../services/credentialVault.js';
+} from '../index.js';
 
 const router = Router();
 

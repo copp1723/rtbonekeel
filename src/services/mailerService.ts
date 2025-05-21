@@ -3,8 +3,8 @@
  * Handles email sending functionality using SendGrid
  */
 import { MailService } from '...';
-import { isError } from '../utils/errorUtils.js';
-import { db } from '../shared/db.js';
+import { isError } from '../index.js';
+import { db } from '../index.js';
 import { emailLogs } from '...';
 import { v4 as uuidv4 } from 'uuid';
 import { eq } from 'drizzle-orm';

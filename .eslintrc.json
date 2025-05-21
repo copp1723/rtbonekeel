@@ -47,6 +47,16 @@
       "objectLiteralTypeAssertions": "never"
     }],
     
+    // Enforce canonical export/import patterns
+    "import/extensions": ["error", "ignorePackages", {
+      "ts": "never",
+      "tsx": "never",
+      "js": "never",
+      "jsx": "never"
+    }],
+    "import/no-default-export": "error",
+    "import/prefer-default-export": "off",
+    
     // Enforce naming conventions
     "@typescript-eslint/naming-convention": [
       "error",

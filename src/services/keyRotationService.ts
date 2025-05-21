@@ -4,7 +4,7 @@
  * Provides functionality for rotating encryption keys and re-encrypting data
  * with new keys to maintain security best practices.
  */
-import { db } from '../shared/db.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
 import { 
   credentials, 
@@ -12,10 +12,10 @@ import {
   userCredentials, 
   apiKeys,
   securityAuditLogs
-} from '../shared/schema.js';
-import { debug, info, warn, error } from '../shared/logger.js';
-import { isError } from '../utils/errorUtils.js';
-import { rotateEncryptionKeys, generateSecureKey } from '../utils/encryption.js';
+} from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { rotateEncryptionKeys, generateSecureKey } from '../index.js';
 import cron from 'node-cron';
 
 // Tables with encrypted data and their field mappings

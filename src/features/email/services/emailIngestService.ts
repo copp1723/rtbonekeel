@@ -7,13 +7,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../../../shared/logger.js';
-import { fetchEmailsWithAttachments } from '../../../services/imapIngestionService.js';
-import { parseByExtension } from '../../../services/attachmentParsers.js';
-import { storeResults } from '../../../services/resultsPersistence.js';
-import { generateInsights } from '../../../services/insightGenerator.js';
-import { sendAdminAlert } from '../../../services/alertMailer.js';
-import { isError } from '../../../utils/errorUtils.js';
+import { debug, info, warn, error } from '../index.js';
+import { fetchEmailsWithAttachments } from '../index.js';
+import { parseByExtension } from '../index.js';
+import { storeResults } from '../index.js';
+import { generateInsights } from '../index.js';
+import { sendAdminAlert } from '../index.js';
+import { isError } from '../index.js';
 // Types
 export interface EmailIngestOptions {
   intent?: string;

@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { isError, getErrorMessage } from '../utils/errorUtils.js';
+import { isError, getErrorMessage } from '../index.js';
 
 /**
  * Health Monitoring Service
@@ -9,8 +9,8 @@ import { isError, getErrorMessage } from '../utils/errorUtils.js';
  * of different services and APIs, and stores the results for display
  * in a health dashboard.
  */
-import { db } from '../shared/db.js';
-import { healthChecks, healthLogs } from '../shared/schema.js';
+import { db } from '../index.js';
+import { healthChecks, healthLogs } from '../index.js';
 import { eq, desc, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 

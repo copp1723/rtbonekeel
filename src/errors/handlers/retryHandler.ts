@@ -3,8 +3,8 @@
  * 
  * This module provides utilities for retrying operations that might fail temporarily.
  */
-import { info } from '../../shared/logger.js';
-import { toBaseError, getErrorMessage } from '../utils/errorUtils.js';
+import { info } from '../index.js';
+import { toBaseError, getErrorMessage } from '../index.js';
 import { logFormattedError } from './errorHandlers.js';
 
 /**

@@ -1,0 +1,31 @@
+src/config/index.ts:    securityAuditLevel: (process.env.SECURITY_AUDIT_LEVEL || DEFAULT_SECURITY.securityAuditLevel) as any,
+src/config/index.ts:    logLevel: (process.env.LOG_LEVEL || DEFAULT_LOG_LEVELS[env]) as any,
+src/services/queueManager.ts:      taskId: (data as any).taskId || null,
+src/services/queueManager.ts:      taskId: (data as any).taskId || null,
+src/services/healthService.ts:      } as any); // @ts-ignore - Ensuring all required properties are provided;
+src/services/healthService.ts:    } as any); // @ts-ignore - Ensuring all required properties are provided;
+src/services/workflowService.ts:    } as any); // Ensuring all required properties are provided.returning();
+src/services/workflowService.ts:      query = (query as any).where(conditions[0]);
+src/services/workflowService.ts:      query = (query as any).where(and(...conditions));
+src/services/jobQueue.ts:      const WorkerClass = (bullmq as any).Worker || ((bullmq as any).default && (bullmq as any).default.Worker);
+src/services/jobQueue.ts:      ) as any;
+src/services/jobQueue.ts:      ;(jobQueue as any).on('completed', (job: { id: string | number | undefined }) => {
+src/services/jobQueue.ts:      ;(jobQueue as any).on('failed', (job: { id: string | number | undefined } | undefined, err: Error) => {
+src/services/jobQueue.ts:    await (jobQueue as any)?.clean(0, 0, 'completed');
+src/services/monitoringService.ts:      ? (error as any).isOperational
+src/services/jobQueue.standardized.ts:      taskQueue = bullmqService.createQueue(TASK_PROCESSOR_QUEUE as any, {
+src/core/ai/openai.ts:          response_format: responseFormat as any,
+src/core/ai/index.ts:      responseFormat: options.responseFormat || template.responseFormat as any, // ANY AUDIT [2023-05-19]: OpenAI API expects specific format that doesn't match our type
+src/core/ai/index.ts:      responseFormat: options.responseFormat || template.responseFormat as any,
+src/tests/healthCheckScheduler.test.ts:    vi.mocked(cron.schedule).mockReturnValueOnce({ stop: mockStop } as any);
+src/api/server.ts:        userId: (req as any).user?.claims?.sub,
+src/api/server.ts:        userId: (req as any).user?.claims?.sub,
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.ts:    const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/server/routes/workflows.refactored.ts:  const userId = req.user ? (req.user as any).claims?.sub : null;
+src/errors/handlers/errorHandlers.ts:    userId: (req as any).user?.id || (req as any).user?.claims?.sub

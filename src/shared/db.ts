@@ -16,7 +16,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js/driver';
 import postgres, { Sql } from 'postgres';
 import dotenv from 'dotenv';
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 import * as schema from './schema.js';
 import * as reportSchema from './report-schema.js';
 

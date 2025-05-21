@@ -1,0 +1,125 @@
+{
+  "metadata": {
+    "generatedAt": "2025-05-20T12:00:00.000Z",
+    "recordCount": 100,
+    "description": "Large dataset for testing performance and limits"
+  },
+  "records": [
+    {
+      "id": "large-record-1",
+      "type": "user",
+      "attributes": {
+        "email": "large-record-1@example.com",
+        "firstName": "Large",
+        "lastName": "Record",
+        "preferences": {
+          "theme": "dark",
+          "notifications": {
+            "email": true,
+            "push": false,
+            "sms": true
+          },
+          "dashboard": {
+            "widgets": [
+              {
+                "id": "widget-1",
+                "type": "chart",
+                "position": { "x": 0, "y": 0, "width": 2, "height": 2 },
+                "settings": {
+                  "chartType": "line",
+                  "dataSource": "metrics",
+                  "refreshInterval": 60000
+                }
+              },
+              {
+                "id": "widget-2",
+                "type": "table",
+                "position": { "x": 2, "y": 0, "width": 4, "height": 2 },
+                "settings": {
+                  "columns": ["date", "value", "change"],
+                  "dataSource": "transactions",
+                  "pageSize": 10
+                }
+              }
+            ]
+          }
+        },
+        "address": {
+          "street": "123 Test Street",
+          "city": "Test City",
+          "state": "TS",
+          "zipCode": "12345",
+          "country": "Test Country"
+        },
+        "phoneNumbers": [
+          {
+            "type": "home",
+            "number": "555-1234"
+          },
+          {
+            "type": "work",
+            "number": "555-5678"
+          },
+          {
+            "type": "mobile",
+            "number": "555-9012"
+          }
+        ],
+        "tags": ["test", "large", "payload", "performance", "edge-case"]
+      },
+      "relationships": {
+        "organization": {
+          "id": "org-1",
+          "name": "Test Organization",
+          "role": "member"
+        },
+        "teams": [
+          {
+            "id": "team-1",
+            "name": "Test Team 1",
+            "role": "member"
+          },
+          {
+            "id": "team-2",
+            "name": "Test Team 2",
+            "role": "admin"
+          }
+        ],
+        "reports": [
+          "report-1",
+          "report-2",
+          "report-3"
+        ]
+      },
+      "history": [
+        {
+          "action": "created",
+          "timestamp": "2025-01-01T00:00:00.000Z",
+          "actor": "system"
+        },
+        {
+          "action": "updated",
+          "timestamp": "2025-01-02T00:00:00.000Z",
+          "actor": "user-1",
+          "changes": {
+            "firstName": {
+              "from": "Test",
+              "to": "Large"
+            }
+          }
+        },
+        {
+          "action": "updated",
+          "timestamp": "2025-01-03T00:00:00.000Z",
+          "actor": "user-1",
+          "changes": {
+            "lastName": {
+              "from": "User",
+              "to": "Record"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

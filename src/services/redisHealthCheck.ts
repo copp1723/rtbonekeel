@@ -7,9 +7,9 @@
 import { HealthCheckResult } from './healthService.js';
 import { redisService } from './redisService.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../shared/logger.js';
+import { debug, info, warn, error } from '../index.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { isError } from '../utils/errorUtils.js';
+import { isError } from '../index.js';
 
 /**
  * Check Redis health
