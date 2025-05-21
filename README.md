@@ -37,8 +37,7 @@ Row The Boat is an AI agent backend specifically designed for automotive dealers
 
 - Node.js (v16+)
 - npm (v7+)
-- PostgreSQL database (or Supabase account)
-- Redis (for job queues)
+- Docker and Docker Compose (for local PostgreSQL and Redis)
 - Git
 
 ### Installation
@@ -50,13 +49,21 @@ git clone https://github.com/yourusername/rowtheboat.git
 cd rowtheboat
 ```
 
-2. **Install dependencies**
+2. **Install backend dependencies**
 
 ```bash
 npm install
 ```
 
-3. **Set up environment variables**
+3. **Install frontend dependencies**
+
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+### Environment Setup
 
 Copy the `.env.example` file to `.env` and update the values:
 
@@ -66,21 +73,45 @@ cp .env.example .env
 
 See [Environment Variables Documentation](docs/ENVIRONMENT_VARIABLES.md) for details on required and optional variables.
 
-4. **Set up the database**
+### Local Development Setup (Backend, Frontend, DB, Redis)
 
-```bash
-npm run migrate
-```
+This project uses Docker Compose to simplify the setup of local development dependencies (PostgreSQL and Redis).
 
-5. **Build the project**
+1.  **Start PostgreSQL and Redis using Docker Compose:**
+    Make sure you have Docker installed and running.
+    ```bash
+    docker-compose up -d
+    ```
+    This command will start PostgreSQL and Redis containers in detached mode.
+    - PostgreSQL will be available on `localhost:5432`.
+    - Redis will be available on `localhost:6379`.
 
-```bash
-npm run build
-```
+2.  **Set up the database schema:**
+    Run the database migrations to create the necessary tables.
+    ```bash
+    npm run migrate
+    ```
 
-### Environment Setup
+3.  **Build the project (backend):**
+    ```bash
+    npm run build
+    ```
 
-For detailed information about environment variables and configuration, see the [Environment Variables Documentation](docs/ENVIRONMENT_VARIABLES.md).
+4.  **Start the backend development server:**
+    ```bash
+    npm run dev
+    ```
+    The backend server will typically run on `http://localhost:5000` (or the port specified in your `.env` file).
+
+5.  **Start the frontend development server:**
+    In a new terminal, navigate to the `frontend` directory and start the Next.js development server.
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+    The frontend development server will typically run on `http://localhost:3000`.
+
+You should now have the backend, frontend, database, and Redis running locally.
 
 ## Development
 

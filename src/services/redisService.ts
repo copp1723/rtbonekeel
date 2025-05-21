@@ -7,7 +7,7 @@
 import type { Redis as RedisClient } from 'ioredis';
 import { debug, info, warn, error } from '../shared/logger.js';
 import { isError } from '../utils/errorUtils.js';
-import loadConfig from '../config.js';
+import loadConfig from '../config/index.js'; // Changed import path
 import { EventEmitter } from 'events'; // Added import
 
 // Redis connection options
@@ -205,9 +205,20 @@ export class RedisService extends EventEmitter {
       });
 
       // Set up event listeners
-      this.client.on('connect', this.handleConnect.bind(this));
-      this.client.on('error', this.handleError.bind(this));
-      this.client.on('close', this.handleDisconnect.bind(this));
+      if (this.client) { // Added null check
+        this.client.on('connect', this.handleConnect.bind(this));
+        this.client.on('error', this.handleError.bind(this));
+        this.client.on('close', this.handleDisconnect.bind(this));
+      } else {
+        // This case should ideally not be reached if RedisCtor is valid and new RedisCtor throws on error
+        error('Failed to instantiate Redis client, client is null.', {
+          event: 'redis_client_instantiation_failed',
+          timestamp: new Date().toISOString(),
+        });
+        this.status = 'error';
+        this.emit('error', new Error('Failed to instantiate Redis client'));
+        return false; // Propagate failure
+      }
 
       debug('🔄 Redis event handlers registered', {
         event: 'redis_event_handlers_registered',
@@ -298,6 +309,8 @@ export class RedisService extends EventEmitter {
     this.reconnectAttempts = 0;
     info('Connected to Redis');
     this.emit('connected');
+    // Start health check only after a successful connection
+    this.startHealthCheck();
   }
 
   /**
@@ -305,21 +318,47 @@ export class RedisService extends EventEmitter {
    * @param err Error object
    */
   private handleError(err: Error): void {
-    error('Redis error', {
-      error: err.message,
-      stack: err.stack,
-    });
+    // Avoid logging redundant errors if status is already 'error' from a timeout or failed connect
+    if (this.status !== 'error') {
+      error('Redis error', {
+        event: 'redis_runtime_error',
+        timestamp: new Date().toISOString(),
+        host: this.options.host,
+        port: this.options.port,
+        error: err.message,
+        stack: err.stack,
+      });
+    }
+    // Only change status if it wasn't already a terminal error state from connection/initialization
+    if (this.status !== 'error' && this.status !== 'disconnected') {
+        this.status = 'error';
+    }
     this.emit('error', err);
+    // If the error occurs while connected, it might lead to a disconnect.
+    // The 'close' event handler will manage reconnection if the connection actually drops.
   }
 
   /**
    * Handle Redis disconnect event
    */
   private handleDisconnect(): void {
-    if (this.status === 'connected') {
+    // Only act if we were previously connected or trying to connect
+    if (this.status === 'connected' || this.status === 'connecting') {
+      const previousStatus = this.status;
       this.status = 'disconnected';
-      warn('Disconnected from Redis');
+      warn('Disconnected from Redis', {
+        event: 'redis_disconnected',
+        timestamp: new Date().toISOString(),
+        host: this.options.host,
+        port: this.options.port,
+        previousStatus,
+      });
       this.emit('disconnected');
+      // Stop health checks when disconnected
+      if (this.healthCheckTimer) {
+        clearInterval(this.healthCheckTimer);
+        this.healthCheckTimer = null;
+      }
       this.scheduleReconnect();
     }
   }
@@ -379,12 +418,22 @@ export class RedisService extends EventEmitter {
       clearInterval(this.healthCheckTimer);
     }
 
+    // Ensure health checks only run if not in memory mode and client exists
+    if (this.inMemoryMode || !this.client) {
+      debug('Skipping health check: In-memory mode or no client.');
+      return;
+    }
+
     this.healthCheckTimer = setInterval(
       this.checkHealth.bind(this),
       this.options.healthCheckInterval
     );
 
-    debug(`Redis health check started with interval ${this.options.healthCheckInterval}ms`);
+    debug(`Redis health check started with interval ${this.options.healthCheckInterval}ms`, {
+        event: 'redis_health_check_started',
+        timestamp: new Date().toISOString(),
+        interval: this.options.healthCheckInterval,
+    });
   }
 
   /**
@@ -393,10 +442,12 @@ export class RedisService extends EventEmitter {
    */
   async checkHealth(): Promise<{ status: RedisConnectionStatus; latency?: number }> {
     if (this.inMemoryMode) {
+      this.emit('healthCheck', 'disconnected');
       return { status: 'disconnected' };
     }
 
     if (!this.client) {
+      this.emit('healthCheck', 'disconnected');
       return { status: 'disconnected' };
     }
 
@@ -405,7 +456,7 @@ export class RedisService extends EventEmitter {
       await this.client.ping();
       const latency = Date.now() - startTime;
 
-      this.status = 'connected';
+      this.status = 'connected'; // Ensure status is updated if ping is successful
       this.emit('healthCheck', this.status);
 
       debug(`Redis health check: OK (${latency}ms)`, {
@@ -429,9 +480,19 @@ export class RedisService extends EventEmitter {
       this.status = 'error';
       this.emit('healthCheck', this.status);
 
-      // If we were previously connected, try to reconnect
-      if (this.getStatus() === 'connected') {
-        this.handleDisconnect();
+      // If health check fails and we thought we were connected, trigger disconnect handling
+      // to attempt reconnection.
+      if (this.client && this.client.status === 'ready') { // Check if client THINKS it's ready
+         // but ping failed
+         warn('Redis health check failed despite client status being ready. Forcing disconnect.', {
+            event: 'redis_health_check_forced_disconnect',
+            timestamp: new Date().toISOString(),
+         });
+         // Manually close the client to trigger the 'close' event and reconnection logic
+         this.client.disconnect();
+      } else {
+        // If client is not 'ready', scheduleReconnect might already be in progress or needed.
+        this.scheduleReconnect();
       }
 
       return { status: this.status };
@@ -469,6 +530,10 @@ export class RedisService extends EventEmitter {
     if (this.healthCheckTimer) {
       clearInterval(this.healthCheckTimer);
       this.healthCheckTimer = null;
+      debug('Redis health check stopped.', {
+          event: 'redis_health_check_stopped',
+          timestamp: new Date().toISOString(),
+      });
     }
 
     if (this.reconnectTimer) {

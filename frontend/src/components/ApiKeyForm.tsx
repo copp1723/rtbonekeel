@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import Input from './Input.js';
-import Button from './Button.js';
-import Select from './Select.js';
-import { ApiKeyInput } from '@/lib/api';
+import Input from './Input';
+import Button from './Button';
+import Select from './Select';
+import { ApiKeyInput } from '@/types';
 import { useApiKeys } from '@/hooks/useApiKeys';
 import { useForm, validationRules } from '@/hooks/useForm';
-import FormWrapper from './Form/FormWrapper.js';
+import FormWrapper from './Form/FormWrapper';
 
 const services = [
   { value: 'google_ads', label: 'Google Ads' },
@@ -32,13 +32,13 @@ export default function ApiKeyForm() {
   } = useForm<ApiKeyInput>({
     initialValues: {
       service: services[0].value,
-      keyName: '',
+      name: '',
       keyValue: '',
       label: '',
     },
     validationRules: {
       service: [validationRules.required('Service is required')],
-      keyName: [validationRules.required('Key name is required')],
+      name: [validationRules.required('Key name is required')],
       keyValue: [validationRules.required('API key is required')],
     },
     onSubmit: async (values) => {
@@ -70,12 +70,12 @@ export default function ApiKeyForm() {
 
       <Input
         label="Key Name"
-        name="keyName"
+        name="name"
         type="text"
         placeholder="Enter a name for this API key"
-        value={values.keyName}
+        value={values.name}
         onChange={handleChange}
-        error={errors.keyName}
+        error={errors.name}
         required
       />
 

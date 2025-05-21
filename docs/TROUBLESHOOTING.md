@@ -13,6 +13,9 @@ This document provides solutions for common issues you might encounter when sett
 7. [Authentication Issues](#authentication-issues)
 8. [Email Service Issues](#email-service-issues)
 9. [Performance Issues](#performance-issues)
+10. [Common Installation Issues](#common-installation-issues)
+11. [Common Build Issues (npm run build)](#common-build-issues-npm-run-build)
+12. [Common Test Issues (npm test)](#common-test-issues-npm-test)
 
 ## Environment Setup Issues
 
@@ -276,5 +279,112 @@ Error: Invalid API key provided
 2. Review large object caching strategies
 3. Consider implementing pagination for large data sets
 4. Monitor memory usage patterns over time
+
+## Common Installation Issues
+
+### Docker Not Found or Not Running
+
+**Problem:** `docker-compose up -d` fails with an error indicating Docker is not found or the Docker daemon is not running.
+
+**Solution:**
+1.  **Install Docker:** Download and install Docker Desktop from the [official Docker website](https://www.docker.com/products/docker-desktop).
+2.  **Start Docker:** Ensure the Docker Desktop application is running.
+3.  **Permissions (Linux):** If you are on Linux, you might need to add your user to the `docker` group: `sudo usermod -aG docker $USER` and then log out and log back in.
+
+### Port Conflicts (PostgreSQL/Redis)
+
+**Problem:** `docker-compose up -d` fails because port `5432` (PostgreSQL) or `6379` (Redis) is already in use.
+
+**Solution:**
+1.  **Identify Conflicting Process:** Use a command like `sudo lsof -i :5432` (for port 5432) or `sudo lsof -i :6379` (for port 6379) to find the process using the port.
+2.  **Stop Conflicting Process:** Stop the identified process. If it's another PostgreSQL or Redis instance you don't need, stop it. If it's essential, you'll need to change the ports in `docker-compose.yml`.
+3.  **Change Docker Compose Ports (if necessary):**
+    Open `docker-compose.yml` and change the port mapping. For example, for PostgreSQL:
+    ```yaml
+    services:
+      postgres:
+        # ... other settings
+        ports:
+          - "5433:5432" # Host port 5433 maps to container port 5432
+    ```
+    Then update your `.env` file (`DB_PORT=5433`). Do similarly for Redis if needed.
+
+### `npm install` Fails (Backend or Frontend)
+
+**Problem:** `npm install` fails with errors related to package downloads, native module builds (e.g., `node-gyp`), or permissions.
+
+**Solution:**
+1.  **Check Network Connection:** Ensure you have a stable internet connection.
+2.  **Node.js and npm Versions:** Verify you are using the prerequisite versions (Node.js v16+, npm v7+). Use `node -v` and `npm -v`.
+3.  **Clear npm Cache:** `npm cache clean --force`
+4.  **Remove `node_modules` and `package-lock.json`:**
+    ```bash
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+    (Do this in both the root directory and the `frontend` directory if applicable).
+5.  **Build Tools (for native modules):** If errors mention `node-gyp` or C++ compilation, you might be missing build tools. Refer to the `node-gyp` documentation for your OS to install them (e.g., `xcode-select --install` on macOS, `sudo apt-get install -y build-essential` on Debian/Ubuntu, or install Windows Build Tools via `npm install --global --production windows-build-tools`).
+6.  **Permissions:** If you see permission errors (EACCES), avoid using `sudo npm install`. Fix your npm permissions instead. Refer to the [npm documentation on fixing permissions](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally).
+
+## Common Build Issues (`npm run build`)
+
+### TypeScript Errors
+
+**Problem:** `npm run build` (for the backend) or `npm run build` in `frontend/` fails with TypeScript compilation errors (e.g., `TS2322: Type 'X' is not assignable to type 'Y'`).
+
+**Solution:**
+1.  **Review Error Messages:** The TypeScript compiler usually provides detailed error messages and line numbers. Carefully examine these.
+2.  **Check Type Definitions:** Ensure all types are correctly defined and imported.
+3.  **`tsconfig.json`:** Verify your `tsconfig.json` settings are appropriate for the project.
+4.  **Run Type Checker:** Use `npm run type-check` (in the root for backend, or in `frontend/` for frontend) to get a list of all type errors without running a full build.
+
+### Frontend Build Fails (e.g., Next.js errors)
+
+**Problem:** `cd frontend && npm run build` fails with errors specific to Next.js or frontend dependencies.
+
+**Solution:**
+1.  **Check Next.js Version:** Ensure it's compatible with your Node.js version.
+2.  **Environment Variables:** Some frontend build processes might require specific `NEXT_PUBLIC_` environment variables to be set. Check your `.env` file in the `frontend` directory or the root `.env` if it's configured to be shared.
+3.  **Dependency Issues:** Ensure all frontend dependencies are correctly installed and compatible. Try reinstalling them as described in the `npm install` troubleshooting section.
+
+## Common Test Issues (`npm test`)
+
+### Tests Fail Due to Database Connection
+
+**Problem:** Integration tests or tests requiring a database connection fail.
+
+**Solution:**
+1.  **Database Running:** Ensure your PostgreSQL Docker container is running (`docker ps` should show it).
+2.  **Test Environment Variables:** Verify your `.env.test` (if used) or `.env` file has the correct database connection details for the test environment.
+3.  **Migrations for Test DB:** Ensure migrations have been run on your test database. Some testing setups create a separate test database; ensure it's properly initialized.
+    ```bash
+    # Example: If using a separate test DB defined in .env.test
+    NODE_ENV=test npm run migrate
+    ```
+
+### Tests Fail Due to Redis Connection
+
+**Problem:** Tests requiring Redis fail to connect.
+
+**Solution:**
+1.  **Redis Running:** Ensure your Redis Docker container is running (`docker ps` should show it).
+2.  **Test Environment Variables:** Verify your `.env.test` (if used) or `.env` file has the correct Redis connection details.
+
+### Jest/Vitest Configuration Issues
+
+**Problem:** Tests fail with errors related to Jest or Vitest configuration, module resolution, or transformers.
+
+**Solution:**
+1.  **Check `jest.config.js` or `vitest.config.ts`:** Review the configuration files for any misconfigurations.
+2.  **Module Mocks:** If you're mocking modules, ensure the mocks are correctly set up in the `__mocks__` directory or via `jest.mock()` / `vi.mock()`.
+3.  **Transform Issues:** If using TypeScript or other non-standard JavaScript features, ensure your transformers (e.g., `ts-jest`, Babel) are correctly configured.
+
+### Asynchronous Test Timeouts
+
+**Problem:** Tests involving asynchronous operations time out.
+
+**Solution:**
+1.  **`async/await`:** Ensure you are correctly using `async/await` and returning promises from your test functions if they perform asynchronous operations.
+2.  **Increase Timeout:** If an operation genuinely takes longer, you can increase the timeout for specific tests or globally in the test runner configuration (e.g., `jest.setTimeout(10000);` in Jest).
 
 If you encounter an issue not covered in this guide, please check the application logs for more details and consider opening an issue on the project repository.

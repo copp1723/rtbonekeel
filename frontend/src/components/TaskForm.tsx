@@ -1,16 +1,15 @@
 'use client';
 
 import React from 'react';
-import Button from './Button.js';
-import Select from './Select.js';
+import Button from './Button';
+import Select from './Select';
 import { useRouter } from 'next/navigation';
 import { useTasks } from '@/hooks/useTasks';
 import { TaskInput } from '@/lib/api';
 import { useCredentials } from '@/hooks/useCredentials';
-import { useToast } from './Feedback/ToastContext.js';
+import { useToast } from './Feedback/ToastContext';
 import { useForm, validationRules } from '@/hooks/useForm';
-import FormWrapper from './Form/FormWrapper.js';
-import Card from './UI/Card.js';
+import FormWrapper from './Form/FormWrapper';
 
 const intentOptions = [
   { value: 'inventoryAging', label: 'Inventory Aging' },
