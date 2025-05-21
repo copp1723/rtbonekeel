@@ -181,6 +181,8 @@ For more details on code organization, see the [Architecture Documentation](docs
 - [Security](docs/SECURITY_HARDENING.md): Security features and best practices
 - [Type Safety Policy](docs/TYPE_SAFETY_POLICY.md): Type safety guidelines and exceptions
 - [Developer Guide](DEVELOPER_GUIDE.md): Comprehensive developer onboarding guide
+- [Encryption Standards](docs/ENCRYPTION_STANDARDS.md): Encryption implementation details and best practices
+- [Authentication](docs/AUTHENTICATION.md): Authentication implementation and flow
 
 ## Scripts Reference
 

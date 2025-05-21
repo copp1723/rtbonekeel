@@ -1,5 +1,5 @@
 import { Router, Request, Response, RequestHandler } from 'express';
-import { isAuthenticated } from '../replitAuth.js';
+import { isAuthenticated } from '../auth.js';
 import { storage } from '../storage.js';
 // Define custom Request interface with user property
 interface AuthRequest extends Request {

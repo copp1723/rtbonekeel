@@ -4,7 +4,7 @@
  * Enhanced with aggressive rate limiting and suspicious pattern detection
  */
 import express from 'express';
-import { isAuthenticated } from '../replitAuth.js';
+import { isAuthenticated } from '../auth.js';
 import {
   rateLimiters,
   detectSuspiciousPatterns

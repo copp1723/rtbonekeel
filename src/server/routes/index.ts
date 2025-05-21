@@ -3,7 +3,7 @@ import authRouter from './auth.js';
 import credentialsRouter from './credentials.js';
 import workflowRoutes from './workflows.js';
 import scheduleRoutes from './schedules.js';
-import { setupAuth } from '../replitAuth.js';
+import { setupAuth } from '../auth.js';
 import emailRoutes from './emails.js';
 /**
  * Register all auth and credential routes with the Express app

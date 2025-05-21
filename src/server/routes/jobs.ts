@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { isError } from '../utils/errorUtils.js';
 import { listJobs, getJobById, retryJob, enqueueJob } from '../../services/jobQueue.js';
-import { isAuthenticated } from '../replitAuth.js';
+import { isAuthenticated } from '../auth.js';
 import { db } from '../../shared/db.js';
 import { taskLogs } from '../../shared/schema.js';
 import { eq } from 'drizzle-orm';
