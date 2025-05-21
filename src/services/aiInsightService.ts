@@ -1,12 +1,13 @@
 import { OpenAI } from 'openai';
-import { createCircuitBreaker } from '../../../../utils/circuitBreaker.js';
-import { logger } from '../../../../utils/logger.js';
-import { db } from '../../../../shared/db.js';
-import { insightLogs } from '../../../../shared/schema.js';
-import { isError } from '../../../../utils/errorUtils.js';
+import { createCircuitBreaker } from '../utils/circuitBreaker.js';
+import { logger } from '../shared/logger.js';
+import { db } from '../shared/db.js';
+import { insightLogs } from '../shared/schema.js';
+import { isError } from '../utils/errorUtils.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+
 // Initialize OpenAI client with validation
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('OPENAI_API_KEY environment variable is not configured');
@@ -14,15 +15,18 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 // Circuit breaker configuration
 const insightBreaker = createCircuitBreaker('insight-generation', {
   failureThreshold: 5,
   recoveryTimeout: 5 * 60 * 1000, // 5 minutes
 });
+
 interface InsightGenerationOptions {
   role?: 'Executive' | 'Sales' | 'Lot';
   maxRetries?: number;
 }
+
 interface InsightResult {
   summary: string;
   value_insights: string[];
@@ -30,6 +34,7 @@ interface InsightResult {
   confidence: 'high' | 'medium' | 'low';
   prompt_version?: string; // Added to track which prompt version was used
 }
+
 /**
  * Generate role-specific insights from report data
  */
@@ -42,6 +47,7 @@ export async function generateInsights(
   const prompt = await loadRolePrompt(role);
   let attempt = 0;
   let lastError: Error | null = null;
+
   while (attempt < maxRetries) {
     try {
       // Check circuit breaker
@@ -83,20 +89,18 @@ export async function generateInsights(
     } catch (error) {
       // Use type-safe error handling
       const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
       lastError = error as Error;
       attempt++;
       // Log failure
       await logInsightGeneration({
         success: false,
-        error: isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error),
+        error: errorMessage,
         role,
       });
       if (attempt === maxRetries) {
         insightBreaker.recordFailure();
         throw new Error(
-          `Failed to generate insights after ${maxRetries} attempts: ${(error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))}`
+          `Failed to generate insights after ${maxRetries} attempts: ${errorMessage}`
         );
       }
       // Exponential backoff
@@ -105,10 +109,12 @@ export async function generateInsights(
   }
   throw lastError || new Error('Failed to generate insights');
 }
+
 // Get the directory name for prompt templates
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROMPTS_DIR = path.join(__dirname, '..', 'prompts');
+const PROMPTS_DIR = path.join(__dirname, '..', 'prompts', 'aiInsights');
+
 // Define prompt templates for different roles
 const PROMPT_TEMPLATES = {
   Executive: {
@@ -148,6 +154,7 @@ Your response must be a JSON object with this structure:
 }`
   }
 };
+
 /**
  * Load role-specific prompt template
  * First tries to load from filesystem, then falls back to in-memory templates
@@ -180,12 +187,11 @@ async function loadRolePrompt(role: string): Promise<{ version: string; system: 
   } catch (error) {
       // Use type-safe error handling
       const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
     logger.error(`Error loading prompt template: ${errorMessage}`);
     return PROMPT_TEMPLATES.Executive;
   }
 }
+
 /**
  * Log insight generation attempt to DB
  */
@@ -225,8 +231,6 @@ async function logInsightGeneration(data: {
   } catch (error) {
       // Use type-safe error handling
       const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
     logger.error(
       {
         event: 'insight_log_error',
@@ -236,6 +240,7 @@ async function logInsightGeneration(data: {
     );
   }
 }
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
