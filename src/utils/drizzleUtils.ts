@@ -1,14 +1,14 @@
-import { sql, and, eq, isNull } from './drizzleImports.js.js.js';
-import type { PgColumn } from 'drizzle-orm/pg-core';
+import { sql } from './drizzleImports.js';
+import type { SQL } from 'drizzle-orm';
 
-export function safeEq<T>(column: PgColumn, value: T): SQL<unknown> {
+export function safeEq<T>(column: SQL | PgColumn, value: T): SQL {
   return sql`${column} = ${value}`;
 }
 
-export function safeAnd(...conditions: SQL<unknown>[]): SQL<unknown> {
-  return sql`(${conditions.join(' AND ')})`;
+export function safeAnd(...conditions: SQL[]): SQL {
+  return sql.join(conditions, ' AND ');
 }
 
-export function safeOr(...conditions: SQL<unknown>[]): SQL<unknown> {
-  return sql`(${conditions.join(' OR ')})`;
+export function safeOr(...conditions: SQL[]): SQL {
+  return sql.join(conditions, ' OR ');
 }

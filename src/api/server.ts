@@ -1,20 +1,32 @@
 // src/api/server.ts
 import { randomUUID } from 'crypto';
+import type { Request, Response, NextFunction } from 'express';
+import type { Server } from 'http';
 
 // Mock implementations for development
-const logger = {
-  info: (message, ...args) => console.info(message, ...args),
-  warn: (message, ...args) => console.warn(message, ...args),
-  error: (message, ...args) => console.error(message, ...args),
+const logger: {
+  info: (message: unknown, ...args: unknown[]) => void;
+  warn: (message: unknown, ...args: unknown[]) => void;
+  error: (message: unknown, ...args: unknown[]) => void;
+} = {
+  info: (message: unknown, ...args: unknown[]) => console.info(message, ...args),
+  warn: (message: unknown, ...args: unknown[]) => console.warn(message, ...args),
+  error: (message: unknown, ...args: unknown[]) => console.error(message, ...args),
 };
 
-const info = (message) => console.info(message);
-const warn = (message) => console.warn(message);
-const error = (message) => console.error(message);
-const getErrorMessage = (err) => err instanceof Error ? err?.message : String(err);
+const info = (message: unknown, ...args: unknown[]): void => console.info(message, ...args);
+const warn = (message: unknown, ...args: unknown[]): void => console.warn(message, ...args);
+const error = (message: unknown, ...args: unknown[]): void => console.error(message, ...args);
+const getErrorMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : String(err);
 
 // Mock configuration
-const config = {
+interface Config {
+  env: string;
+  server: { host: string; port: number };
+  apiKeys: { sendgrid?: string };
+}
+const config: Config = {
   env: process.env.NODE_ENV || 'development',
   server: {
     host: process.env.HOST || 'localhost',
@@ -26,7 +38,13 @@ const config = {
 };
 
 // Mock implementations for services
-const db = { insert: () => ({ values: () => Promise.resolve() }) };
+const db: {
+  insert: (table?: unknown) => { values: (data?: unknown) => Promise<void> };
+} = {
+  insert: () => ({
+    values: async () => Promise.resolve(),
+  }),
+};
 const taskLogs = {};
 const rateLimiters = { 
   api: (_req, _res, next) => next(),
@@ -48,14 +66,23 @@ const startPerformanceMonitoring = () => {};
 
 // Mock task parser
 class TaskParser {
-  async parseUserRequest(task) {
+  async parseUserRequest(
+    _task: string
+  ): Promise<{
+    task: {
+      id: string;
+      type: string;
+      parameters: Record<string, unknown>;
+      status: string;
+    };
+  }> {
     return {
       task: {
         id: randomUUID(),
         type: 'generic',
         parameters: {},
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     };
   }
 }
@@ -110,7 +137,7 @@ logger.info(
 
 const taskParser = new TaskParser();
 
-async function startServer() {
+async function startServer(): Promise<Server> {
   info('[1/5] Loading configuration...');
   // config is already loaded by import, no need to call loadConfig
 
@@ -119,14 +146,14 @@ async function startServer() {
   const app = express.default();
   
   // Dynamically import health and monitoring routes
-  const healthRoutesModule = await import('./routes/healthRoutes.js.js');
+  const healthRoutesModule = await import('./routes/healthRoutes.js');
   healthRoutes = healthRoutesModule.default;
   
-  const monitoringRoutesModule = await import('./routes/monitoringRoutes.js.js');
+  const monitoringRoutesModule = await import('./routes/monitoringRoutes.js');
   monitoringRoutes = monitoringRoutesModule.default;
   
   // Import health check scheduler
-  const healthCheckSchedulerModule = await import('../.js.js');
+  const healthCheckSchedulerModule = await import('../scheduler/healthCheckScheduler.js');
   startAllHealthChecks = healthCheckSchedulerModule.startAllHealthChecks;
   
   app.use(express.json());
@@ -195,9 +222,9 @@ async function startServer() {
       info('Authentication routes registered successfully');
 
       // Import job queue and database dependencies
-      const { default: jobsRouter } = await import('./routes/jobsRouter.js.js');
-      const { default: workflowsRouter } = await import('./routes/workflowsRouter.js.js');
-      const { default: apiIngestRoutes } = await import('./routes/apiIngestRoutes.js.js');
+      const { default: jobsRouter } = await import('./routes/jobsRouter.js');
+      const { default: workflowsRouter } = await import('./routes/workflowsRouter.js');
+      const { default: apiIngestRoutes } = await import('./routes/apiIngestRoutes.js');
 
       // Register job management routes
       app.use('/api/jobs', jobsRouter);
@@ -227,10 +254,10 @@ async function startServer() {
   router.get(
     '/health',
     rateLimiters.healthCheck,
-    async (_req: any, res: any) => {
+    async (_req: Request, res: Response): Promise<void> => {
       try {
         // Import health service functions
-        const healthServiceModule = await import('../.js.js');
+        const healthServiceModule = await import('../services/healthService.js');
         const { getHealthSummary, getLatestHealthChecks } = healthServiceModule;
         const summary = await getHealthSummary();
         const checks = await getLatestHealthChecks();
@@ -262,9 +289,9 @@ async function startServer() {
   // Test-parser endpoint
   router.post(
     '/test-parser',
-    async (req: any, res: any) => {
+    async (req: Request, res: Response): Promise<void> => {
       try {
-        const task = req.body.task || '';
+        const task = (req.body.task as string) || '';
         // Task parsing API key removed; EKO integration is no longer used
         const result = await taskParser.parseUserRequest(task);
         res.json(result);
@@ -277,7 +304,7 @@ async function startServer() {
   // Tasks listing endpoint
   router.get(
     '/tasks',
-    async (_req: any, res: any) => {
+    async (_req: Request, res: Response): Promise<void> => {
       // Mock implementation
       res.json([]);
     }
@@ -286,10 +313,10 @@ async function startServer() {
   // Performance metrics endpoint
   router.get(
     '/performance',
-    async (_req: any, res: any) => {
+    async (_req: Request, res: Response): Promise<void> => {
       try {
         // Dynamically import monitoring service
-        const monitoringServiceModule = await import('../.js.js');
+        const monitoringServiceModule = await import('../services/monitoringService.js');
         const { getPerformanceMetrics, getSystemMetrics, getMetricsHistory } = monitoringServiceModule;
         
         const performanceMetrics = getPerformanceMetrics();
@@ -314,17 +341,18 @@ async function startServer() {
   // Serve the index.html file for the root route
   app.get(
     '/',
-    async (_req: any, res: any) => {
+    async (_req: Request, res: Response): Promise<void> => {
       res.sendFile('index.html', { root: './public' });
     }
   );
   
   // API endpoint to submit a new task
-  app.post('/api/tasks', rateLimiters.taskSubmission, async (req: any, res: any) => {
+  app.post('/api/tasks', rateLimiters.taskSubmission, async (req: Request, res: Response): Promise<void> => {
     try {
       const { task } = req.body;
       if (!task || typeof task !== 'string') {
-        return res.status(400).json({ error: 'Task is required and must be a string' });
+        res.status(400).json({ error: 'Task is required and must be a string' });
+        return;
       }
       // Parse the task to determine its type and parameters
       const { task: parsedTask } = await taskParser.parseUserRequest(task);
@@ -333,7 +361,7 @@ async function startServer() {
       // Create the task object and insert into database
       await db.insert(taskLogs).values({
         id: taskId,
-        userId: req.user?.claims?.sub,
+        userId: (req as any).user?.claims?.sub,
         taskType: parsedTask.type,
         taskText: task,
         taskData: parsedTask.parameters ?? {},
@@ -358,7 +386,7 @@ async function startServer() {
   });
   
   // API endpoint for direct task execution
-  app.post('/submit-task', rateLimiters.taskSubmission, async (req: any, res: any) => {
+  app.post('/submit-task', rateLimiters.taskSubmission, async (req: Request, res: Response): Promise<void> => {
     try {
       const { task } = req.body;
       if (!task || typeof task !== 'string') {
@@ -372,7 +400,7 @@ async function startServer() {
       // Create the task object and insert into database
       await db.insert(taskLogs).values({
         id: taskId,
-        userId: req.user?.claims?.sub,
+        userId: (req as any).user?.claims?.sub,
         taskType: parsedTask.type,
         taskText: task,
         taskData: parsedTask.parameters ?? {},

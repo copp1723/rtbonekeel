@@ -5,10 +5,16 @@
  * and environment validation for production security.
  */
 import crypto from 'crypto';
-import { isError } from '../index.js.js.js';
-import { db } from '../index.js.js.js';
-import { securityAuditLogs } from '../index.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
+import {
+  sql,
+  isError,
+  db,
+  securityAuditLogs,
+  debug,
+  info,
+  warn,
+  error,
+} from '../index.js';
 // Constants for encryption
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for AES
@@ -20,7 +26,7 @@ const MIN_KEY_LENGTH = 32; // Minimum key length in characters
 // In production, this should be a secure, randomly generated key
 const DEFAULT_KEY = 'default-dev-key-do-not-use-in-production-environment';
 // Derive a proper length key from the environment variable or use a default (for development only)
-let encryptionKey: Buffer;
+let encryptionKey!: Buffer; // initialized by initializeEncryption()
 // Store the current key version for rotation purposes
 let currentKeyVersion = 1;
 /**
@@ -346,13 +352,13 @@ export async function logSecurityEvent(
       severity,
       timestamp: new Date(),
     });
-  } catch (error) {
+  } catch (err: unknown) {
     // Unified error message handling
-    const errorMessage = isError(error)
-      ? error instanceof Error
-        ? error?.message
-        : String(error)
-      : String(error);
+    const errorMessage = isError(err)
+      ? err instanceof Error
+        ? err.message
+        : String(err)
+      : String(err);
 
     error(`Security event logging error: ${errorMessage}`);
   }

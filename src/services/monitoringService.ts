@@ -4,22 +4,35 @@
  * This module provides functionality for system monitoring and metrics.
  */
 
+interface PerformanceMetrics {
+  cpu: number;
+  memory: number;
+  responseTime: number;
+  requestCount: number;
+  errorRate: number;
+}
+
+interface MetricsHistoryEntry extends PerformanceMetrics {
+  timestamp: string;
+}
+
 // Simple logger functions
-const info = (message) => console.info(message);
-const warn = (message) => console.warn(message);
-const error = (message, err) => console.error(message, err);
+const info = (message: unknown, ...args: unknown[]): void => console.info(message, ...args);
+const warn = (message: unknown, ...args: unknown[]): void => console.warn(message, ...args);
+const error = (message: unknown, err?: unknown, ...args: unknown[]): void =>
+  console.error(message, err, ...args);
 
 // Mock metrics data
-const metrics = {
+const metrics: PerformanceMetrics = {
   cpu: 0,
   memory: 0,
   responseTime: 0,
   requestCount: 0,
-  errorRate: 0
+  errorRate: 0,
 };
 
 // Mock metrics history
-const metricsHistory = [];
+const metricsHistory: MetricsHistoryEntry[] = [];
 
 // Update metrics periodically
 setInterval(() => {
@@ -54,7 +67,7 @@ setInterval(() => {
  * Get current performance metrics
  * @returns Performance metrics object
  */
-export function getPerformanceMetrics() {
+export function getPerformanceMetrics(): PerformanceMetrics {
   return { ...metrics };
 }
 
@@ -62,7 +75,14 @@ export function getPerformanceMetrics() {
  * Get system metrics
  * @returns System metrics object
  */
-export function getSystemMetrics() {
+export function getSystemMetrics(): {
+  uptime: number;
+  nodeVersion: string;
+  platform: NodeJS.Platform;
+  arch: string;
+  memoryUsage: NodeJS.MemoryUsage;
+  cpuUsage: NodeJS.CpuUsage;
+} {
   return {
     uptime: process.uptime(),
     nodeVersion: process.version,
@@ -77,14 +97,14 @@ export function getSystemMetrics() {
  * Get metrics history
  * @returns Array of metrics history entries
  */
-export function getMetricsHistory() {
+export function getMetricsHistory(): MetricsHistoryEntry[] {
   return [...metricsHistory];
 }
 
 /**
  * Start performance monitoring
  */
-export function startPerformanceMonitoring() {
+export function startPerformanceMonitoring(): void {
   info('Performance monitoring started');
 }
 

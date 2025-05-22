@@ -5,20 +5,21 @@
  * Implements type-safe queue operations using the defined job types.
  */
 
-import { Queue, Worker, QueueScheduler, QueueEvents, Job, JobsOptions, WorkerOptions, QueueSchedulerOptions, QueueEventsOptions } from 'bullmq';
+import {
+  Queue,
+  Worker,
+  QueueScheduler,
+  QueueEvents,
+  Job,
+  WorkerOptions,
+  QueueSchedulerOptions,
+  QueueEventsOptions,
+} from 'bullmq';
 import type { ConnectionOptions } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
+import { info, warn, error } from '../index.js';
 import { isError } from '../index.js';
 import { QUEUE_NAMES } from '../index.js';
-import type {
-  BaseJobData,
-  QueueRegistry,
-  EmailJobData,
-  InsightJobData,
-  WorkflowJobData,
-  ReportJobData,
-  TaskJobData
-} from '../index.js';
+import type { QueueRegistry } from '../index.js';
 import {
   initializeRedis,
   getRedisClient,
@@ -30,10 +31,10 @@ import {
 } from '../index.js';
 
 // Queue instances registry
-const queues: Map<string, Queue> = new Map();
+const queues: Map<string, Queue<QueueRegistry[keyof QueueRegistry]>> = new Map();
 
 // Worker instances registry
-const workers: Map<string, Worker> = new Map();
+const workers: Map<string, Worker<QueueRegistry[keyof QueueRegistry]>> = new Map();
 
 // Scheduler instances registry
 const schedulers: Map<string, QueueScheduler> = new Map();
