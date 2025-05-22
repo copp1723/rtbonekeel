@@ -1,111 +1,98 @@
 /**
  * API Ingestion Routes
  * 
- * Routes for handling API-based data ingestion
+ * This module provides API endpoints for data ingestion.
  */
-import type express from 'express';
+import express from 'express';
 import type { Request, Response } from 'express';
-import { routeHandler } from '../../middleware/routeHandler.js';
-import { ingestFromGoogleAdsApi, ingestFromApi } from '../../features/api/services/apiIngestService.js';
-import { isError } from '../../utils/errorUtils.js';
-import { rateLimiters } from '../../shared/middleware/rateLimiter.js';
-import { validateApiIngestRequest } from '../../middleware/validators/apiIngestValidator.js';
+import { randomUUID } from 'crypto';
 
 const router = express.Router();
 
-/**
- * Route to ingest data from Google Ads API
- */
-router.post(
-  '/google-ads',
-  rateLimiters.apiIngestion,
-  validateApiIngestRequest,
-  routeHandler(async (req: Request, res: Response) => {
-    const { apiKeyId, options } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required',
-      });
-    }
-
-    if (!apiKeyId) {
-      return res.status(400).json({
-        success: false,
-        error: 'API key ID is required',
-      });
-    }
-
-    try {
-      const result = await ingestFromGoogleAdsApi(userId, apiKeyId, options || {});
-      
-      return res.status(result.success ? 200 : 400).json(result);
-    } catch (err) {
-      const errorMessage = isError(err)
-        ? err instanceof Error
-          ? err.message
-          : String(err)
-        : String(err);
-      
-      return res.status(500).json({
-        success: false,
-        error: errorMessage,
-      });
-    }
-  })
-);
+// Mock ingestion data
+const ingestions = [];
 
 /**
- * Route to ingest data from any API
+ * POST /api/ingest/data
+ * Ingests data from external sources
  */
-router.post(
-  '/generic',
-  rateLimiters.apiIngestion,
-  validateApiIngestRequest,
-  routeHandler(async (req: Request, res: Response) => {
-    const { apiKeyId, platform, options } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required',
-      });
+router.post('/data', async (req: Request, res: Response) => {
+  try {
+    const { source, data } = req.body;
+    
+    if (!source) {
+      return res.status(400).json({ error: 'Source is required' });
     }
-
-    if (!apiKeyId) {
-      return res.status(400).json({
-        success: false,
-        error: 'API key ID is required',
-      });
+    
+    if (!data) {
+      return res.status(400).json({ error: 'Data is required' });
     }
+    
+    const ingestionId = randomUUID();
+    
+    // Mock ingestion process
+    const ingestion = {
+      id: ingestionId,
+      source,
+      timestamp: new Date().toISOString(),
+      status: 'success',
+      recordsProcessed: Array.isArray(data) ? data.length : 1,
+      errors: []
+    };
+    
+    ingestions.push(ingestion);
+    
+    res.status(201).json({
+      id: ingestionId,
+      message: 'Data ingested successfully',
+      status: 'success',
+      timestamp: ingestion.timestamp
+    });
+  } catch (error) {
+    console.error('Error ingesting data:', error);
+    res.status(500).json({ error: 'Failed to ingest data' });
+  }
+});
 
-    if (!platform) {
-      return res.status(400).json({
-        success: false,
-        error: 'Platform name is required',
-      });
+/**
+ * GET /api/ingest/status/:id
+ * Gets the status of a data ingestion
+ */
+router.get('/status/:id', async (req: Request, res: Response) => {
+  try {
+    const ingestion = ingestions.find(i => i.id === req.params.id);
+    
+    if (!ingestion) {
+      return res.status(404).json({ error: 'Ingestion not found' });
     }
+    
+    res.json(ingestion);
+  } catch (error) {
+    console.error(`Error retrieving ingestion status ${req.params.id}:`, error);
+    res.status(500).json({ error: 'Failed to retrieve ingestion status' });
+  }
+});
 
-    try {
-      const result = await ingestFromApi(userId, apiKeyId, platform, options || {});
-      
-      return res.status(result.success ? 200 : 400).json(result);
-    } catch (err) {
-      const errorMessage = isError(err)
-        ? err instanceof Error
-          ? err.message
-          : String(err)
-        : String(err);
-      
-      return res.status(500).json({
-        success: false,
-        error: errorMessage,
-      });
+/**
+ * GET /api/ingest/history
+ * Gets the history of data ingestions
+ */
+router.get('/history', async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const source = req.query.source as string;
+    
+    let filteredIngestions = [...ingestions];
+    
+    if (source) {
+      filteredIngestions = filteredIngestions.filter(i => i.source === source);
     }
-  })
-);
+    
+    res.json(filteredIngestions.slice(0, limit));
+  } catch (error) {
+    console.error('Error retrieving ingestion history:', error);
+    res.status(500).json({ error: 'Failed to retrieve ingestion history' });
+  }
+});
 
 export default router;

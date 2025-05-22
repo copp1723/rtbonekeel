@@ -1,3 +1,6 @@
+// This file is needed for ESM compatibility
+// It exports common utilities used throughout the application
+
 // Logger exports
 export const debug = console.debug;
 export const info = console.info;
@@ -64,3 +67,6 @@ export const logSecurityEvent = () => {};
 
 // Migration
 export const runMigrations = async () => true;
+
+// Task logs
+export const getTaskLogs = async () => [];

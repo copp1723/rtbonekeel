@@ -3,19 +3,22 @@
  *
  * This module provides functionality to schedule periodic health checks.
  */
-import { debug, info, warn, error } from '../index.js';
-import { runAllHealthChecks } from './healthService.js';
 import cron from 'node-cron';
 
+// Simple logger functions
+const info = (message) => console.info(message);
+const warn = (message) => console.warn(message);
+const error = (message, err) => console.error(message, err);
+
 // Store active schedulers
-const activeSchedulers: Record<string, cron.ScheduledTask> = {};
+const activeSchedulers = {};
 
 /**
  * Start running all health checks on a schedule
  * @param cronExpression Cron expression for scheduling (default: every 5 minutes)
  * @returns true if scheduler was started successfully, false otherwise
  */
-export function startAllHealthChecks(cronExpression: string = '*/5 * * * *'): boolean {
+export async function startAllHealthChecks(cronExpression = '*/5 * * * *') {
   try {
     // Validate cron expression
     if (!cron.validate(cronExpression)) {
@@ -28,6 +31,10 @@ export function startAllHealthChecks(cronExpression: string = '*/5 * * * *'): bo
       activeSchedulers['all'].stop();
       delete activeSchedulers['all'];
     }
+
+    // Import runAllHealthChecks function
+    const healthService = await import('./healthService');
+    const { runAllHealthChecks } = healthService;
 
     // Schedule health checks
     const task = cron.schedule(cronExpression, async () => {
@@ -57,7 +64,7 @@ export function startAllHealthChecks(cronExpression: string = '*/5 * * * *'): bo
  * @param cronExpression Cron expression for scheduling
  * @returns true if scheduler was started successfully, false otherwise
  */
-export function startHealthCheck(checkName: string, cronExpression: string): boolean {
+export async function startHealthCheck(checkName, cronExpression) {
   try {
     // Validate cron expression
     if (!cron.validate(cronExpression)) {
@@ -72,7 +79,8 @@ export function startHealthCheck(checkName: string, cronExpression: string): boo
     }
 
     // Import runHealthCheck function
-    const { runHealthCheck } = require('./healthService.js');
+    const healthService = await import('./healthService');
+    const { runHealthCheck } = healthService;
 
     // Schedule health check
     const task = cron.schedule(cronExpression, async () => {
@@ -99,7 +107,7 @@ export function startHealthCheck(checkName: string, cronExpression: string): boo
 /**
  * Stop all health check schedulers
  */
-export function stopAllHealthChecks(): void {
+export function stopAllHealthChecks() {
   Object.entries(activeSchedulers).forEach(([name, scheduler]) => {
     scheduler.stop();
     delete activeSchedulers[name];
@@ -112,7 +120,7 @@ export function stopAllHealthChecks(): void {
  * @param checkName Name of the health check scheduler to stop
  * @returns true if scheduler was stopped, false if it wasn't running
  */
-export function stopHealthCheck(checkName: string): boolean {
+export function stopHealthCheck(checkName) {
   const scheduler = activeSchedulers[checkName];
   if (scheduler) {
     scheduler.stop();
@@ -127,11 +135,11 @@ export function stopHealthCheck(checkName: string): boolean {
  * Get all active health check schedulers
  * @returns Object with scheduler names as keys and cron expressions as values
  */
-export function getActiveSchedulers(): Record<string, string> {
+export function getActiveSchedulers() {
   return Object.entries(activeSchedulers).reduce((acc, [name, scheduler]) => {
     acc[name] = scheduler.getExpression();
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 }
 
 export default {

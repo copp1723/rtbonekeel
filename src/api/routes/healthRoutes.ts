@@ -4,14 +4,14 @@
  * This module provides API endpoints for health monitoring and status checks.
  */
 import express from 'express';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { 
   runAllHealthChecks, 
   runHealthCheck, 
   getLatestHealthChecks, 
   getHealthLogs, 
   getHealthSummary 
-} from '../../services/healthService.js';
+} from '../../services/healthService';
 
 const router = express.Router();
 

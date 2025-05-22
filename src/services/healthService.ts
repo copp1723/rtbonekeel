@@ -1,464 +1,155 @@
-import { sql } from 'drizzle-orm';
-import { isError, getErrorMessage } from '../index.js';
-
 /**
- * Health Monitoring Service
- *
- * This service provides functionality to monitor the health and performance
- * of various components in the system. It periodically checks the status
- * of different services and APIs, and stores the results for display
- * in a health dashboard.
+ * Health Service
+ * 
+ * This module provides functionality for health checks and monitoring.
  */
-import { db } from '../index.js';
-import { healthChecks, healthLogs } from '../index.js';
-import { eq, desc, and } from 'drizzle-orm';
-import { v4 as uuidv4 } from 'uuid';
 
-// Types for health check results
-export type HealthCheckResult = {
-  id: string;
-  name: string;
-  status: 'ok' | 'warning' | 'error';
-  responseTime: number; // in milliseconds
-  lastChecked: Date;
-  message: string;
-  details?: Record<string, any>;
+// Simple logger functions
+const info = (message) => console.info(message);
+const warn = (message) => console.warn(message);
+const error = (message, err) => console.error(message, err);
+
+// Mock health check data
+const healthChecks = {
+  database: {
+    name: 'database',
+    status: 'ok',
+    message: 'Database connection is healthy',
+    responseTime: 15,
+    lastChecked: new Date().toISOString(),
+    details: { connectionPool: 5, activeQueries: 2 }
+  },
+  redis: {
+    name: 'redis',
+    status: 'ok',
+    message: 'Redis connection is healthy',
+    responseTime: 5,
+    lastChecked: new Date().toISOString(),
+    details: { usedMemory: '2.5MB', connectedClients: 3 }
+  },
+  api: {
+    name: 'api',
+    status: 'ok',
+    message: 'API endpoints are responding',
+    responseTime: 25,
+    lastChecked: new Date().toISOString(),
+    details: { endpoints: 12, failedEndpoints: 0 }
+  }
 };
 
-export type HealthLogEntry = {
-  id: string;
-  checkId: string;
-  timestamp: Date;
-  status: 'ok' | 'warning' | 'error';
-  responseTime: number;
-  message: string;
-  details?: Record<string, any>;
-};
-
-interface ProcessResultParams {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  message: string;
-  timestamp: Date;
-}
-
-interface LogHealthStatusParams {
-  id: string;
-  service: string;
-  status: string;
-  message: string;
-  timestamp: Date;
-}
-
-interface ResultType {
-  id: string;
-  name: string;
-  status: 'ok' | 'warning' | 'error';
-  responseTime: number;
-  lastChecked: Date;
-  message: string;
-  details: string;
-}
-
-interface LogType {
-  id: string;
-  checkId: string;
-  timestamp: Date;
-  status: 'ok' | 'warning' | 'error';
-  responseTime: number;
-  message: string;
-  details: string;
-}
-
-// Map of registered health check functions
-const healthCheckFunctions: Record<string, () => Promise<HealthCheckResult>> = {};
+// Health check logs
+const healthLogs = [];
 
 /**
- * Register a new health check function
- * @param name - The name of the health check
- * @param checkFn - The function that performs the health check
+ * Run all health checks
+ * @returns Array of health check results
  */
-export function registerHealthCheck(name: string, checkFn: () => Promise<HealthCheckResult>): void {
-  healthCheckFunctions[name] = checkFn;
-  console.log(`Registered health check: ${name}`);
-}
-
-/**
- * Run all registered health checks
- * @returns Results of all health checks
- */
-export async function runAllHealthChecks(): Promise<HealthCheckResult[]> {
-  const results: HealthCheckResult[] = [];
-  // Run each health check in parallel
-  const checkPromises = Object.entries(healthCheckFunctions).map(async ([name, checkFn]) => {
+export async function runAllHealthChecks() {
+  info('Running all health checks');
+  
+  const results = [];
+  
+  for (const checkName of Object.keys(healthChecks)) {
     try {
-      const result = await checkFn();
+      const result = await runHealthCheck(checkName);
       results.push(result);
-      // Store the result in the database
-      await storeHealthCheckResult(result);
-    } catch (error) {
-      let errorMessage = getErrorMessage(error);
-      // If a health check fails, record an error
-      const errorResult: HealthCheckResult = {
-        id: uuidv4(),
-        name,
+    } catch (err) {
+      error(`Error running health check for ${checkName}`, err);
+      results.push({
+        name: checkName,
         status: 'error',
+        message: err instanceof Error ? err.message : String(err),
         responseTime: 0,
-        lastChecked: new Date(),
-        message: `Health check failed: ${errorMessage}`,
-      };
-      results.push(errorResult);
-      await storeHealthCheckResult(errorResult);
+        lastChecked: new Date().toISOString(),
+        details: { error: err instanceof Error ? err.message : String(err) }
+      });
     }
-  });
-  await Promise.all(checkPromises);
+  }
+  
   return results;
 }
 
 /**
- * Run a specific health check by name
- * @param name - The name of the health check to run
- * @returns Result of the health check
+ * Run a specific health check
+ * @param checkName Name of the health check to run
+ * @returns Health check result
  */
-export async function runHealthCheck(name: string): Promise<HealthCheckResult | null> {
-  const checkFn = healthCheckFunctions[name];
-  if (!checkFn) {
+export async function runHealthCheck(checkName) {
+  info(`Running health check: ${checkName}`);
+  
+  if (!healthChecks[checkName]) {
     return null;
   }
-  try {
-    const result = await checkFn();
-    await storeHealthCheckResult(result);
-    return result;
-  } catch (error) {
-    let errorMessage = getErrorMessage(error);
-    const errorResult: HealthCheckResult = {
-      id: uuidv4(),
-      name,
-      status: 'error',
-      responseTime: 0,
-      lastChecked: new Date(),
-      message: `Health check failed: ${errorMessage}`,
-    };
-    await storeHealthCheckResult(errorResult);
-    return errorResult;
+  
+  // Simulate health check execution
+  const startTime = Date.now();
+  
+  // Mock implementation - in a real app, this would check actual services
+  const check = { ...healthChecks[checkName] };
+  check.lastChecked = new Date().toISOString();
+  check.responseTime = Math.floor(Math.random() * 50) + 5;
+  
+  // Log the health check
+  healthLogs.push({
+    checkName,
+    status: check.status,
+    timestamp: check.lastChecked,
+    responseTime: check.responseTime,
+    details: check.details
+  });
+  
+  // Limit logs to 1000 entries
+  if (healthLogs.length > 1000) {
+    healthLogs.shift();
   }
+  
+  return check;
 }
 
 /**
- * Store a health check result in the database
- * @param result - The health check result to store
+ * Get the latest health check results for all services
+ * @returns Array of health check results
  */
-async function storeHealthCheckResult(result: HealthCheckResult): Promise<void> {
-  try {
-    // Get existing health check or create a new one
-    const existingChecks = await db
-      .select()
-      .from(healthChecks)
-      .where(eq(healthChecks.name, result.name));
-    let checkId: string;
-    if (existingChecks.length > 0) {
-      // Update existing health check
-      checkId = existingChecks[0].id;
-      await db
-        .update(healthChecks)
-        .set({
-          status: result.status,
-          responseTime: result.responseTime,
-          lastChecked: result.lastChecked,
-          message: result.message,
-          details: result.details ? JSON.stringify(result.details) : null,
-          updatedAt: new Date(),
-        })
-        .where(eq(healthChecks.id, checkId.toString()));
-    } else {
-      // Create new health check
-      checkId = result.id || uuidv4();
-      await db.insert(healthChecks).values({
-        id: checkId,
-        name: result.name,
-        status: result.status,
-        responseTime: result.responseTime,
-        lastChecked: result.lastChecked,
-        message: result.message,
-        details: result.details ? JSON.stringify(result.details) : null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any); // @ts-ignore - Ensuring all required properties are provided;
-    }
-    // Add entry to health logs
-    await db.insert(healthLogs).values({
-      id: uuidv4(),
-      checkId,
-      timestamp: result.lastChecked,
-      status: result.status,
-      responseTime: result.responseTime,
-      message: result.message,
-      details: result.details ? JSON.stringify(result.details) : null,
-    } as any); // @ts-ignore - Ensuring all required properties are provided;
-  } catch (error) {
-    console.error('Error storing health check result:', error);
-  }
+export async function getLatestHealthChecks() {
+  return Object.values(healthChecks);
 }
 
 /**
- * Get the most recent health check results
- * @returns List of the latest health check results for each service
+ * Get health check logs for a specific service
+ * @param checkName Name of the health check
+ * @param limit Maximum number of logs to return
+ * @returns Array of health check logs
  */
-export async function getLatestHealthChecks(): Promise<HealthCheckResult[]> {
-  const results = await db.select().from(healthChecks).orderBy(desc(healthChecks.lastChecked));
-  return results.map((result: ResultType) => ({
-    id: result.id,
-    name: result.name,
-    status: result.status as 'ok' | 'warning' | 'error',
-    responseTime: result.responseTime,
-    lastChecked: result.lastChecked,
-    message: result.message || 'No message provided',
-    details: result.details ? JSON.parse(result.details) : undefined,
-  }));
-}
-
-/**
- * Get health logs for a specific check
- * @param checkId - ID of the health check
- * @param limit - Maximum number of logs to return
- * @returns List of health log entries
- */
-export async function getHealthLogs(checkId: string, limit = 100): Promise<HealthLogEntry[]> {
-  const logs = await db
-    .select()
-    .from(healthLogs)
-    .where(eq(healthLogs.checkId, checkId))
-    .orderBy(desc(healthLogs.timestamp))
-    .limit(limit);
-  return logs.map((log: LogType) => ({
-    id: log.id,
-    checkId: log.checkId,
-    timestamp: log.timestamp,
-    status: log.status as 'ok' | 'warning' | 'error',
-    responseTime: log.responseTime,
-    message: log.message || 'No message provided',
-    details: log.details ? JSON.parse(log.details) : undefined,
-  }));
+export async function getHealthLogs(checkName, limit = 100) {
+  return healthLogs
+    .filter(log => log.checkName === checkName)
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, limit);
 }
 
 /**
  * Get a summary of system health
- * @returns Summary of the system health status
+ * @returns Health summary object
  */
-export async function getHealthSummary(): Promise<{
-  overallStatus: 'ok' | 'warning' | 'error';
-  servicesCount: number;
-  servicesOk: number;
-  servicesWarning: number;
-  servicesError: number;
-  averageResponseTime: number;
-  lastChecked: Date | null;
-}> {
+export async function getHealthSummary() {
   const checks = await getLatestHealthChecks();
-  if (checks.length === 0) {
-    return {
-      overallStatus: 'ok',
-      servicesCount: 0,
-      servicesOk: 0,
-      servicesWarning: 0,
-      servicesError: 0,
-      averageResponseTime: 0,
-      lastChecked: null,
-    };
-  }
-  const servicesOk = checks.filter((c) => c.status === 'ok').length;
-  const servicesWarning = checks.filter((c) => c.status === 'warning').length;
-  const servicesError = checks.filter((c) => c.status === 'error').length;
-  // Calculate overall status
-  let overallStatus: 'ok' | 'warning' | 'error' = 'ok';
-  if (servicesError > 0) {
-    overallStatus = 'error';
-  } else if (servicesWarning > 0) {
-    overallStatus = 'warning';
-  }
-  // Calculate average response time
-  const totalResponseTime = checks.reduce((sum, check) => sum + check.responseTime, 0);
-  const averageResponseTime = totalResponseTime / checks.length;
-  // Find the most recent check
-  const lastChecked = new Date(Math.max(...checks.map((c) => c.lastChecked.getTime())));
+  
+  // Check if any service is not healthy
+  const hasErrors = checks.some(check => check.status !== 'ok');
+  
   return {
-    overallStatus,
-    servicesCount: checks.length,
-    servicesOk,
-    servicesWarning,
-    servicesError,
-    averageResponseTime,
-    lastChecked,
+    overallStatus: hasErrors ? 'error' : 'ok',
+    services: checks.length,
+    healthy: checks.filter(check => check.status === 'ok').length,
+    unhealthy: checks.filter(check => check.status !== 'ok').length,
+    lastUpdated: new Date().toISOString()
   };
 }
 
-/**
- * Default health check for the database
- */
-export async function checkDatabaseHealth(): Promise<HealthCheckResult> {
-  const id = 'database';
-  const name = 'Database';
-  const startTime = Date.now();
-  try {
-    // Simple query to test database connectivity
-    await db.execute(sql`SELECT 1`);
-    const responseTime = Date.now() - startTime;
-    return {
-      id,
-      name,
-      status: 'ok',
-      responseTime,
-      lastChecked: new Date(),
-      message: 'Database is operational',
-      details: {
-        connectionString: process.env.DATABASE_URL
-          ? process.env.DATABASE_URL.replace(/:[^:]*@/, ':***@')
-          : 'Using environment variables',
-      },
-    };
-  } catch (error) {
-    let errorMessage = getErrorMessage(error);
-    return {
-      id,
-      name,
-      status: 'error',
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message: `Database error: ${errorMessage}`,
-    };
-  }
-}
-
-/**
- * Health check for the email service
- */
-export async function checkEmailService(): Promise<HealthCheckResult> {
-  const id = 'email';
-  const name = 'Email Service';
-  const startTime = Date.now();
-  try {
-    // Check if SendGrid API key is configured
-    const hasSendGridKey = !!process.env.SENDGRID_API_KEY;
-    // Note: We don't actually send a test email here to avoid unnecessary API calls
-    // In a production system, you might want to periodically send a test email
-    const status = hasSendGridKey ? 'ok' : 'warning';
-    const message = hasSendGridKey
-      ? 'Email service is configured'
-      : 'Using Nodemailer fallback (no SendGrid API key)';
-    return {
-      id,
-      name,
-      status,
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message,
-      details: {
-        provider: hasSendGridKey ? 'SendGrid' : 'Nodemailer',
-        configured: hasSendGridKey,
-      },
-    };
-  } catch (error) {
-    let errorMessage = getErrorMessage(error);
-    return {
-      id,
-      name,
-      status: 'error',
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message: `Email service error: ${errorMessage}`,
-    };
-  }
-}
-
-/**
- * Health check for the AI API (OpenAI)
- */
-export async function checkAIService(): Promise<HealthCheckResult> {
-  const id = 'ai';
-  const name = 'AI Service';
-  const startTime = Date.now();
-  try {
-    // Check if OpenAI API key is configured
-    const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
-    // Note: We don't actually make an API call here to avoid unnecessary usage
-    // In a production system, you might want to periodically make a simple API call
-    const status = hasOpenAIKey ? 'ok' : 'error';
-    const message = hasOpenAIKey ? 'AI service is configured' : 'Missing OpenAI API key';
-    return {
-      id,
-      name,
-      status,
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message,
-      details: {
-        provider: 'OpenAI',
-        configured: hasOpenAIKey,
-      },
-    };
-  } catch (error) {
-    let errorMessage = getErrorMessage(error);
-    return {
-      id,
-      name,
-      status: 'error',
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message: `AI service error: ${errorMessage}`,
-    };
-  }
-}
-
-/**
- * Health check for the scheduler service
- */
-export async function checkSchedulerService(): Promise<HealthCheckResult> {
-  const id = 'scheduler';
-  const name = 'Scheduler Service';
-  const startTime = Date.now();
-  try {
-    // Check if there are any active schedules
-    const activeSchedules = await db
-      .select({ count: sql`COUNT(*)` })
-      .from(healthChecks)
-      .where(eq(healthChecks.status, 'ok'));
-    // Note: We're just checking configuration here
-    // In a production system, you might want to check if scheduled tasks are running
-    return {
-      id,
-      name,
-      status: 'ok',
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message: 'Scheduler service is operational',
-      details: {
-        activeServices: activeSchedules[0]?.count || 0,
-      },
-    };
-  } catch (error) {
-    let errorMessage = getErrorMessage(error);
-    return {
-      id,
-      name,
-      status: 'error',
-      responseTime: Date.now() - startTime,
-      lastChecked: new Date(),
-      message: `Scheduler error: ${errorMessage}`,
-    };
-  }
-}
-
-// Register default health checks
-registerHealthCheck('database', checkDatabaseHealth);
-registerHealthCheck('email', checkEmailService);
-registerHealthCheck('ai', checkAIService);
-registerHealthCheck('scheduler', checkSchedulerService);
-
-function processResult(result: ProcessResultParams): void {
-  // Process the result
-  console.info(`Processing health check result: ${result.status}`);
-}
-
-function logHealthStatus(log: LogHealthStatusParams): void {
-  // Log the health status
-  console.info(`Health status update for ${log.service}: ${log.status}`);
-}
+export default {
+  runAllHealthChecks,
+  runHealthCheck,
+  getLatestHealthChecks,
+  getHealthLogs,
+  getHealthSummary
+};

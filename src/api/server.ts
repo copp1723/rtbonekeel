@@ -1,30 +1,24 @@
 // src/api/server.ts
-import type express from 'express';
-import type { Request, Response } from 'express';
-import type crypto from 'crypto';
-import type apiIngestRoutes from './routes/apiIngestRoutes.js';
-
-// Import types from our global declarations
-import '../types/index.d.ts';
+import { randomUUID } from 'crypto';
 
 // Mock implementations for development
 const logger = {
-  info: (message: any, ...args: any[]) => console.info(message, ...args),
-  warn: (message: any, ...args: any[]) => console.warn(message, ...args),
-  error: (message: any, ...args: any[]) => console.error(message, ...args),
+  info: (message, ...args) => console.info(message, ...args),
+  warn: (message, ...args) => console.warn(message, ...args),
+  error: (message, ...args) => console.error(message, ...args),
 };
 
-const info = (message: string) => console.info(message);
-const warn = (message: string) => console.warn(message);
-const error = (message: string) => console.error(message);
-const getErrorMessage = (err: unknown): string => err instanceof Error ? err.message : String(err);
+const info = (message) => console.info(message);
+const warn = (message) => console.warn(message);
+const error = (message) => console.error(message);
+const getErrorMessage = (err) => err instanceof Error ? err.message : String(err);
 
 // Mock configuration
 const config = {
   env: process.env.NODE_ENV || 'development',
   server: {
     host: process.env.HOST || 'localhost',
-    port: parseInt(process.env.PORT || '3000', 10),
+    port: parseInt(process.env.PORT || '9002', 10),
   },
   apiKeys: {
     sendgrid: process.env.SENDGRID_API_KEY,
@@ -35,13 +29,13 @@ const config = {
 const db = { insert: () => ({ values: () => Promise.resolve() }) };
 const taskLogs = {};
 const rateLimiters = { 
-  api: (_req: any, _res: any, next: Function) => next(),
-  healthCheck: (_req: any, _res: any, next: Function) => next(),
-  taskSubmission: (_req: any, _res: any, next: Function) => next()
+  api: (_req, _res, next) => next(),
+  healthCheck: (_req, _res, next) => next(),
+  taskSubmission: (_req, _res, next) => next()
 };
-const performanceMonitoring = (_req: any, _res: any, next: Function) => next();
-const setDbContext = (_req: any, _res: any, next: Function) => next();
-const errorHandlerMiddleware = (err: Error, _req: any, res: any, _next: any) => {
+const performanceMonitoring = (_req, _res, next) => next();
+const setDbContext = (_req, _res, next) => next();
+const errorHandlerMiddleware = (err: any, _req: any, res: any, _next: any) => {
   console.error(err);
   res.status(500).json({ error: err.message });
 };
@@ -54,10 +48,10 @@ const startPerformanceMonitoring = () => {};
 
 // Mock task parser
 class TaskParser {
-  async parseUserRequest(task: string) {
+  async parseUserRequest(task) {
     return {
       task: {
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         type: 'generic',
         parameters: {},
         status: 'pending'
@@ -69,7 +63,7 @@ class TaskParser {
 // Mock service objects
 const monitoringService = {
   initialize: async () => ({ sentryInitialized: false, datadogInitialized: false }),
-  trackError: (_err: any, _context?: any, _critical?: boolean) => {},
+  trackError: (_err, _context, _critical) => {},
   shutdown: async () => {}
 };
 
@@ -78,39 +72,30 @@ const redisService = {
   close: async () => {}
 };
 
-// Mock route handlers
-const routeHandler = (fn: Function) => {
-  return async (req: Request, res: Response, next: Function) => {
-    try {
-      await fn(req, res);
-    } catch (err) {
-      next(err);
-    }
-  };
-};
-
 // Mock service initializers
-const registerAuthRoutes = async (_app: any) => {};
+const registerAuthRoutes = async (_app) => {};
 const initializeJobQueue = async () => {};
 const initializeScheduler = async () => {};
 const initializeMailer = () => {};
 const migrateDatabase = async () => {};
-const enqueueJob = async (_taskId: string, _priority?: number) => crypto.randomUUID();
+const enqueueJob = async (_taskId, _priority) => randomUUID();
 
-// Import health and monitoring routes
-import healthRoutes from './routes/healthRoutes.js';
-import monitoringRoutes from './routes/monitoringRoutes.js';
-
-// Import health check scheduler
-import { startAllHealthChecks } from '../services/healthCheckScheduler.js';
+// Health and monitoring routes will be imported dynamically
+let healthRoutes;
+let monitoringRoutes;
+let startAllHealthChecks;
 
 /**
  * Register monitoring routes
  * @param app Express application
  */
-const registerMonitoringRoutes = (app: any) => {
-  app.use('/api/health', healthRoutes);
-  app.use('/api/monitoring', monitoringRoutes);
+const registerMonitoringRoutes = (app) => {
+  if (healthRoutes && monitoringRoutes) {
+    app.use('/api/health', healthRoutes);
+    app.use('/api/monitoring', monitoringRoutes);
+  } else {
+    warn('Health or monitoring routes not loaded properly');
+  }
 };
 
 // Log startup information
@@ -125,19 +110,30 @@ logger.info(
 
 const taskParser = new TaskParser();
 
-async function startServer(): Promise<import('http').Server> {
+async function startServer() {
   info('[1/5] Loading configuration...');
   // config is already loaded by import, no need to call loadConfig
 
   info('[2/5] Initializing Express app...');
-  const app = express();
+  const express = await import('express');
+  const app = express.default();
+  
+  // Dynamically import health and monitoring routes
+  const healthRoutesModule = await import('./routes/healthRoutes');
+  healthRoutes = healthRoutesModule.default;
+  
+  const monitoringRoutesModule = await import('./routes/monitoringRoutes');
+  monitoringRoutes = monitoringRoutesModule.default;
+  
+  // Import health check scheduler
+  const healthCheckSchedulerModule = await import('../services/healthCheckScheduler');
+  startAllHealthChecks = healthCheckSchedulerModule.startAllHealthChecks;
+  
   app.use(express.json());
   // Serve static files from the public directory
   app.use(express.static('public'));
   // Apply global rate limiter to all routes
   app.use(rateLimiters.api);
-  // Set up Swagger UI for API documentation
-  // setupSwagger(app); // Disabled: No such file exists
   // Apply performance monitoring middleware
   app.use(performanceMonitoring);
 
@@ -180,8 +176,12 @@ async function startServer(): Promise<import('http').Server> {
       info('Task scheduler initialized');
 
       // Start health check schedulers
-      startAllHealthChecks();
-      info('Health check schedulers started');
+      try {
+        await startAllHealthChecks();
+        info('Health check schedulers started');
+      } catch (err) {
+        warn('Failed to start health check schedulers:', err);
+      }
 
       // Initialize email service if SendGrid API key is available
       if (config.apiKeys.sendgrid) {
@@ -193,6 +193,11 @@ async function startServer(): Promise<import('http').Server> {
       // Register authentication and API routes
       await registerAuthRoutes(app);
       info('Authentication routes registered successfully');
+
+      // Import job queue and database dependencies
+      const { default: jobsRouter } = await import('./routes/jobsRouter');
+      const { default: workflowsRouter } = await import('./routes/workflowsRouter');
+      const { default: apiIngestRoutes } = await import('./routes/apiIngestRoutes');
 
       // Register job management routes
       app.use('/api/jobs', jobsRouter);
@@ -217,78 +222,105 @@ async function startServer(): Promise<import('http').Server> {
 
   // Set up routes
   const router = express.Router();
+  
   // Health check
   router.get(
     '/health',
     rateLimiters.healthCheck,
-    routeHandler(async (_req: Request, res: Response) => {
-      // Import health service functions
-      const { getHealthSummary, getLatestHealthChecks } = require('../services/healthService.js');
-      const summary = await getHealthSummary();
-      const checks = await getLatestHealthChecks();
+    async (_req: any, res: any) => {
+      try {
+        // Import health service functions
+        const healthServiceModule = await import('../services/healthService');
+        const { getHealthSummary, getLatestHealthChecks } = healthServiceModule;
+        const summary = await getHealthSummary();
+        const checks = await getLatestHealthChecks();
 
-      res.status(summary.overallStatus === 'ok' ? 200 : 503).json({
-        overallStatus: summary.overallStatus,
-        version: '1.0.0',
-        timestamp: new Date().toISOString(),
-        checks: checks.map(check => ({
-          name: check.name,
-          status: check.status,
-          message: check.message,
-          responseTime: check.responseTime,
-          lastChecked: check.lastChecked,
-          details: check.details,
-        })),
-      });
-    })
+        res.status(summary.overallStatus === 'ok' ? 200 : 503).json({
+          overallStatus: summary.overallStatus,
+          version: '1.0.0',
+          timestamp: new Date().toISOString(),
+          checks: checks.map(check => ({
+            name: check.name,
+            status: check.status,
+            message: check.message,
+            responseTime: check.responseTime,
+            lastChecked: check.lastChecked,
+            details: check.details,
+          })),
+        });
+      } catch (err) {
+        console.error('Error in health check endpoint:', err);
+        res.status(500).json({
+          overallStatus: 'error',
+          message: 'Failed to retrieve health status',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
   );
+  
   // Test-parser endpoint
   router.post(
     '/test-parser',
-    routeHandler(async (req: Request, res: Response) => {
-      const task = req.body.task || '';
-      // Task parsing API key removed; EKO integration is no longer used
-      const result = await taskParser.parseUserRequest(task);
-      res.json(result);
-    })
+    async (req: any, res: any) => {
+      try {
+        const task = req.body.task || '';
+        // Task parsing API key removed; EKO integration is no longer used
+        const result = await taskParser.parseUserRequest(task);
+        res.json(result);
+      } catch (err) {
+        res.status(500).json({ error: getErrorMessage(err) });
+      }
+    }
   );
+  
   // Tasks listing endpoint
   router.get(
     '/tasks',
-    routeHandler(async (_req: Request, res: Response) => {
-      const tasks = await getTaskLogs('all');
-      res.json(tasks);
-    })
+    async (_req: any, res: any) => {
+      // Mock implementation
+      res.json([]);
+    }
   );
 
   // Performance metrics endpoint
   router.get(
     '/performance',
-    routeHandler(async (_req: Request, res: Response) => {
-      // Use statically imported monitors
-      const performanceMetrics = getPerformanceMetrics();
-      const systemMetrics = getSystemMetrics();
-      const metricsHistory = getMetricsHistory();
+    async (_req: any, res: any) => {
+      try {
+        // Dynamically import monitoring service
+        const monitoringServiceModule = await import('../services/monitoringService');
+        const { getPerformanceMetrics, getSystemMetrics, getMetricsHistory } = monitoringServiceModule;
+        
+        const performanceMetrics = getPerformanceMetrics();
+        const systemMetrics = getSystemMetrics();
+        const metricsHistory = getMetricsHistory();
 
-      res.json({
-        performance: performanceMetrics,
-        system: systemMetrics,
-        history: metricsHistory.slice(-10), // last 10 snapshots
-      });
-    })
+        res.json({
+          performance: performanceMetrics,
+          system: systemMetrics,
+          history: metricsHistory.slice(-10), // last 10 snapshots
+        });
+      } catch (err) {
+        console.error('Error retrieving performance metrics:', err);
+        res.status(500).json({ error: 'Failed to retrieve performance metrics' });
+      }
+    }
   );
+  
   // Register API routes
   app.use('/api', router);
+  
   // Serve the index.html file for the root route
   app.get(
     '/',
-    routeHandler(async (_req: Request, res: Response) => {
+    async (_req: any, res: any) => {
       res.sendFile('index.html', { root: './public' });
-    })
+    }
   );
-  // Import job queue and database dependencies
+  
   // API endpoint to submit a new task
-  app.post('/api/tasks', rateLimiters.taskSubmission, async (req: Request, res: Response) => {
+  app.post('/api/tasks', rateLimiters.taskSubmission, async (req: any, res: any) => {
     try {
       const { task } = req.body;
       if (!task || typeof task !== 'string') {
@@ -297,11 +329,11 @@ async function startServer(): Promise<import('http').Server> {
       // Parse the task to determine its type and parameters
       const { task: parsedTask } = await taskParser.parseUserRequest(task);
       // Generate task ID
-      const taskId = parsedTask.id || crypto.randomUUID();
+      const taskId = parsedTask.id || randomUUID();
       // Create the task object and insert into database
       await db.insert(taskLogs).values({
         id: taskId,
-        userId: (req as any).user?.claims?.sub,
+        userId: req.user?.claims?.sub,
         taskType: parsedTask.type,
         taskText: task,
         taskData: parsedTask.parameters ?? {},
@@ -324,8 +356,9 @@ async function startServer(): Promise<import('http').Server> {
       });
     }
   });
+  
   // API endpoint for direct task execution
-  app.post('/submit-task', rateLimiters.taskSubmission, async (req: Request, res: Response) => {
+  app.post('/submit-task', rateLimiters.taskSubmission, async (req: any, res: any) => {
     try {
       const { task } = req.body;
       if (!task || typeof task !== 'string') {
@@ -335,11 +368,11 @@ async function startServer(): Promise<import('http').Server> {
       // Parse the task to determine its type and parameters
       const { task: parsedTask } = await taskParser.parseUserRequest(task);
       // Generate task ID
-      const taskId = parsedTask.id || crypto.randomUUID();
+      const taskId = parsedTask.id || randomUUID();
       // Create the task object and insert into database
       await db.insert(taskLogs).values({
         id: taskId,
-        userId: (req as any).user?.claims?.sub,
+        userId: req.user?.claims?.sub,
         taskType: parsedTask.type,
         taskText: task,
         taskData: parsedTask.parameters ?? {},
@@ -362,12 +395,14 @@ async function startServer(): Promise<import('http').Server> {
       });
     }
   });
+  
   // Add global error handler middleware
   app.use(errorHandlerMiddleware);
 
   info('[5/5] Starting server...');
   const server = app.listen(config.server.port, config.server.host, () => {
     logger.info(`Server running on ${config.server.host}:${config.server.port}`);
+    console.log(`Server is running at http://${config.server.host}:${config.server.port}`);
   }).on('error', (err) => {
     error('Server failed to start:', { error: err });
     process.exit(1);
