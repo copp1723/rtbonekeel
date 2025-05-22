@@ -1,86 +1,60 @@
 #!/bin/bash
+
+# Deploy script for staging environment
+# This script deploys the application to the staging environment
+
+# Exit on error
 set -e
 
-# Deploy Staging Branch Script
-# This script deploys the current staging branch to the staging environment
+echo "Starting deployment to staging environment..."
 
-# Display banner
-echo "====================================================="
-echo "  Row The Boat - Staging Deployment"
-echo "====================================================="
-echo "This script will deploy the current staging branch to the staging environment."
-echo
-
-# Check if we're on the staging branch
-CURRENT_BRANCH=$(git branch --show-current)
-if [ "$CURRENT_BRANCH" != "staging" ]; then
-  echo "Error: You must be on the staging branch to deploy to staging."
-  echo "Current branch: $CURRENT_BRANCH"
-  echo "Please switch to the staging branch and try again."
+# Load environment variables
+if [ -f .env.staging ]; then
+  echo "Loading staging environment variables..."
+  export $(grep -v '^#' .env.staging | xargs)
+else
+  echo "Error: .env.staging file not found!"
   exit 1
 fi
 
-# Check for uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
-  echo "Warning: You have uncommitted changes."
-  echo "These changes will not be included in the deployment."
-  echo "Git status:"
-  git status --short
-  
-  read -p "Do you want to continue anyway? (y/n) " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Deployment aborted."
-    exit 1
-  fi
+# Ensure we're deploying to staging
+if [ "$NODE_ENV" != "staging" ]; then
+  echo "Error: NODE_ENV is not set to 'staging' in .env.staging!"
+  exit 1
 fi
 
-# Ensure we have the latest changes
-echo "Pulling latest changes from origin/staging..."
-git pull origin staging
-
-# Install dependencies
-echo "Installing dependencies..."
-npm ci
-
-# Run type checking
-echo "Running type checking..."
-npm run type-check
-
-# Run tests
-echo "Running tests..."
-npm test
-
 # Build the application
-echo "Building the application..."
+echo "Building application for staging..."
 npm run build
 
 # Run database migrations
 echo "Running database migrations..."
-npm run migrate
+node dist/migrations/migrationRunner.js
 
-# Deploy to staging environment
-echo "Deploying to staging environment..."
-# This would typically involve copying files to a server, restarting services, etc.
-# For now, we'll just simulate this with a message
-echo "Simulating deployment to staging server..."
-echo "Application would be deployed to staging server at this point."
+# Seed the staging database with test data
+echo "Seeding staging database with test data..."
+node dist/scripts/seed-staging-db.js
 
-# Run post-deployment tests
-echo "Running post-deployment tests..."
-echo "Simulating post-deployment tests..."
+# Deploy to staging server
+# This is a placeholder - replace with your actual deployment method
+echo "Deploying to staging server..."
 
-echo
-echo "====================================================="
-echo "  Deployment to staging completed successfully!"
-echo "====================================================="
-echo
-echo "Next steps:"
-echo "1. Verify the application is running correctly in staging"
-echo "2. Run manual tests of key workflows"
-echo "3. Monitor logs for any errors"
-echo "4. If everything looks good, prepare for production deployment"
-echo
+# Verify deployment
+echo "Verifying deployment..."
 
-# Exit successfully
+# Check if the health endpoint is accessible
+echo "Checking health endpoint..."
+curl -s http://localhost:3000/api/health || {
+  echo "Error: Health endpoint is not accessible!"
+  exit 1
+}
+
+# Check if monitoring endpoints are accessible
+echo "Checking monitoring endpoints..."
+curl -s http://localhost:3000/api/monitoring/health/summary || {
+  echo "Error: Monitoring health summary endpoint is not accessible!"
+  exit 1
+}
+
+echo "Deployment to staging completed successfully!"
 exit 0

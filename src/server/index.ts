@@ -1,42 +1,46 @@
 /**
- * Server setup and configuration
+ * Server Entry Point
+ * 
+ * Configures and starts the Express server with all routes and middleware
  */
 import express from 'express';
-import helmet from 'helmet';
-import { errorHandler, notFoundHandler } from '../middleware/errorMiddleware';
-import apiRoutes from './routes';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { setupAuth } from './auth.js';
+import { registerHealthRoutes } from './routes/health.js';
+import { registerMonitoringRoutes } from './routes/monitoring.js';
+import { registerDashboardRoutes } from './routes/dashboards.js';
+import { registerLogRoutes } from './routes/logs.js';
+import { debug, info, error } from '../shared/logger.js';
 
-/**
- * Configure and create Express application
- */
-export function createApp() {
-  const app = express();
-  
-  // Security middleware
-  app.use(helmet());
-  
-  // Parse JSON bodies
-  app.use(express.json());
-  
-  // API routes
-  app.use('/api', apiRoutes);
-  
-  // Handle 404s
-  app.use(notFoundHandler);
-  
-  // Global error handler
-  app.use(errorHandler);
-  
-  return app;
-}
+// Create Express app
+const app = express();
 
-/**
- * Start the server
- */
-export async function startServer(port = process.env.PORT || 3000) {
-  const app = createApp();
-  
-  return app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-}
+// Configure middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+  credentials: true,
+}));
+
+// Set up authentication
+setupAuth(app).catch(err => {
+  error('Failed to set up authentication:', err);
+  process.exit(1);
+});
+
+// Register routes
+registerHealthRoutes(app);
+registerMonitoringRoutes(app);
+registerDashboardRoutes(app);
+registerLogRoutes(app);
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  info(`Server running on port ${PORT}`);
+});
+
+export default app;

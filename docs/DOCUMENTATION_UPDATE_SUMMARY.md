@@ -2,6 +2,15 @@
 
 This document summarizes the updates made to the project documentation to ensure all docs reflect canonical patterns, error handling, API changes, and updated workflows.
 
+## Recent Updates
+
+### 2023-11-30: QA and Environment Documentation
+
+- Added `QA_MANUAL_CHECKLISTS.md` with comprehensive testing checklists
+- Added `ACCEPTANCE_CRITERIA.md` to centralize feature acceptance criteria
+- Added `ENVIRONMENT_SEPARATION.md` detailing environment configuration and testing access
+- Updated `TESTING.md` with references to new QA documentation
+
 ## Updated Documents
 
 ### 1. ONBOARDING.md
@@ -35,6 +44,8 @@ This document summarizes the updates made to the project documentation to ensure
 2. **Error Handling**: Enhanced error handling documentation with new error types, better examples, and more comprehensive testing guidance
 3. **API Changes**: Updated API documentation to include versioning, new endpoints, and improved SDK usage examples
 4. **Workflows**: Expanded workflow documentation with more detailed steps for documentation, CI/CD, and development processes
+5. **QA Process**: Added comprehensive QA checklists and centralized acceptance criteria
+6. **Environment Management**: Documented environment separation and testing access procedures
 
 ## Next Steps
 

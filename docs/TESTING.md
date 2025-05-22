@@ -2,6 +2,13 @@
 
 This document provides comprehensive information about testing the Row The Boat application, including test structure, running tests, and writing new tests.
 
+## Related Documentation
+
+For QA processes and acceptance criteria, please refer to these additional documents:
+- [QA Manual Checklists](/home/user/rtbonekeel/docs/QA_MANUAL_CHECKLISTS.md) - Comprehensive checklists for manual testing
+- [Acceptance Criteria](/home/user/rtbonekeel/docs/ACCEPTANCE_CRITERIA.md) - Centralized acceptance criteria for all features
+- [Environment Separation](/home/user/rtbonekeel/docs/ENVIRONMENT_SEPARATION.md) - Details about testing environments and access procedures
+
 ## Test Structure
 
 Tests are organized into the following categories:

@@ -1,138 +1,143 @@
 /**
  * Health Check Scheduler
- * 
- * This module provides functionality to schedule periodic health checks
- * for various services in the system. It uses node-cron to schedule
- * the execution of health checks at regular intervals.
+ *
+ * This module provides functionality to schedule periodic health checks.
  */
-
-import cron from 'node-cron';
+import { debug, info, warn, error } from '../index.js';
 import { runAllHealthChecks } from './healthService.js';
-import { info, warn, error } from '../index.js';
+import cron from 'node-cron';
 
-// Default schedule: every 5 minutes
-const DEFAULT_SCHEDULE = '*/5 * * * *';
-
-// Store the active cron job
-let activeScheduler: ReturnType<typeof cron.schedule> | null = null;
-let currentSchedule: string | null = null;
+// Store active schedulers
+const activeSchedulers: Record<string, cron.ScheduledTask> = {};
 
 /**
- * Start all health checks on a schedule
- * 
- * @param schedule - Cron schedule for health checks (default: every 5 minutes)
+ * Start running all health checks on a schedule
+ * @param cronExpression Cron expression for scheduling (default: every 5 minutes)
+ * @returns true if scheduler was started successfully, false otherwise
  */
-export function startAllHealthChecks(schedule: string = DEFAULT_SCHEDULE): void {
-  // If there's already an active scheduler, stop it first
-  if (activeScheduler) {
-    stopAllHealthChecks();
-  }
-
-  // Validate the cron expression
-  if (!cron.validate(schedule)) {
-    error({
-      event: 'health_check_scheduler_invalid_cron',
-      schedule,
-      timestamp: new Date().toISOString(),
-    }, `Invalid cron expression for health check scheduler: ${schedule}`);
-    
-    // Fall back to default schedule
-    schedule = DEFAULT_SCHEDULE;
-    warn({
-      event: 'health_check_scheduler_fallback',
-      schedule,
-      timestamp: new Date().toISOString(),
-    }, `Falling back to default schedule: ${schedule}`);
-  }
-
+export function startAllHealthChecks(cronExpression: string = '*/5 * * * *'): boolean {
   try {
-    // Create a new scheduler with the specified schedule
-    activeScheduler = cron.schedule(schedule, async () => {
+    // Validate cron expression
+    if (!cron.validate(cronExpression)) {
+      error(`Invalid cron expression: ${cronExpression}`);
+      return false;
+    }
+
+    // Stop existing scheduler if running
+    if (activeSchedulers['all']) {
+      activeSchedulers['all'].stop();
+      delete activeSchedulers['all'];
+    }
+
+    // Schedule health checks
+    const task = cron.schedule(cronExpression, async () => {
+      info('Running scheduled health checks');
       try {
-        info({
-          event: 'health_check_scheduler_running',
-          schedule,
-          timestamp: new Date().toISOString(),
-        }, 'Running scheduled health checks');
-        
-        // Run all health checks
-        const results = await runAllHealthChecks();
-        
-        // Log the results
-        const statuses = {
-          ok: results.filter(r => r.status === 'ok').length,
-          warning: results.filter(r => r.status === 'warning').length,
-          error: results.filter(r => r.status === 'error').length,
-        };
-        
-        info({
-          event: 'health_check_scheduler_completed',
-          schedule,
-          checks: results.length,
-          statuses,
-          timestamp: new Date().toISOString(),
-        }, `Completed scheduled health checks: ${statuses.ok} ok, ${statuses.warning} warnings, ${statuses.error} errors`);
+        await runAllHealthChecks();
+        info('Scheduled health checks completed successfully');
       } catch (err) {
-        // Log error but don't stop the scheduler
-        error({
-          event: 'health_check_scheduler_error',
-          schedule,
-          error: err instanceof Error ? err.message : String(err),
-          stack: err instanceof Error ? err.stack : undefined,
-          timestamp: new Date().toISOString(),
-        }, 'Error running scheduled health checks');
+        error('Error running scheduled health checks', err);
       }
-    }, {
-      scheduled: true,
-      timezone: 'UTC', // Use UTC to avoid timezone issues
     });
 
-    // Store the current schedule
-    currentSchedule = schedule;
-    
-    info({
-      event: 'health_check_scheduler_started',
-      schedule,
-      timestamp: new Date().toISOString(),
-    }, `Health check scheduler started with schedule: ${schedule}`);
+    // Store the scheduler
+    activeSchedulers['all'] = task;
+
+    info(`Health check scheduler started with schedule: ${cronExpression}`);
+    return true;
   } catch (err) {
-    error({
-      event: 'health_check_scheduler_start_error',
-      schedule,
-      error: err instanceof Error ? err.message : String(err),
-      stack: err instanceof Error ? err.stack : undefined,
-      timestamp: new Date().toISOString(),
-    }, 'Error starting health check scheduler');
-    
-    // Reset state
-    activeScheduler = null;
-    currentSchedule = null;
+    error('Failed to start health check scheduler', err);
+    return false;
   }
 }
 
 /**
- * Stop all scheduled health checks
+ * Start a specific health check on a schedule
+ * @param checkName Name of the health check to run
+ * @param cronExpression Cron expression for scheduling
+ * @returns true if scheduler was started successfully, false otherwise
+ */
+export function startHealthCheck(checkName: string, cronExpression: string): boolean {
+  try {
+    // Validate cron expression
+    if (!cron.validate(cronExpression)) {
+      error(`Invalid cron expression: ${cronExpression}`);
+      return false;
+    }
+
+    // Stop existing scheduler if running
+    if (activeSchedulers[checkName]) {
+      activeSchedulers[checkName].stop();
+      delete activeSchedulers[checkName];
+    }
+
+    // Import runHealthCheck function
+    const { runHealthCheck } = require('./healthService.js');
+
+    // Schedule health check
+    const task = cron.schedule(cronExpression, async () => {
+      info(`Running scheduled health check: ${checkName}`);
+      try {
+        await runHealthCheck(checkName);
+        info(`Scheduled health check completed: ${checkName}`);
+      } catch (err) {
+        error(`Error running scheduled health check: ${checkName}`, err);
+      }
+    });
+
+    // Store the scheduler
+    activeSchedulers[checkName] = task;
+
+    info(`Health check scheduler started for ${checkName} with schedule: ${cronExpression}`);
+    return true;
+  } catch (err) {
+    error(`Failed to start health check scheduler for ${checkName}`, err);
+    return false;
+  }
+}
+
+/**
+ * Stop all health check schedulers
  */
 export function stopAllHealthChecks(): void {
-  if (activeScheduler) {
-    activeScheduler.stop();
-    
-    info({
-      event: 'health_check_scheduler_stopped',
-      schedule: currentSchedule,
-      timestamp: new Date().toISOString(),
-    }, 'Health check scheduler stopped');
-    
-    activeScheduler = null;
-    currentSchedule = null;
-  }
+  Object.entries(activeSchedulers).forEach(([name, scheduler]) => {
+    scheduler.stop();
+    delete activeSchedulers[name];
+    info(`Stopped health check scheduler: ${name}`);
+  });
 }
 
 /**
- * Get the current health check schedule
- * 
- * @returns The current cron schedule or null if not running
+ * Stop a specific health check scheduler
+ * @param checkName Name of the health check scheduler to stop
+ * @returns true if scheduler was stopped, false if it wasn't running
  */
-export function getHealthCheckSchedule(): string | null {
-  return currentSchedule;
+export function stopHealthCheck(checkName: string): boolean {
+  const scheduler = activeSchedulers[checkName];
+  if (scheduler) {
+    scheduler.stop();
+    delete activeSchedulers[checkName];
+    info(`Stopped health check scheduler: ${checkName}`);
+    return true;
+  }
+  return false;
 }
+
+/**
+ * Get all active health check schedulers
+ * @returns Object with scheduler names as keys and cron expressions as values
+ */
+export function getActiveSchedulers(): Record<string, string> {
+  return Object.entries(activeSchedulers).reduce((acc, [name, scheduler]) => {
+    acc[name] = scheduler.getExpression();
+    return acc;
+  }, {} as Record<string, string>);
+}
+
+export default {
+  startAllHealthChecks,
+  startHealthCheck,
+  stopAllHealthChecks,
+  stopHealthCheck,
+  getActiveSchedulers,
+};

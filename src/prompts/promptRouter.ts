@@ -9,6 +9,9 @@ import {
   automotiveAnalystSystemPrompt,
   promptVersion as autoPromptVersion,
 } from './automotiveAnalystPrompt.js';
+import {
+  AUTOMOTIVE_ANALYST_SYSTEM_PROMPT,
+} from './insightPromptEngine.js';
 /**
  * Tracks the version of the prompt router itself
  */
@@ -34,8 +37,9 @@ export interface PromptInfo {
 export function getPromptByIntent(intent: PromptIntent | string): PromptInfo {
   switch (intent) {
     case 'automotive_analysis':
+      // Use the new unified automotive analyst prompt from the insight engine
       return {
-        text: automotiveAnalystSystemPrompt,
+        text: AUTOMOTIVE_ANALYST_SYSTEM_PROMPT,
         version: autoPromptVersion,
         intent: 'automotive_analysis',
       };

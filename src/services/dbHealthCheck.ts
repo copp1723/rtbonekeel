@@ -1,60 +1,77 @@
 /**
- * PostgreSQL Health Check
+ * Database Health Check Service
  *
- * This module provides a health check function for PostgreSQL that can be registered
- * with the health monitoring service.
+ * This service provides health check functionality for the database.
  */
-import { db } from '../index.js';
 import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { HealthCheckResult } from './healthService.js'; // Assuming HealthCheckResult is defined here or in a shared types file
+import { sql } from 'drizzle-orm';
+import { v4 as uuidv4 } from 'uuid';
+import { HealthCheckResult } from './healthService.js';
+import { db } from '../index.js';
 
 /**
- * Check PostgreSQL health
+ * Check database health
  * @returns Health check result
  */
-export async function checkPostgresHealth(): Promise<HealthCheckResult> {
-  const id = 'postgresql';
-  const name = 'PostgreSQL';
+export async function checkDatabaseHealth(): Promise<HealthCheckResult> {
+  const id = 'database';
+  const name = 'Database';
   const startTime = Date.now();
-
+  
   try {
-    // Attempt a simple query to check connectivity
-    await db.execute('SELECT 1');
-    const responseTime = Date.now() - startTime;
-    info('PostgreSQL health check: OK', { duration: responseTime });
+    // Simple query to test database connectivity
+    const queryStart = Date.now();
+    await db.execute(sql`SELECT 1`);
+    const queryLatency = Date.now() - queryStart;
+    
+    // Check if query latency exceeds threshold
+    const maxLatency = parseInt(process.env.DB_MAX_LATENCY || '200', 10);
+    const status = queryLatency > maxLatency ? 'warning' : 'ok';
+    const message = status === 'warning' 
+      ? `Database query latency (${queryLatency}ms) exceeds threshold (${maxLatency}ms)`
+      : 'Database is operational';
+    
+    // Get connection pool status if available
+    let poolStatus = {};
+    try {
+      // This assumes db has a pool property with stats
+      // Adjust based on your actual database client
+      if ((db as any).pool && typeof (db as any).pool.getStats === 'function') {
+        poolStatus = (db as any).pool.getStats();
+      }
+    } catch (poolErr) {
+      // Ignore pool stats errors
+    }
+    
     return {
       id,
       name,
-      status: 'ok',
-      responseTime,
+      status,
+      responseTime: Date.now() - startTime,
       lastChecked: new Date(),
-      message: 'PostgreSQL is operational',
+      message,
       details: {
-        host: process.env.PGHOST || 'localhost', // Or extract from DATABASE_URL if used
-        database: process.env.PGDATABASE, // Or extract from DATABASE_URL if used
+        queryLatency,
+        maxLatency,
+        connectionString: process.env.DATABASE_URL
+          ? process.env.DATABASE_URL.replace(/:[^:]*@/, ':***@')
+          : 'Using environment variables',
+        poolStatus,
       },
     };
   } catch (err) {
-    const responseTime = Date.now() - startTime;
-    const errorMessage = isError(err) ? err.message : String(err);
-    error('PostgreSQL health check failed', {
-      error: errorMessage,
-      stack: err instanceof Error ? err.stack : undefined,
-      duration: responseTime,
-    });
+    const errorMessage = err instanceof Error ? err.message : String(err);
     return {
       id,
       name,
       status: 'error',
-      responseTime,
+      responseTime: Date.now() - startTime,
       lastChecked: new Date(),
-      message: 'PostgreSQL is not available',
-      details: {
-        error: errorMessage,
-        host: process.env.PGHOST || 'localhost',
-        database: process.env.PGDATABASE,
-      },
+      message: `Database error: ${errorMessage}`,
     };
   }
 }
+
+export default {
+  checkDatabaseHealth,
+};

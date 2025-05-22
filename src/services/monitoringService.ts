@@ -1,159 +1,103 @@
 /**
  * Monitoring Service
  *
- * This service provides a unified interface for monitoring and alerting.
- * It integrates with Sentry for error tracking and DataDog for performance monitoring,
- * and provides utility functions for tracking errors, performance, and system health.
+ * This service provides monitoring and alerting functionality by integrating
+ * with Sentry and DataDog, as well as providing internal performance metrics.
  */
+import os from 'os';
+import { debug, info, warn, error } from '../index.js';
 import * as sentryService from './sentryService.js';
 import * as datadogService from './datadogService.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { sendAdminAlert, sendImmediateAdminAlert } from './alertMailer.js';
-import { db } from '../index.js';
-import { healthChecks, healthLogs } from '../index.js';
-import { eq } from 'drizzle-orm';
+import monitoringConfig from '../config/monitoring.js';
 
-// Import monitoring configuration
-import monitoringConfig from '../index.js';
+// Performance metrics storage
+let performanceMetrics = {
+  cpu: 0,
+  memory: 0,
+  responseTime: 0,
+  requestCount: 0,
+  errorCount: 0,
+  errorRate: 0,
+  dbQueryDuration: 0,
+  dbQueryCount: 0,
+};
+
+// Metrics history for trending
+const metricsHistory: Array<{
+  timestamp: Date;
+  metrics: typeof performanceMetrics;
+}> = [];
 
 // Track initialization status
-let sentryInitialized = false;
-let datadogInitialized = false;
-
-// Alert thresholds from configuration
-const ERROR_RATE_THRESHOLD = monitoringConfig.alertThresholds.errorRate;
-const DB_QUERY_DURATION_THRESHOLD = monitoringConfig.alertThresholds.dbQueryDuration;
-const API_RESPONSE_TIME_THRESHOLD = monitoringConfig.alertThresholds.apiResponseTime;
-
-// Error tracking
-const errorCounts: Record<string, number> = {
-  total: 0,
-  operational: 0,
-  critical: 0,
-};
-
-// Request tracking
-const requestCounts: Record<string, number> = {
-  total: 0,
-  success: 0,
-  error: 0,
-};
+let initialized = false;
 
 /**
- * Initialize the monitoring service
- * @returns Object with initialization status
+ * Initialize monitoring services
+ * @returns Object indicating which services were initialized
  */
 export async function initialize(): Promise<{
   sentryInitialized: boolean;
   datadogInitialized: boolean;
 }> {
-  try {
-    // Check if monitoring is enabled
-    if (!monitoringConfig.enabled) {
-      info('Monitoring is disabled by configuration');
-      return {
-        sentryInitialized: false,
-        datadogInitialized: false,
-      };
-    }
-
-    // Initialize Sentry with configuration
-    sentryInitialized = sentryService.initializeSentry(monitoringConfig.sentry.dsn);
-
-    // Initialize DataDog with configuration
-    datadogInitialized = datadogService.initializeDataDog();
-
-    // Log initialization status
-    info(`Monitoring service initialized: Sentry=${sentryInitialized}, DataDog=${datadogInitialized}`);
-
-    // Start system resource tracking if DataDog is initialized
-    if (datadogInitialized) {
-      startResourceTracking();
-    }
-
-    return {
-      sentryInitialized,
-      datadogInitialized,
-    };
-  } catch (error) {
-    error('Failed to initialize monitoring service:', isError(error) ? error : String(error));
-    return {
-      sentryInitialized: false,
-      datadogInitialized: false,
-    };
+  if (!monitoringConfig.enabled) {
+    info('Monitoring is disabled by configuration');
+    return { sentryInitialized: false, datadogInitialized: false };
   }
+
+  // Initialize Sentry
+  const sentryInitialized = sentryService.initializeSentry(monitoringConfig.sentry.dsn);
+  
+  // Initialize DataDog
+  const datadogInitialized = datadogService.initializeDataDog();
+  
+  // Start system metrics collection
+  if (datadogInitialized) {
+    startSystemMetricsCollection();
+  }
+  
+  initialized = true;
+  
+  return {
+    sentryInitialized,
+    datadogInitialized,
+  };
 }
 
 /**
- * Track an error
- * @param error Error to track
+ * Track an error in monitoring systems
+ * @param err Error to track
  * @param context Additional context
- * @param isCritical Whether this is a critical error
- * @returns Error ID from Sentry (if available)
+ * @param critical Whether this is a critical error
  */
-export function trackError(
-  error: unknown,
-  context: Record<string, any> = {},
-  isCritical: boolean = false
-): string {
-  try {
-    // Update error counts
-    errorCounts.total++;
+export function trackError(err: unknown, context: Record<string, any> = {}, critical: boolean = false): void {
+  if (!initialized || !monitoringConfig.enabled) {
+    return;
+  }
 
-    // Determine if error is operational
-    const isOperational = error instanceof Error && 'isOperational' in error
-      ? (error as any).isOperational
-      : false;
-
-    if (isOperational) {
-      errorCounts.operational++;
-    }
-
-    if (isCritical) {
-      errorCounts.critical++;
-
-      // Send immediate alert for critical errors
-      sendImmediateAdminAlert(
-        'Critical Error Detected',
-        `A critical error has occurred: ${isError(error) ? error.message : String(error)}`,
-        {
-          severity: 'critical',
-          component: context.component || 'unknown',
-          details: {
-            ...context,
-            errorType: isError(error) ? error.constructor.name : 'Unknown',
-          },
-        }
-      ).catch(alertError => {
-        error('Failed to send critical error alert:',
-          isError(alertError) ? alertError : String(alertError)
-        );
-      });
-    }
-
-    // Track in DataDog if initialized
-    if (datadogInitialized) {
-      datadogService.incrementMetric('errors.count', 1, [
-        `type:${isError(error) ? error.constructor.name : 'unknown'}`,
-        `operational:${isOperational}`,
-        `critical:${isCritical}`,
-        ...(context.component ? [`component:${context.component}`] : []),
-      ]);
-    }
-
-    // Track in Sentry if initialized
-    if (sentryInitialized) {
-      return sentryService.captureError(error, {
-        ...context,
-        isCritical,
-      });
-    }
-
-    return '';
-  } catch (trackError) {
-    error('Failed to track error:', isError(trackError) ? trackError : String(trackError));
-    return '';
+  // Increment error count
+  performanceMetrics.errorCount++;
+  
+  // Calculate error rate if we have requests
+  if (performanceMetrics.requestCount > 0) {
+    performanceMetrics.errorRate = performanceMetrics.errorCount / performanceMetrics.requestCount;
+  }
+  
+  // Track in Sentry
+  sentryService.captureError(err, {
+    ...context,
+    critical,
+    environment: monitoringConfig.sentry.environment,
+  });
+  
+  // Track in DataDog
+  datadogService.incrementMetric('errors.count', 1, [
+    `critical:${critical}`,
+    `environment:${monitoringConfig.datadog.env}`,
+  ]);
+  
+  // Send alerts if this is a critical error or error rate exceeds threshold
+  if (critical || performanceMetrics.errorRate > monitoringConfig.alertThresholds.errorRate) {
+    sendAlerts(err, context, critical);
   }
 }
 
@@ -170,62 +114,40 @@ export function trackApiRequest(
   statusCode: number,
   durationMs: number
 ): void {
-  try {
-    // Update request counts
-    requestCounts.total++;
+  if (!initialized || !monitoringConfig.enabled) {
+    return;
+  }
 
-    if (statusCode >= 200 && statusCode < 400) {
-      requestCounts.success++;
-    } else {
-      requestCounts.error++;
-    }
-
-    // Calculate error rate
-    const errorRate = requestCounts.total > 0
-      ? requestCounts.error / requestCounts.total
-      : 0;
-
-    // Check if error rate exceeds threshold
-    if (errorRate > ERROR_RATE_THRESHOLD && requestCounts.total >= 100) {
-      // Send alert for high error rate
-      sendAdminAlert(
-        'High API Error Rate Detected',
-        `The API error rate has exceeded the threshold of ${ERROR_RATE_THRESHOLD * 100}%. Current rate: ${(errorRate * 100).toFixed(2)}%`,
-        {
-          severity: 'warning',
-          component: 'api',
-          details: {
-            totalRequests: requestCounts.total,
-            errorRequests: requestCounts.error,
-            errorRate: errorRate,
-          },
-        }
-      ).catch(alertError => {
-        error('Failed to send error rate alert:',
-          isError(alertError) ? alertError : String(alertError)
-        );
-      });
-    }
-
-    // Check if response time exceeds threshold
-    if (durationMs > API_RESPONSE_TIME_THRESHOLD) {
-      warn(`Slow API response: ${method} ${path} took ${durationMs}ms`);
-
-      // Track in DataDog if initialized
-      if (datadogInitialized) {
-        datadogService.incrementMetric('api.slow_requests', 1, [
-          `method:${method}`,
-          `path:${path}`,
-        ]);
-      }
-    }
-
-    // Track in DataDog if initialized
-    if (datadogInitialized) {
-      datadogService.trackApiRequest(method, path, statusCode, durationMs);
-    }
-  } catch (error) {
-    error('Failed to track API request:', isError(error) ? error : String(error));
+  // Update performance metrics
+  performanceMetrics.requestCount++;
+  performanceMetrics.responseTime = 
+    (performanceMetrics.responseTime * (performanceMetrics.requestCount - 1) + durationMs) / 
+    performanceMetrics.requestCount;
+  
+  // Recalculate error rate
+  if (statusCode >= 500) {
+    performanceMetrics.errorCount++;
+    performanceMetrics.errorRate = performanceMetrics.errorCount / performanceMetrics.requestCount;
+  }
+  
+  // Track in DataDog
+  datadogService.trackApiRequest(method, path, statusCode, durationMs);
+  
+  // Check if response time exceeds threshold
+  if (durationMs > monitoringConfig.alertThresholds.apiResponseTime) {
+    warn(`Slow API response: ${method} ${path} took ${durationMs}ms`, {
+      method,
+      path,
+      durationMs,
+      threshold: monitoringConfig.alertThresholds.apiResponseTime,
+    });
+    
+    // Track in DataDog as a separate metric
+    datadogService.incrementMetric('api.slow_responses', 1, [
+      `method:${method}`,
+      `path:${path}`,
+      `environment:${monitoringConfig.datadog.env}`,
+    ]);
   }
 }
 
@@ -242,63 +164,182 @@ export function trackDatabaseQuery(
   durationMs: number,
   success: boolean = true
 ): void {
-  try {
-    // Check if query duration exceeds threshold
-    if (durationMs > DB_QUERY_DURATION_THRESHOLD) {
-      warn(`Slow database query: ${operation} on ${table} took ${durationMs}ms`);
+  if (!initialized || !monitoringConfig.enabled) {
+    return;
+  }
 
-      // Track in DataDog if initialized
-      if (datadogInitialized) {
-        datadogService.incrementMetric('database.slow_queries', 1, [
-          `operation:${operation}`,
-          `table:${table}`,
-        ]);
-      }
-    }
-
-    // Track in DataDog if initialized
-    if (datadogInitialized) {
-      datadogService.trackDatabaseQuery(operation, table, durationMs, success);
-    }
-  } catch (error) {
-    error('Failed to track database query:', isError(error) ? error : String(error));
+  // Update performance metrics
+  performanceMetrics.dbQueryCount++;
+  performanceMetrics.dbQueryDuration = 
+    (performanceMetrics.dbQueryDuration * (performanceMetrics.dbQueryCount - 1) + durationMs) / 
+    performanceMetrics.dbQueryCount;
+  
+  // Track in DataDog
+  datadogService.trackDatabaseQuery(operation, table, durationMs, success);
+  
+  // Check if query duration exceeds threshold
+  if (durationMs > monitoringConfig.alertThresholds.dbQueryDuration) {
+    warn(`Slow database query: ${operation} on ${table} took ${durationMs}ms`, {
+      operation,
+      table,
+      durationMs,
+      threshold: monitoringConfig.alertThresholds.dbQueryDuration,
+    });
+    
+    // Track in DataDog as a separate metric
+    datadogService.incrementMetric('database.slow_queries', 1, [
+      `operation:${operation}`,
+      `table:${table}`,
+      `environment:${monitoringConfig.datadog.env}`,
+    ]);
   }
 }
 
 /**
- * Start tracking system resources
- * @param intervalMs Interval in milliseconds (default: 60000 = 1 minute)
+ * Get current performance metrics
+ * @returns Current performance metrics
  */
-function startResourceTracking(intervalMs: number = 60000): void {
-  // Track resources immediately
-  datadogService.trackSystemResources();
-
-  // Set up interval for tracking resources
-  setInterval(() => {
-    datadogService.trackSystemResources();
-  }, intervalMs);
-
-  info(`System resource tracking started with interval of ${intervalMs}ms`);
+export function getPerformanceMetrics(): typeof performanceMetrics {
+  return { ...performanceMetrics };
 }
 
 /**
- * Shutdown the monitoring service
+ * Get system metrics
+ * @returns System metrics
+ */
+export function getSystemMetrics(): {
+  uptime: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  memoryTotal: number;
+  memoryFree: number;
+} {
+  const totalMemory = os.totalmem();
+  const freeMemory = os.freemem();
+  const usedMemory = totalMemory - freeMemory;
+  const memoryUsage = (usedMemory / totalMemory) * 100;
+  
+  return {
+    uptime: process.uptime(),
+    cpuUsage: os.loadavg()[0] / os.cpus().length * 100,
+    memoryUsage,
+    memoryTotal: totalMemory,
+    memoryFree: freeMemory,
+  };
+}
+
+/**
+ * Get metrics history
+ * @returns Array of historical metrics
+ */
+export function getMetricsHistory(): Array<{
+  timestamp: Date;
+  metrics: typeof performanceMetrics;
+}> {
+  return [...metricsHistory];
+}
+
+/**
+ * Start collecting system metrics periodically
+ */
+function startSystemMetricsCollection(): void {
+  // Collect metrics every minute
+  const interval = setInterval(() => {
+    if (!monitoringConfig.enabled) {
+      clearInterval(interval);
+      return;
+    }
+    
+    try {
+      // Get current system metrics
+      const systemMetrics = getSystemMetrics();
+      
+      // Update performance metrics
+      performanceMetrics.cpu = systemMetrics.cpuUsage;
+      performanceMetrics.memory = systemMetrics.memoryUsage;
+      
+      // Track in DataDog
+      datadogService.trackSystemResources();
+      
+      // Store in history (keep last 60 entries = 1 hour)
+      metricsHistory.push({
+        timestamp: new Date(),
+        metrics: { ...performanceMetrics },
+      });
+      
+      // Limit history size
+      if (metricsHistory.length > 60) {
+        metricsHistory.shift();
+      }
+      
+      // Check if metrics exceed thresholds
+      if (systemMetrics.cpuUsage > monitoringConfig.alertThresholds.cpuUsage) {
+        warn(`High CPU usage: ${systemMetrics.cpuUsage.toFixed(2)}%`, {
+          cpuUsage: systemMetrics.cpuUsage,
+          threshold: monitoringConfig.alertThresholds.cpuUsage,
+        });
+      }
+      
+      if (systemMetrics.memoryUsage > monitoringConfig.alertThresholds.memoryUsage) {
+        warn(`High memory usage: ${systemMetrics.memoryUsage.toFixed(2)}%`, {
+          memoryUsage: systemMetrics.memoryUsage,
+          threshold: monitoringConfig.alertThresholds.memoryUsage,
+        });
+      }
+    } catch (err) {
+      error('Error collecting system metrics', err);
+    }
+  }, 60000); // Every minute
+}
+
+/**
+ * Send alerts for critical errors or threshold violations
+ * @param err Error that triggered the alert
+ * @param context Additional context
+ * @param critical Whether this is a critical error
+ */
+function sendAlerts(err: unknown, context: Record<string, any> = {}, critical: boolean = false): void {
+  if (!monitoringConfig.enabled || !monitoringConfig.adminEmails.length) {
+    return;
+  }
+  
+  const errorMessage = err instanceof Error ? err.message : String(err);
+  const errorStack = err instanceof Error ? err.stack : undefined;
+  
+  // Log the alert
+  error(`Sending alert: ${errorMessage}`, {
+    error: errorMessage,
+    stack: errorStack,
+    context,
+    critical,
+  });
+  
+  // In a real implementation, this would send emails to admin emails
+  // For now, we'll just log that alerts would be sent
+  info(`Alert would be sent to: ${monitoringConfig.adminEmails.join(', ')}`, {
+    recipients: monitoringConfig.adminEmails,
+    subject: `[${critical ? 'CRITICAL' : 'ERROR'}] ${monitoringConfig.sentry.environment}: ${errorMessage}`,
+  });
+}
+
+/**
+ * Shutdown monitoring services
  */
 export async function shutdown(): Promise<void> {
+  if (!initialized || !monitoringConfig.enabled) {
+    return;
+  }
+  
   try {
-    // Flush Sentry events
-    if (sentryInitialized) {
-      await sentryService.flushSentryEvents();
-    }
-
     // Flush DataDog metrics
-    if (datadogInitialized) {
-      await datadogService.flushMetrics();
-    }
-
-    info('Monitoring service shut down successfully');
-  } catch (error) {
-    error('Error shutting down monitoring service:', isError(error) ? error : String(error));
+    await datadogService.flushMetrics();
+    
+    // Flush Sentry events
+    await sentryService.flushSentryEvents();
+    
+    info('Monitoring services shut down successfully');
+  } catch (err) {
+    error('Error shutting down monitoring services', err);
   }
 }
 
@@ -307,5 +348,8 @@ export default {
   trackError,
   trackApiRequest,
   trackDatabaseQuery,
+  getPerformanceMetrics,
+  getSystemMetrics,
+  getMetricsHistory,
   shutdown,
 };

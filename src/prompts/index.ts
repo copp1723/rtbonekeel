@@ -19,6 +19,17 @@ export {
   type PromptIntent,
   type PromptInfo,
 } from './promptRouter.js';
+// Export insight prompt engine functionality
+export {
+  AUTOMOTIVE_ANALYST_SYSTEM_PROMPT,
+  INSIGHT_OUTPUT_SCHEMA,
+  BUSINESS_ANALYST_PROMPT,
+  INFORMAL_PROMPT,
+  buildInsightPrompt,
+  validateLlmOutput,
+  generateInsightPrompt,
+  type PromptTemplate,
+} from './insightPromptEngine.js';
 /**
  * Describes the expected structure of insight responses
  */
@@ -36,4 +47,5 @@ export interface InsightGenerationParams {
   intent: string; // The analysis intent (e.g., 'automotive_analysis')
   dataFormat?: string; // Format of the input data (e.g., 'csv', 'json')
   contextInfo?: Record<string, any>; // Optional additional context
+  mode?: 'business' | 'informal'; // The prompt mode to use (business or informal)
 }

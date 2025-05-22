@@ -1,15 +1,14 @@
 /**
- * Redis Health Check
- * 
- * This module provides a health check function for Redis that can be registered
- * with the health monitoring service.
+ * Redis Health Check Service
+ *
+ * This service provides health check functionality for Redis.
  */
-import { HealthCheckResult } from './healthService.js';
-import { redisService } from './redisService.js';
-// [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
 import { debug, info, warn, error } from '../index.js';
-// [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { isError } from '../index.js';
+import { v4 as uuidv4 } from 'uuid';
+import { HealthCheckResult } from './healthService.js';
+
+// Import Redis client - assuming it's exported from redisService.js
+import { getClient } from './redisService.js';
 
 /**
  * Check Redis health
@@ -21,65 +20,69 @@ export async function checkRedisHealth(): Promise<HealthCheckResult> {
   const startTime = Date.now();
   
   try {
-    // Check if Redis service is initialized
-    if (!redisService.getClient()) {
-      // Try to initialize Redis service if not already initialized
-      await redisService.initialize();
-    }
+    const redisClient = getClient();
     
-    // Check Redis health
-    const healthResult = await redisService.checkHealth();
-    const responseTime = Date.now() - startTime;
-    
-    if (healthResult.status === 'connected') {
-      return {
-        id,
-        name,
-        status: 'ok',
-        responseTime,
-        lastChecked: new Date(),
-        message: 'Redis is operational',
-        details: {
-          latency: healthResult.latency,
-          host: process.env.REDIS_HOST || 'localhost',
-          port: process.env.REDIS_PORT || '6379',
-        },
-      };
-    } else if (healthResult.status === 'connecting') {
-      return {
-        id,
-        name,
-        status: 'warning',
-        responseTime,
-        lastChecked: new Date(),
-        message: 'Redis is connecting',
-        details: {
-          host: process.env.REDIS_HOST || 'localhost',
-          port: process.env.REDIS_PORT || '6379',
-        },
-      };
-    } else {
+    if (!redisClient) {
       return {
         id,
         name,
         status: 'error',
-        responseTime,
+        responseTime: Date.now() - startTime,
         lastChecked: new Date(),
-        message: 'Redis is not available',
-        details: {
-          status: healthResult.status,
-          host: process.env.REDIS_HOST || 'localhost',
-          port: process.env.REDIS_PORT || '6379',
-        },
+        message: 'Redis client not initialized',
       };
     }
-  } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
-    error('Redis health check error', {
-      error: errorMessage,
-      stack: err instanceof Error ? err.stack : undefined,
-    });
     
+    // Check if Redis is connected
+    if (!redisClient.isOpen) {
+      return {
+        id,
+        name,
+        status: 'error',
+        responseTime: Date.now() - startTime,
+        lastChecked: new Date(),
+        message: 'Redis client not connected',
+      };
+    }
+    
+    // Measure ping latency
+    const pingStart = Date.now();
+    await redisClient.ping();
+    const pingLatency = Date.now() - pingStart;
+    
+    // Check if ping latency exceeds threshold
+    const maxLatency = parseInt(process.env.REDIS_MAX_LATENCY || '100', 10);
+    const status = pingLatency > maxLatency ? 'warning' : 'ok';
+    const message = status === 'warning' 
+      ? `Redis ping latency (${pingLatency}ms) exceeds threshold (${maxLatency}ms)`
+      : 'Redis is operational';
+    
+    // Get Redis info for details
+    const info = await redisClient.info();
+    const memoryMatch = info.match(/used_memory_human:(.+?)\r\n/);
+    const memoryUsage = memoryMatch ? memoryMatch[1].trim() : 'unknown';
+    
+    const connectedClientsMatch = info.match(/connected_clients:(.+?)\r\n/);
+    const connectedClients = connectedClientsMatch ? parseInt(connectedClientsMatch[1].trim(), 10) : 0;
+    
+    return {
+      id,
+      name,
+      status,
+      responseTime: Date.now() - startTime,
+      lastChecked: new Date(),
+      message,
+      details: {
+        pingLatency,
+        memoryUsage,
+        connectedClients,
+        maxLatency,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT || '6379',
+      },
+    };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     return {
       id,
       name,
@@ -90,3 +93,7 @@ export async function checkRedisHealth(): Promise<HealthCheckResult> {
     };
   }
 }
+
+export default {
+  checkRedisHealth,
+};

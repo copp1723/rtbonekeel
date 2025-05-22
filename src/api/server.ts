@@ -2,7 +2,7 @@
 import type express from 'express';
 import type { Request, Response } from 'express';
 import type crypto from 'crypto';
-import type apiIngestRoutes from './index.jsroutes/apiIngestRoutes.js';
+import type apiIngestRoutes from './routes/apiIngestRoutes.js';
 
 // Import types from our global declarations
 import '../types/index.d.ts';
@@ -91,13 +91,27 @@ const routeHandler = (fn: Function) => {
 
 // Mock service initializers
 const registerAuthRoutes = async (_app: any) => {};
-const registerMonitoringRoutes = (_app: any) => {};
 const initializeJobQueue = async () => {};
 const initializeScheduler = async () => {};
 const initializeMailer = () => {};
-const startAllHealthChecks = () => {};
 const migrateDatabase = async () => {};
 const enqueueJob = async (_taskId: string, _priority?: number) => crypto.randomUUID();
+
+// Import health and monitoring routes
+import healthRoutes from './routes/healthRoutes.js';
+import monitoringRoutes from './routes/monitoringRoutes.js';
+
+// Import health check scheduler
+import { startAllHealthChecks } from '../services/healthCheckScheduler.js';
+
+/**
+ * Register monitoring routes
+ * @param app Express application
+ */
+const registerMonitoringRoutes = (app: any) => {
+  app.use('/api/health', healthRoutes);
+  app.use('/api/monitoring', monitoringRoutes);
+};
 
 // Log startup information
 logger.info(
@@ -209,8 +223,7 @@ async function startServer(): Promise<import('http').Server> {
     rateLimiters.healthCheck,
     routeHandler(async (_req: Request, res: Response) => {
       // Import health service functions
-      const getHealthSummary = async () => ({ overallStatus: 'ok' });
-      const getLatestHealthChecks = async () => [];
+      const { getHealthSummary, getLatestHealthChecks } = require('../services/healthService.js');
       const summary = await getHealthSummary();
       const checks = await getLatestHealthChecks();
 

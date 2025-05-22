@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+
+// This file sets up the configuration for Next.js with Sentry integration
+const { withSentryConfig } = require('@sentry/nextjs');
+
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
@@ -23,4 +27,13 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Sentry webpack plugin configuration
+const sentryWebpackPluginOptions = {
+  // Additional options for the Sentry webpack plugin
+  silent: true, // Suppresses all logs
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
+};
+
+// Export the Next.js configuration with Sentry integration
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
