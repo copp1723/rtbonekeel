@@ -4,8 +4,8 @@
  * Validates required environment variables and prevents startup with default
  * or missing secrets in production environments.
  */
-import { debug, info, warn, error } from '../index.js';
-import { logSecurityEvent } from './encryption.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { logSecurityEvent } from './encryption.js.js.js';
 // Default values that should not be used in production
 const DEFAULT_VALUES = {
   // Encryption keys

@@ -7,8 +7,8 @@ import {
   renderEmailTemplate,
   EmailTemplateOptions,
   EmailTemplateResult,
-} from './emailTemplateEngine.js';
-import { sendEmail } from './mailerService.js';
+} from './emailTemplateEngine.js.js';
+import { sendEmail } from './mailerService.js.js';
 /**
  * Email template types
  */

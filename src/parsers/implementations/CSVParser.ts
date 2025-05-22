@@ -10,11 +10,11 @@ import { pipeline } from 'stream/promises';
 import { parse as csvParse } from 'csv-parse';
 import { v4 as uuidv4 } from 'uuid';
 
-import { BaseParser } from '../index.js';
-import type { FileType, ParserOptions, ParserResult } from '../index.js';
-import { ParseError } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { getErrorMessage } from '../index.js';
+import { BaseParser } from '../index.js.js';
+import type { FileType, ParserOptions, ParserResult } from '../index.js.js';
+import { ParseError } from '../index.js.js';
+import { debug, info, warn, error } from '../index.js.js';
+import { getErrorMessage } from '../index.js.js';
 
 /**
  * CSV parser options
@@ -95,7 +95,7 @@ export class CSVParser extends BaseParser {
       error({
         event: 'csv_parser_error',
         file: options._fileName || 'unknown',
-        error: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error?.message : String(error),
         parser: 'CSVParser',
       });
       

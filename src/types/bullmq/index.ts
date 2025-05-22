@@ -5,13 +5,13 @@
  */
 
 // Export base types
-export * from './baseTypes.js';
+export * from './baseTypes.js.js';
 
 // Export job types
-export { Job, JobOptions } from './jobTypes.js';
+export { Job, JobOptions } from './jobTypes.js.js';
 
 // Export queue types
-export { Queue } from './queueTypes.js';
+export { Queue } from './queueTypes.js.js';
 
 // Export worker types
-export { Worker } from './workerTypes.js';
+export { Worker } from './workerTypes.js.js';

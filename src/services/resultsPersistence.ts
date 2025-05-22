@@ -7,10 +7,10 @@
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../index.js';
-import { reports, reportSources } from '../index.js';
+import { db } from '../index.js.js.js';
+import { reports, reportSources } from '../index.js.js.js';
 import { eq, and } from 'drizzle-orm';
-import { ParserResult } from './attachmentParsers.js';
+import { ParserResult } from './attachmentParsers.js.js.js';
 // Interface for storing results
 export interface StorageResult {
   id: string;

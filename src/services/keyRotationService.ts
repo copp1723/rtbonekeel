@@ -4,7 +4,7 @@
  * Provides functionality for rotating encryption keys and re-encrypting data
  * with new keys to maintain security best practices.
  */
-import { db } from '../index.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
 import { 
   credentials, 
@@ -12,10 +12,10 @@ import {
   userCredentials, 
   apiKeys,
   securityAuditLogs
-} from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { rotateEncryptionKeys, generateSecureKey } from '../index.js';
+} from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { rotateEncryptionKeys, generateSecureKey } from '../index.js.js.js';
 import cron from 'node-cron';
 
 // Tables with encrypted data and their field mappings
@@ -109,7 +109,7 @@ export async function initializeKeyRotation(options: {
 
     return true;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error(`Failed to initialize key rotation service: ${errorMessage}`);
     return false;
   }
@@ -131,13 +131,13 @@ function scheduleKeyRotation(): void {
       try {
         await rotateKeys();
       } catch (err) {
-        error('Scheduled key rotation failed:', isError(err) ? err.message : String(err));
+        error('Scheduled key rotation failed:', isError(err) ? err?.message : String(err));
       }
     });
 
     info('Key rotation scheduled with cron expression:', keyRotationConfig.schedule);
   } catch (err) {
-    error('Failed to schedule key rotation:', isError(err) ? err.message : String(err));
+    error('Failed to schedule key rotation:', isError(err) ? err?.message : String(err));
   }
 }
 
@@ -239,7 +239,7 @@ export async function rotateKeys(options?: {
     // Return the new key information for updating environment variables
     return;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error(`Key rotation failed: ${errorMessage}`);
     
     // Log the failure

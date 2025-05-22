@@ -6,7 +6,7 @@
  * for capturing performance data and system metrics.
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 import os from 'os';
 
 // Track initialization status
@@ -75,7 +75,7 @@ export function trackMetric(name: string, value: number, tags: string[] = []): v
     flushMetrics().catch(err => {
       error('Failed to flush metrics buffer', {
         event: 'datadog_flush_error',
-        error: err instanceof Error ? err.message : String(err),
+        error: err instanceof Error ? err?.message : String(err),
       });
     });
   }

@@ -3,9 +3,9 @@
  * 
  * This module provides utilities for retrying operations that might fail temporarily.
  */
-import { info } from '../index.js';
-import { toBaseError, getErrorMessage } from '../index.js';
-import { logFormattedError } from './errorHandlers.js';
+import { info } from '../index.js.js';
+import { toBaseError, getErrorMessage } from '../index.js.js';
+import { logFormattedError } from './errorHandlers.js.js';
 
 /**
  * Options for retry operations

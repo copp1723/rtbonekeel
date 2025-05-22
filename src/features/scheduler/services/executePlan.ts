@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 
-import { db } from '../index.js';
-import { plans } from '../index.js';
+import { db } from '../index.js.js';
+import { plans } from '../index.js.js';
 import { eq, sql } from 'drizzle-orm';
 // Define steps table schema inline until added to main schema
 const steps = {
@@ -93,7 +93,7 @@ export async function executePlan(
           error instanceof Error
             ? error instanceof Error
               ? error instanceof Error
-                ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))
+                ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error))
                 : String(error)
               : String(error)
             : String(error);

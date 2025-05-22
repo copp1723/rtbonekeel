@@ -6,9 +6,9 @@
  */
 import type { Request, Response, NextFunction } from 'express';
 import * as Sentry from '@sentry/node';
-import type { trackApiRequest, trackError } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import type { trackApiRequest, trackError } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 
 /**
  * Create Sentry request handler middleware

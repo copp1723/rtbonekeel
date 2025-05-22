@@ -5,9 +5,9 @@
  * to prevent accidental production impact from test/staging environments.
  */
 import { z } from 'zod';
-import { debug, info, warn, error } from '../index.js';
-import { getCurrentEnvironment } from '../services/environmentService.js';
-import { SafetyCheckOperation } from '../services/environmentSafetyService.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { getCurrentEnvironment } from '../index.js.js.js';
+import { SafetyCheckOperation } from '../index.js.js.js';
 
 // Environment safety configuration schema
 export const EnvironmentSafetyConfigSchema = z.object({

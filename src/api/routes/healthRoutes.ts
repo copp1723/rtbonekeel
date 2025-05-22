@@ -11,7 +11,7 @@ import {
   getLatestHealthChecks, 
   getHealthLogs, 
   getHealthSummary 
-} from '../../services/healthService';
+} from '../../services/healthService.js';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ const router = express.Router();
  * GET /api/health
  * Returns a summary of system health
  */
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
     const summary = await getHealthSummary();
     const checks = await getLatestHealthChecks();
@@ -52,7 +52,7 @@ router.get('/', async (_req: Request, res: Response) => {
  * GET /api/health/checks
  * Returns the latest health check results for all services
  */
-router.get('/checks', async (_req: Request, res: Response) => {
+router.get('/checks', async (_req: Request, res: Response): Promise<void> => {
   try {
     const checks = await getLatestHealthChecks();
     res.json(checks);
@@ -66,11 +66,12 @@ router.get('/checks', async (_req: Request, res: Response) => {
  * GET /api/health/checks/:id
  * Returns the latest health check result for a specific service
  */
-router.get('/checks/:id', async (req: Request, res: Response) => {
+router.get('/checks/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const check = await runHealthCheck(req.params.id);
     if (!check) {
-      return res.status(404).json({ error: 'Health check not found' });
+      res.status(404).json({ error: 'Health check not found' });
+      return;
     }
     res.json(check);
   } catch (error) {
@@ -83,11 +84,12 @@ router.get('/checks/:id', async (req: Request, res: Response) => {
  * POST /api/health/checks/:id/run
  * Runs a health check for a specific service
  */
-router.post('/checks/:id/run', async (req: Request, res: Response) => {
+router.post('/checks/:id/run', async (req: Request, res: Response): Promise<void> => {
   try {
     const check = await runHealthCheck(req.params.id);
     if (!check) {
-      return res.status(404).json({ error: 'Health check not found' });
+      res.status(404).json({ error: 'Health check not found' });
+      return;
     }
     res.json(check);
   } catch (error) {
@@ -100,7 +102,7 @@ router.post('/checks/:id/run', async (req: Request, res: Response) => {
  * GET /api/health/logs/:id
  * Returns the health check logs for a specific service
  */
-router.get('/logs/:id', async (req: Request, res: Response) => {
+router.get('/logs/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
     const logs = await getHealthLogs(req.params.id, limit);
@@ -115,7 +117,7 @@ router.get('/logs/:id', async (req: Request, res: Response) => {
  * POST /api/health/run-all
  * Runs all health checks
  */
-router.post('/run-all', async (_req: Request, res: Response) => {
+router.post('/run-all', async (_req: Request, res: Response): Promise<void> => {
   try {
     const results = await runAllHealthChecks();
     res.json(results);

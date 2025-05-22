@@ -5,10 +5,10 @@
  * from test or staging environments. It implements checks and validations
  * to ensure that operations are only performed in the appropriate environment.
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { getCurrentEnvironment, isProduction, isStaging, isDevelopment } from './environmentService.js';
-import { sendNotification } from './notificationService.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { getCurrentEnvironment, isProduction, isStaging, isDevelopment } from './environmentService.js.js.js';
+import { sendNotification } from './notificationService.js.js.js';
 
 // Define operation types that require environment safety checks
 export type SafetyCheckOperation = 

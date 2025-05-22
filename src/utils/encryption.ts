@@ -5,10 +5,10 @@
  * and environment validation for production security.
  */
 import crypto from 'crypto';
-import { isError } from '../index.js';
-import { db } from '../index.js';
-import { securityAuditLogs } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
+import { securityAuditLogs } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 // Constants for encryption
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for AES
@@ -189,7 +189,7 @@ export function encryptData(
   } catch (err: unknown) {
     // Unified error message handling
     const errorMessage = isError(err)
-      ? err.message
+      ? err?.message
       : String(err);
 
     error(`Encryption error: ${errorMessage}`);
@@ -262,7 +262,7 @@ export function decryptData(
   } catch (err: unknown) {
     // Unified error message handling
     const errorMessage = isError(err)
-      ? err.message
+      ? err?.message
       : String(err);
 
     error(`Decryption error: ${errorMessage}`);
@@ -350,7 +350,7 @@ export async function logSecurityEvent(
     // Unified error message handling
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 
@@ -579,7 +579,7 @@ export async function rotateEncryptionKeys(
     info(`Key rotation completed for table ${tableName}. Updated ${updatedRecords}/${totalRecords} records.`);
     return updatedRecords;
   } catch (err: unknown) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error(`Key rotation failed: ${errorMessage}`);
     throw new Error(`Key rotation failed: ${errorMessage}`);
   }

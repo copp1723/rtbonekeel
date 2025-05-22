@@ -4,7 +4,7 @@
  * Provides functionality to fetch emails with attachments from IMAP servers
  * TODO: Replace with real implementation
  */
-import { info, warn, error } from '../index.js';
+import { info, warn, error } from '../index.js.js.js';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
@@ -104,7 +104,7 @@ export async function fetchEmailsWithAttachments(
     // Log the error
     error('Failed to fetch emails with attachments', {
       platform,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -147,13 +147,13 @@ export async function configureImapConnection(
   } catch (err) {
     // Log the error
     error('Failed to configure IMAP connection', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Return error result
     return {
       success: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     };
   }
 }

@@ -49,13 +49,13 @@ export async function sendWorkflowCompletionEmail(
     // Log the error
     error('Failed to send workflow completion email', {
       workflowId,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Return error result
     return {
       success: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     };
   }
 }
@@ -94,13 +94,13 @@ export async function configureNotification(
     // Log the error
     error('Failed to configure workflow email notifications', {
       workflowId,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Return error result
     return {
       success: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     };
   }
 }

@@ -5,13 +5,13 @@
  * Uses AWS KMS for encryption and implements RBAC
  */
 import { eq, and } from 'drizzle-orm';
-import { db } from '../index.js';
-import { apiKeys } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { encryptData, decryptData, isEncryptionConfigured } from './kmsEncryptionService.js';
-import { logSecurityEvent } from './awsKmsService.js';
-import { updateApiKeyPermissions } from './rbacService.js';
+import { db } from '../index.js.js.js';
+import { apiKeys } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { encryptData, decryptData, isEncryptionConfigured } from './kmsEncryptionService.js.js.js';
+import { logSecurityEvent } from './awsKmsService.js.js.js';
+import { updateApiKeyPermissions } from './rbacService.js.js.js';
 
 /**
  * API Key data interface
@@ -100,7 +100,7 @@ export async function addApiKey(
   } catch (error) {
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 
@@ -169,7 +169,7 @@ export async function getApiKeys(userId: string, service?: string): Promise<any[
   } catch (error) {
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 
@@ -239,7 +239,7 @@ export async function getApiKeyById(id: string, userId: string): Promise<any> { 
   } catch (error) {
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 
@@ -363,7 +363,7 @@ export async function updateApiKey(
   } catch (error) {
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 
@@ -426,7 +426,7 @@ export async function deleteApiKey(id: string, userId: string): Promise<boolean>
   } catch (error) {
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 

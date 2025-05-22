@@ -3,9 +3,9 @@
  * 
  * This script runs database migrations in sequence
  */
-import { db } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { db } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
 import dotenv from 'dotenv';
 
@@ -13,7 +13,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import migrations
-import addApiKeySecurityFields from './add-api-key-security-fields.js';
+import addApiKeySecurityFields from './add-api-key-security-fields.js.js.js';
 
 // List of migrations to run in order
 const migrations = [
@@ -33,7 +33,7 @@ async function ensureMigrationsTable(): Promise<void> {
       )
     `);
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error(`Failed to create migrations table: ${errorMessage}`);
     throw error;
   }
@@ -52,7 +52,7 @@ async function isMigrationApplied(name: string): Promise<boolean> {
     `);
     return result.length > 0;
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error(`Failed to check migration status: ${errorMessage}`);
     throw error;
   }
@@ -69,7 +69,7 @@ async function recordMigration(name: string): Promise<void> {
       INSERT INTO migrations (name) VALUES (${name})
     `);
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error(`Failed to record migration: ${errorMessage}`);
     throw error;
   }
@@ -112,7 +112,7 @@ async function runMigrations(): Promise<void> {
     
     info('All migrations completed successfully');
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error(`Migration process failed: ${errorMessage}`);
     throw error;
   }
@@ -126,7 +126,7 @@ async function main() {
     await runMigrations();
     process.exit(0);
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error(`Migration failed: ${errorMessage}`);
     process.exit(1);
   }

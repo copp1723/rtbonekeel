@@ -9,7 +9,7 @@ import {
   generateInsightPrompt,
   validateLlmOutput,
   BUSINESS_ANALYST_PROMPT,
-} from '../index.js';
+} from '../index.js.js';
 
 // Example data summary (would typically come from your data pipeline)
 const exampleDataSummary = `

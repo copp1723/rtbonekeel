@@ -4,10 +4,10 @@
  * Exposes endpoints for dashboard access with RBAC protection
  */
 import express, { Request, Response } from 'express';
-import { isAuthenticated } from '../auth.js';
-import { requireAccess } from '../../middleware/rbac.js';
-import { debug, error as logError } from '../../shared/logger.js';
-import { isError } from '../../utils/errorUtils.js';
+import { isAuthenticated } from '../index.js.js';
+import { requireAccess } from '../index.js.js';
+import { debug, error as logError } from '../index.js.js';
+import { isError } from '../index.js.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.get('/',
         ]
       });
     } catch (err) {
-      logError('Failed to fetch dashboards:', isError(err) ? err.message : String(err));
+      logError('Failed to fetch dashboards:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to fetch dashboards'
@@ -100,7 +100,7 @@ router.get('/:id',
         data: dashboard
       });
     } catch (err) {
-      logError('Failed to fetch dashboard:', isError(err) ? err.message : String(err));
+      logError('Failed to fetch dashboard:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to fetch dashboard'
@@ -141,7 +141,7 @@ router.post('/',
         }
       });
     } catch (err) {
-      logError('Failed to create dashboard:', isError(err) ? err.message : String(err));
+      logError('Failed to create dashboard:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to create dashboard'
@@ -183,7 +183,7 @@ router.put('/:id',
         }
       });
     } catch (err) {
-      logError('Failed to update dashboard:', isError(err) ? err.message : String(err));
+      logError('Failed to update dashboard:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to update dashboard'
@@ -210,7 +210,7 @@ router.delete('/:id',
         message: `Dashboard with ID "${id}" deleted successfully`
       });
     } catch (err) {
-      logError('Failed to delete dashboard:', isError(err) ? err.message : String(err));
+      logError('Failed to delete dashboard:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to delete dashboard'

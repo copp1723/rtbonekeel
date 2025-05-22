@@ -4,10 +4,10 @@
  * Provides middleware for role-based access control
  */
 import type { Request, Response, NextFunction } from 'express';
-import { error, warn } from '../index.js';
-import { isError } from '../index.js';
-import { checkApiKeyPermission } from '../index.js';
-import { logSecurityEvent } from '../index.js';
+import { error, warn } from '../index.js.js';
+import { isError } from '../index.js.js';
+import { checkApiKeyPermission } from '../index.js.js';
+import { logSecurityEvent } from '../index.js.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {
@@ -101,7 +101,7 @@ export function requirePermission(resource: string, action: string) {
       // For now, allow access
       return next();
     } catch (err) {
-      const errorMessage = isError(err) ? err.message : String(err);
+      const errorMessage = isError(err) ? err?.message : String(err);
       error('Permission check error', {
         event: 'permission_check_error',
         error: errorMessage,
@@ -166,7 +166,7 @@ export function requireAdmin(req: AuthRequest, res: Response, next: NextFunction
     // Admin access granted
     return next();
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error('Admin check error', {
       event: 'admin_check_error',
       error: errorMessage,

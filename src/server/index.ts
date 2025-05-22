@@ -6,12 +6,12 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { setupAuth } from './auth.js';
-import { registerHealthRoutes } from './routes/health.js';
-import { registerMonitoringRoutes } from './routes/monitoring.js';
-import { registerDashboardRoutes } from './routes/dashboards.js';
-import { registerLogRoutes } from './routes/logs.js';
-import { debug, info, error } from '../shared/logger.js';
+import { setupAuth } from './auth.js.js';
+import { registerHealthRoutes } from './routes/health.js.js';
+import { registerMonitoringRoutes } from './routes/monitoring.js.js';
+import { registerDashboardRoutes } from './routes/dashboards.js.js';
+import { registerLogRoutes } from './routes/logs.js.js';
+import { debug, info, error } from '../index.js.js';
 
 // Create Express app
 const app = express();

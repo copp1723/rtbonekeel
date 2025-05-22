@@ -3,8 +3,8 @@
  * 
  * Provides RBAC functionality for protecting routes based on user roles
  */
-import { Request, Response, NextFunction } from 'express';
-import { debug, error } from '../shared/logger.js';
+import type { Request, Response, NextFunction } from 'express';
+import { debug, error } from '../index.js.js.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {
@@ -123,7 +123,7 @@ export function requireAccess(resource: string, action: string) {
       // User has access, continue
       next();
     } catch (err) {
-      error('RBAC error:', err instanceof Error ? err.message : String(err));
+      error('RBAC error:', err instanceof Error ? err?.message : String(err));
       return res.status(500).json({
         status: 'error',
         code: 'internal_error',
@@ -165,7 +165,7 @@ export function requireQAorTester(req: AuthRequest, res: Response, next: NextFun
     // User has access, continue
     next();
   } catch (err) {
-    error('RBAC error:', err instanceof Error ? err.message : String(err));
+    error('RBAC error:', err instanceof Error ? err?.message : String(err));
     return res.status(500).json({
       status: 'error',
       code: 'internal_error',

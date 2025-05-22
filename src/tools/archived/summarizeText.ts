@@ -6,7 +6,7 @@
  */
 
 // Summarize text tool implementation
-import { EkoTool } from './extractCleanContent.js';
+import { EkoTool } from './extractCleanContent.js.js.js';
 import OpenAI from 'openai';
 interface SummarizeTextArgs {
   text: string;
@@ -81,7 +81,7 @@ export function summarizeText(_unused: string): EkoTool {
           '❌ Error summarizing text:',
           error instanceof Error
             ? error instanceof Error
-              ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))
+              ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error))
               : String(error)
             : String(error)
         );
@@ -93,7 +93,7 @@ export function summarizeText(_unused: string): EkoTool {
           });
         }
         throw new Error(
-          `Failed to summarize text: ${error instanceof Error ? (error instanceof Error ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)) : String(error)) : String(error)}`
+          `Failed to summarize text: ${error instanceof Error ? (error instanceof Error ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error)) : String(error)) : String(error)}`
         );
       }
     },

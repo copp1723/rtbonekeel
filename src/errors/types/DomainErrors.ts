@@ -4,7 +4,7 @@
  * This module provides specialized error classes for different domains
  * of the application, all extending the BaseError class.
  */
-import { BaseError, ErrorCode } from './BaseError.js';
+import { BaseError, ErrorCode } from './BaseError.js.js';
 
 /**
  * Error for validation failures

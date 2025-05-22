@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { users } from '../shared/schema.js';
+import { users } from '../shared/schema.js.js';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../shared/db.js';
+import { db } from '../shared/db.js.js';
 
 interface MockUser {
   id: string;

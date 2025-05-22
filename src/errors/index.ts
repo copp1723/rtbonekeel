@@ -1,64 +1,36 @@
-/**
- * Error Handling System
- * 
- * This module exports a unified error handling system for the application.
- * It includes error classes, utilities, and handlers.
- */
+// Errors module barrel exports
+export * from './handlers/errorHandlers.js.js';
+export * from './handlers/retryHandler.js.js';
+export * from './types/DomainErrors.js.js';
+export * from './utils/errorUtils.js.js';
 
-// Export error types
-export * from './types/BaseError.js';
-export * from './types/DomainErrors.js';
+// Error types
+export interface AppError extends Error {
+  code: string;
+  statusCode?: number;
+  context?: Record<string, unknown>;
+}
 
-// Export error utilities
-export * from './utils/errorUtils.js';
+// Error utilities
+export const isAppError = (err: unknown): err is AppError => 
+  err instanceof Error && 'code' in err;
 
-// Export error handlers
-export * from './handlers/errorHandlers.js';
-export * from './handlers/retryHandler.js';
-
-// Re-export common utilities with shorter names
-import { 
-  toBaseError, 
-  isError, 
-  isBaseError, 
-  getErrorMessage, 
-  getErrorStack,
-  formatError,
-  enrichError
-} from './utils/errorUtils.js';
-
-import {
-  logFormattedError,
-  errorHandlerMiddleware,
-  formatErrorResponse,
-  setupGlobalErrorHandlers,
-  tryCatch,
-  asyncHandler
-} from './handlers/errorHandlers.js';
-
-import {
-  executeWithRetry
-} from './handlers/retryHandler.js';
-
-// Export common utilities
-export {
-  // Error utilities
-  toBaseError,
-  isError,
-  isBaseError,
-  getErrorMessage,
-  getErrorStack,
-  formatError,
-  enrichError,
+export const toAppError = (err: unknown, code = 'UNKNOWN_ERROR'): AppError => {
+  if (isAppError(err)) return err;
   
-  // Error handlers
-  logFormattedError,
-  errorHandlerMiddleware,
-  formatErrorResponse,
-  setupGlobalErrorHandlers,
-  tryCatch,
-  asyncHandler,
-  
-  // Retry handler
-  executeWithRetry
+  const error = err instanceof Error ? err : new Error(String(err));
+  return Object.assign(error, { code }) as AppError;
 };
+
+// Common error codes
+export enum ErrorCode {
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  NOT_FOUND = 'NOT_FOUND',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  BAD_REQUEST = 'BAD_REQUEST',
+  CONFLICT = 'CONFLICT'
+}
+
+export const ERROR_CODES = Object.values(ErrorCode);

@@ -288,7 +288,7 @@ export function toAppError(
     return error;
   }
 
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error?.message : String(error);
   const context: Record<string, any> = {
     originalError: error,
   };

@@ -5,9 +5,9 @@
  * including Express middleware, global error handlers, and function wrappers.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error as logError, fatal } from '../index.js';
-import { BaseError } from '../index.js';
-import { toBaseError, formatError } from '../index.js';
+import { debug, info, warn, error as logError, fatal } from '../index.js.js';
+import { BaseError } from '../index.js.js';
+import { toBaseError, formatError } from '../index.js.js';
 
 /**
  * Log an error with appropriate level based on error type
@@ -111,7 +111,7 @@ export function formatErrorResponse(
     };
   }
   
-  return response;
+  response.end(); return;
 }
 
 /**

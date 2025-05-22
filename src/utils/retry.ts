@@ -4,7 +4,7 @@
  * Provides configurable retry mechanisms with exponential backoff for handling
  * transient failures in network operations, API calls, and other error-prone tasks.
  */
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 /**
  * Retry options for configuring retry behavior
  */
@@ -91,7 +91,7 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions = {})
           error instanceof Error
             ? error instanceof Error
               ? error instanceof Error
-                ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))
+                ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error))
                 : String(error)
               : String(error)
             : String(error),

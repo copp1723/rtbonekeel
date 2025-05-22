@@ -5,13 +5,13 @@
  * including custom error classes, error boundaries, and error formatting.
  */
 
-import { debug, info, warn, error } from '../index.js';
-import { AppError, isAppError, toAppError } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { AppError, isAppError, toAppError } from '../index.js.js.js';
 import type { Request, Response, NextFunction } from 'express';
 import React from 'react';
 
 // Re-export error types for convenience
-export * from '../index.js';
+export * from '../index.js.js.js';
 
 /**
  * Error codes for common error scenarios
@@ -114,7 +114,7 @@ export function formatErrorForResponse(
     };
   }
 
-  return response;
+  response.end(); return;
 }
 
 /**

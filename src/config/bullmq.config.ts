@@ -6,9 +6,9 @@
  */
 
 import IORedis from 'ioredis';
-import type { ConnectionOptions, JobsOptions } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import type { ConnectionOptions, JobsOptions } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 
 // Redis client instance
 let redisClient: IORedis | null = null;
@@ -65,9 +65,9 @@ export async function initializeRedis(options?: ConnectionOptions): Promise<IORe
     redisClient.on('error', (err: Error) => {
       error({
         event: 'redis_connection_error',
-        errorMessage: err.message,
+        errorMessage: err?.message,
         timestamp: new Date().toISOString(),
-      }, `Redis connection error: ${err.message}`);
+      }, `Redis connection error: ${err?.message}`);
     });
 
     await redisClient.ping();
@@ -82,7 +82,7 @@ export async function initializeRedis(options?: ConnectionOptions): Promise<IORe
   } catch (err) {
     warn({
       event: 'redis_connection_failed',
-      errorMessage: isError(err) ? err.message : String(err),
+      errorMessage: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date().toISOString(),
     }, 'Redis connection failed, using in-memory mode');
@@ -125,7 +125,7 @@ export async function closeRedisConnection(): Promise<void> {
     } catch (err) {
       error({
         event: 'redis_connection_close_error',
-        errorMessage: isError(err) ? err.message : String(err),
+        errorMessage: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
         timestamp: new Date().toISOString(),
       }, 'Error closing Redis connection');

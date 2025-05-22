@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import logger from './logger.js';
+import logger from './logger.js.js';
 
 /**
  * Custom error class for application errors
@@ -109,7 +109,7 @@ export function errorHandlerMiddleware(
   );
 
   // Send the response
-  return response;
+  response.end(); return;
 }
 
 /**

@@ -3,7 +3,7 @@
  * 
  * This module provides rate limiting middleware for API endpoints.
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * API rate limiter middleware

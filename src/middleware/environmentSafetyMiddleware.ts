@@ -4,12 +4,12 @@
  * This middleware provides HTTP route protection based on environment,
  * preventing accidental production impact from test/staging environments.
  */
-import { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { getCurrentEnvironment, isProduction, isStaging } from '../services/environmentService.js';
-import { sendNotification } from '../services/notificationService.js';
-import { SafetyCheckOperation, performSafetyCheck } from '../services/environmentSafetyService.js';
+import type { Request, Response, NextFunction } from 'express';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { getCurrentEnvironment, isProduction, isStaging } from '../index.js.js.js';
+import { sendNotification } from '../index.js.js.js';
+import { SafetyCheckOperation, performSafetyCheck } from '../index.js.js.js';
 
 // Interface for route protection options
 interface ProtectRouteOptions {
@@ -66,7 +66,7 @@ export function protectRoute(options: ProtectRouteOptions) {
       // Operation is allowed, proceed
       next();
     } catch (err) {
-      const errorMessage = isError(err) ? err.message : String(err);
+      const errorMessage = isError(err) ? err?.message : String(err);
       
       // Log the error
       error({
@@ -140,7 +140,7 @@ export function preventProductionImpact() {
       // Operation is safe, proceed
       next();
     } catch (err) {
-      const errorMessage = isError(err) ? err.message : String(err);
+      const errorMessage = isError(err) ? err?.message : String(err);
       
       // Log the error
       error({

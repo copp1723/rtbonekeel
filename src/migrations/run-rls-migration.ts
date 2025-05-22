@@ -4,8 +4,8 @@
  * This script runs the RLS migration to enable Row Level Security
  * on all user-specific tables.
  */
-import { db } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
+import { db } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
@@ -37,7 +37,7 @@ async function runRlsMigration() {
       } catch (error) {
         error({
           event: 'rls_migration_statement_error',
-          error: error instanceof Error ? error.message : String(error),
+          error: error instanceof Error ? error?.message : String(error),
           statement: statement.substring(0, 100),
         }, 'Error executing SQL statement');
         
@@ -50,7 +50,7 @@ async function runRlsMigration() {
   } catch (error) {
     error({
       event: 'rls_migration_error',
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error?.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     }, 'Error running RLS migration');
     

@@ -10,17 +10,17 @@ interface Recipient {
  * Workflow Service
  * Handles multi-step workflows with memory, state transitions, and resumability
  */
-import { db } from '../index.js';
-import { isError } from '../index.js';
-import { workflows, WorkflowStatus, WorkflowStep, Workflow } from '../index.js';
+import { db } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { workflows, WorkflowStatus, WorkflowStep, Workflow } from '../index.js.js.js';
 import { eq, and } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 // Import step handlers
-import { stepHandlers } from './stepHandlers.js';
+import { stepHandlers } from './stepHandlers.js.js.js';
 // Import email service
-import { sendWorkflowCompletionEmail } from './workflowEmailServiceFixed.js';
+import { sendWorkflowCompletionEmail } from './workflowEmailServiceFixed.js.js.js';
 // Import logger
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 export interface WorkflowContext {
   [key: string]: unknown;
@@ -284,7 +284,7 @@ export async function runWorkflow(workflowId: string): Promise<Workflow> {
             error instanceof Error
               ? error instanceof Error
                 ? error instanceof Error
-                  ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))
+                  ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error))
                   : String(error)
                 : String(error)
               : String(error),
@@ -303,7 +303,7 @@ export async function runWorkflow(workflowId: string): Promise<Workflow> {
     // Extract a type‑safe error message
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? error.message
+        ? error?.message
         : String(error)
       : String(error);
 

@@ -3,10 +3,10 @@
  * 
  * Provides security monitoring and alerting functionality
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { db } from '../index.js';
-import { securityAuditLogs } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
+import { securityAuditLogs } from '../index.js.js.js';
 import { eq, and, gte, lte, count, sql } from 'drizzle-orm';
 import cron from 'node-cron';
 
@@ -91,7 +91,7 @@ export async function initializeSecurityMonitoring(options?: {
       try {
         await checkSecurityEvents();
       } catch (err) {
-        const errorMessage = isError(err) ? err.message : String(err);
+        const errorMessage = isError(err) ? err?.message : String(err);
         error({
           event: 'security_monitoring_error',
           error: errorMessage,
@@ -109,7 +109,7 @@ export async function initializeSecurityMonitoring(options?: {
 
     return true;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'security_monitoring_initialization_error',
       error: errorMessage,
@@ -144,7 +144,7 @@ async function checkSecurityEvents(): Promise<void> {
 
     debug({}, 'Security event check completed');
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'security_event_check_error',
       error: errorMessage,
@@ -190,7 +190,7 @@ async function checkFailedLogins(timeWindow: Date): Promise<void> {
       }
     }
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'failed_logins_check_error',
       error: errorMessage,
@@ -236,7 +236,7 @@ async function checkApiKeyCreation(timeWindow: Date): Promise<void> {
       }
     }
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'api_key_creation_check_error',
       error: errorMessage,
@@ -282,7 +282,7 @@ async function checkPermissionDenied(timeWindow: Date): Promise<void> {
       }
     }
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'permission_denied_check_error',
       error: errorMessage,
@@ -320,7 +320,7 @@ async function checkEncryptionFailures(timeWindow: Date): Promise<void> {
       }, `Security Alert: Excessive encryption failures detected`);
     }
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'encryption_failures_check_error',
       error: errorMessage,

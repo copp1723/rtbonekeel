@@ -11,7 +11,7 @@ import {
   configureNotification,
   getNotificationSettings,
   deleteNotification,
-} from '../index.js';
+} from '../index.js.js';
 const router = Router();
 /**
  * Configure email notifications for a workflow

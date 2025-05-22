@@ -11,9 +11,9 @@
  * - previousKeyId: Reference to previous version of this key
  */
 import { sql } from 'drizzle-orm';
-import { db } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { db } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 
 /**
  * Run the migration
@@ -57,7 +57,7 @@ export async function migrate(): Promise<boolean> {
     info('Migration completed successfully: Add API Key Security Fields');
     return true;
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error({
       event: 'migration_error',
       migration: 'add_api_key_security_fields',
@@ -96,7 +96,7 @@ export async function rollback(): Promise<boolean> {
     info('Rollback completed successfully: Add API Key Security Fields');
     return true;
   } catch (error) {
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     error({
       event: 'migration_rollback_error',
       migration: 'add_api_key_security_fields',

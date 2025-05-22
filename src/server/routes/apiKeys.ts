@@ -4,19 +4,19 @@
  * Enhanced with aggressive rate limiting and suspicious pattern detection
  */
 import express from 'express';
-import { isAuthenticated } from '../index.js';
+import { isAuthenticated } from '../index.js.js';
 import {
   rateLimiters,
   detectSuspiciousPatterns
-} from '../index.js';
-import { debug, info, warn, error } from '../index.js';
+} from '../index.js.js';
+import { debug, info, warn, error } from '../index.js.js';
 import {
   addApiKey,
   getApiKeys,
   getApiKeyById,
   updateApiKey,
   deleteApiKey,
-} from '../index.js';
+} from '../index.js.js';
 
 const router = express.Router();
 
@@ -66,7 +66,7 @@ router.get('/:id', async (req: any, res) => {
   } catch (error) {
     console.error('Error getting API key:', error);
 
-    if (error instanceof Error && error.message === 'API key not found or access denied') {
+    if (error instanceof Error && error?.message === 'API key not found or access denied') {
       return res.status(404).json({ error: 'API key not found or access denied' });
     }
 
@@ -150,7 +150,7 @@ router.put('/:id', async (req: any, res) => {
   } catch (error) {
     console.error('Error updating API key:', error);
 
-    if (error instanceof Error && error.message === 'API key not found or access denied') {
+    if (error instanceof Error && error?.message === 'API key not found or access denied') {
       return res.status(404).json({ error: 'API key not found or access denied' });
     }
 

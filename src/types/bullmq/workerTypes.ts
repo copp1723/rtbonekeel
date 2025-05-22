@@ -1,4 +1,4 @@
-import type { Job } from './jobTypes.js';
+import type { Job } from './jobTypes.js.js';
 
 export interface Worker<T = any> {
   name: string;

@@ -5,11 +5,11 @@
  * with enhanced encryption and security audit logging.
  */
 import { eq, and, desc } from 'drizzle-orm';
-import { isError } from '../index.js';
-import { db } from '../index.js';
-import { userCredentials } from '../index.js';
-import { encryptData, decryptData, isEncryptionConfigured, logSecurityEvent } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js.js';
+import { db } from '../index.js.js';
+import { userCredentials } from '../index.js.js';
+import { encryptData, decryptData, isEncryptionConfigured, logSecurityEvent } from '../index.js.js';
+import { debug, info, warn, error } from '../index.js.js';
 
 // Use the schema-generated types for database operations
 
@@ -41,14 +41,14 @@ function isCredentialError(error: unknown): error is { message: string } {
     'message' in error &&
     typeof (error instanceof Error
       ? error instanceof Error
-        ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error))
+        ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error))
         : String(error)
       : String(error)) === 'string'
   );
 }
 
 function getErrorMessage(error: unknown): string {
-  return isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
+  return isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
 }
 
 /**

@@ -117,7 +117,7 @@ export async function initializeJobQueue(): Promise<void> {
     // Set up worker
     await setupWorker();
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'job_queue_initialization_failed',
       error: errorMessage,
@@ -157,7 +157,7 @@ async function setupWorker(): Promise<void> {
 
       worker.on('failed', async (job: Job<TaskJobData> | undefined, err: Error) => {
         if (job?.id) {
-          const jobError = err.message;
+          const jobError = err?.message;
           await updateJobStatus(job.id, 'failed', jobError);
           
           if (job.attemptsMade < (job.opts?.attempts || 0)) {
@@ -173,7 +173,7 @@ async function setupWorker(): Promise<void> {
         timestamp: new Date().toISOString()
       }, 'Job worker initialized');
     } catch (err) {
-      const errorMessage = isError(err) ? err.message : String(err);
+      const errorMessage = isError(err) ? err?.message : String(err);
       error({
         event: 'job_worker_initialization_failed',
         error: errorMessage,
@@ -214,7 +214,7 @@ async function processInMemoryJobs(): Promise<void> {
       job.status = 'completed';
       job.updatedAt = new Date();
     } catch (err) {
-      const processError = err instanceof Error ? err.message : String(err);
+      const processError = err instanceof Error ? err?.message : String(err);
       error({
         originalError: err,
         taskId: job.taskId
@@ -261,7 +261,7 @@ async function processJob(jobId: string, taskId: string): Promise<boolean> {
     job.updatedAt = new Date();
     return true;
   } catch (err) {
-    const processError = err instanceof Error ? err.message : String(err);
+    const processError = err instanceof Error ? err?.message : String(err);
     job.status = 'failed';
     job.lastError = processError;
     job.updatedAt = new Date();

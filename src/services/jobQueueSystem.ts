@@ -4,14 +4,14 @@
  * Main entry point for the distributed job queue system
  * Initializes all components and provides a unified interface
  */
-import { initializeRedis, closeConnections } from './bullmqService.js';
-import { isError } from '../index.js';
-import { initializeQueueManager } from './queueManager.js';
-import { initializeIngestionWorker } from '../index.js';
-import { initializeProcessingWorker } from '../index.js';
-import { initializeInsightWorker } from '../index.js';
-import { initializeDistributedScheduler } from './distributedScheduler.js';
-import { debug, info, warn, error } from '../index.js';
+import { initializeRedis, closeConnections } from './bullmqService.js.js.js';
+import { isError } from '../index.js.js.js';
+import { initializeQueueManager } from './queueManager.js.js.js';
+import { initializeIngestionWorker } from '../index.js.js.js';
+import { initializeProcessingWorker } from '../index.js.js.js';
+import { initializeInsightWorker } from '../index.js.js.js';
+import { initializeDistributedScheduler } from './distributedScheduler.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 /**
  * Initialize the job queue system
  */
@@ -43,12 +43,12 @@ export async function initializeJobQueueSystem(): Promise<void> {
     );
   } catch (error) {
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error);
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error)
+        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
         : String(error)
       : String(error);
     error(
@@ -85,12 +85,12 @@ export async function shutdownJobQueueSystem(): Promise<void> {
     );
   } catch (error) {
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error);
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error)
+        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
         : String(error)
       : String(error);
     error(
@@ -105,9 +105,9 @@ export async function shutdownJobQueueSystem(): Promise<void> {
   }
 }
 // Export all components for direct access
-export * from './bullmqService.js';
-export * from './queueManager.js';
-export * from './distributedScheduler.js';
-export * from '../index.js';
-export * from '../index.js';
-export * from '../index.js';
+export * from './bullmqService.js.js.js';
+export * from './queueManager.js.js.js';
+export * from './distributedScheduler.js.js.js';
+export * from '../index.js.js.js';
+export * from '../index.js.js.js';
+export * from '../index.js.js.js';

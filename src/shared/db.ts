@@ -16,9 +16,9 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js/driver';
 import postgres, { Sql } from 'postgres';
 import dotenv from 'dotenv';
-import { debug, info, warn, error } from '../index.js';
-import * as schema from './schema.js';
-import * as reportSchema from './report-schema.js';
+import { debug, info, warn, error } from '../index.js.js';
+import * as schema from './schema.js.js';
+import * as reportSchema from './report-schema.js.js';
 
 // Load environment variables
 dotenv.config();
@@ -168,7 +168,7 @@ export async function closeDatabase(): Promise<void> {
   } catch (error) {
     error({
       event: 'database_close_error',
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error?.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
   }

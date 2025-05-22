@@ -5,7 +5,7 @@
  * It helps determine the current environment (development, staging, production)
  * and provides environment-specific configuration options.
  */
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 // Environment types
 export type Environment = 'development' | 'staging' | 'production' | 'test';

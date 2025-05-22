@@ -80,7 +80,7 @@ export async function initialize(options?: ConnectionOptions): Promise<boolean> 
   } catch (err) {
     error({
       event: 'bullmq_initialization_error',
-      errorMessage: isError(err) ? err.message : String(err),
+      errorMessage: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date().toISOString(),
     }, 'Error initializing BullMQ service');
@@ -305,7 +305,7 @@ export async function closeConnections(): Promise<void> {
   } catch (err) {
     error({
       event: 'close_connections_error',
-      errorMessage: isError(err) ? err.message : String(err),
+      errorMessage: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date().toISOString(),
     }, 'Error closing connections');

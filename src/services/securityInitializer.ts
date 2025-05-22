@@ -3,13 +3,13 @@
  * 
  * Initializes all security-related services
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { initializeKmsService } from './awsKmsService.js';
-import { initializeKmsEncryption } from './kmsEncryptionService.js';
-import { initializeKeyRotation } from './keyRotationService.js';
-import { initializeSecurityMonitoring } from './securityMonitoringService.js';
-import { runMigrations } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { initializeKmsService } from './awsKmsService.js.js.js';
+import { initializeKmsEncryption } from './kmsEncryptionService.js.js.js';
+import { initializeKeyRotation } from './keyRotationService.js.js.js';
+import { initializeSecurityMonitoring } from './securityMonitoringService.js.js.js';
+import { runMigrations } from '../index.js.js.js';
 
 /**
  * Initialize all security services
@@ -51,7 +51,7 @@ export async function initializeSecurity(options?: {
         await runMigrations();
         info('Database migrations completed successfully');
       } catch (err) {
-        const errorMessage = isError(err) ? err.message : String(err);
+        const errorMessage = isError(err) ? err?.message : String(err);
         error({
           event: 'migrations_error',
           error: errorMessage,
@@ -120,7 +120,7 @@ export async function initializeSecurity(options?: {
     info('Security services initialization completed');
     return true;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error({
       event: 'security_initialization_error',
       error: errorMessage,

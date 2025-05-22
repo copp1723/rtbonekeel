@@ -5,10 +5,10 @@
  * during application startup. It provides a robust system for tracking migration status
  * and handling migration failures.
  */
-import { db } from '../index.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -80,7 +80,7 @@ export class MigrationService {
       info('Migration service initialized');
     } catch (err) {
       error('Failed to initialize migration service', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       throw err;
@@ -124,7 +124,7 @@ export class MigrationService {
       debug(`Ensured migrations table exists: ${this.options.migrationTableName}`);
     } catch (err) {
       error('Failed to create migrations table', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       throw err;
@@ -145,7 +145,7 @@ export class MigrationService {
       return result.length > 0;
     } catch (err) {
       error(`Failed to check migration status for ${id}`, {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       throw err;
@@ -184,7 +184,7 @@ export class MigrationService {
       debug(`Recorded migration ${migration.name} as ${status}`);
     } catch (err) {
       error(`Failed to record migration ${migration.name}`, {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       // Don't throw here, as we don't want to fail the entire migration process
@@ -207,7 +207,7 @@ export class MigrationService {
       return result as { id: string; name: string; appliedAt: Date }[];
     } catch (err) {
       error('Failed to get applied migrations', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       throw err;
@@ -229,7 +229,7 @@ export class MigrationService {
       return sortedMigrations.filter((migration) => !appliedIds.has(migration.id));
     } catch (err) {
       error('Failed to get pending migrations', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       throw err;
@@ -274,7 +274,7 @@ export class MigrationService {
         }
       } catch (err) {
         status = 'failed';
-        errorMessage = isError(err) ? err.message : String(err);
+        errorMessage = isError(err) ? err?.message : String(err);
         error(`Migration failed with error: ${migration.name}`, {
           error: errorMessage,
           stack: err instanceof Error ? err.stack : undefined,

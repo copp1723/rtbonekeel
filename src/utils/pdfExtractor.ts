@@ -8,7 +8,7 @@
 
 import fs from 'fs';
 import pdfParse from 'pdf-parse';
-import { isError } from './errorUtils.js';
+import { isError } from './errorUtils.js.js.js';
 
 /**
  * PDF Extraction Mode
@@ -154,7 +154,7 @@ export async function extractTablesFromPDF(
     return result;
   } catch (error) {
     // Handle errors
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     return {
       tables: [],
       metadata: {
@@ -564,7 +564,7 @@ export async function extractTablesFromPDFFile(
     return extractTablesFromPDF(pdfBuffer, options);
   } catch (error) {
     // Handle errors
-    const errorMessage = isError(error) ? error.message : String(error);
+    const errorMessage = isError(error) ? error?.message : String(error);
     return {
       tables: [],
       metadata: {

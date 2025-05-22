@@ -5,9 +5,9 @@
  * for Row Level Security (RLS) policies to use.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { db } from '../index.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {
@@ -71,7 +71,7 @@ export async function setDbContext(req: AuthRequest, res: Response, next: NextFu
   } catch (error) {
     error({
       event: 'db_context_error',
-      error: error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error?.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     }, 'Error setting database context');
 

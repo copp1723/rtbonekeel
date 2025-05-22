@@ -1,8 +1,11 @@
+src/scripts/seed-staging-db.ts:    // Clear existing test users if any
 src/config/bullmq.config.ts:export function getQueueConfig(options?: Record<string, any>): Record<string, any> {
 src/config/bullmq.config.ts:export function getWorkerConfig(options?: Record<string, any>): Record<string, any> {
 src/config/bullmq.config.ts:export function getSchedulerConfig(options?: Record<string, any>): Record<string, any> {
 src/config/index.ts:    securityAuditLevel: (process.env.SECURITY_AUDIT_LEVEL || DEFAULT_SECURITY.securityAuditLevel) as any,
 src/config/index.ts:    logLevel: (process.env.LOG_LEVEL || DEFAULT_LOG_LEVELS[env]) as any,
+src/config/integrationConfig.ts:  [key: string]: any;
+src/config/integrationConfig.ts:      const config = row.config as Record<string, any>;
 src/utils/drizzleWrapper.ts:  async findMany(conditions: QueryCondition[] = [], limit = 100): Promise<R[]> {
 src/utils/drizzleWrapper.ts:  async getManyByKey<K extends keyof R>(key: K, value: R[K]): Promise<R[]> {
 src/utils/rateLimiter.ts:      // Notify waiting promises if any
@@ -53,8 +56,6 @@ src/utils/apiResponse.ts:  meta: Record<string, any> = {}
 src/utils/apiResponse.ts:  meta: Record<string, any> = {}
 src/utils/apiResponse.ts:  meta: Record<string, any> = {}
 src/utils/apiResponse.ts:  meta: Record<string, any> = {}
-src/utils/errorUtils.ts:  context: Record<string, any> = {}
-src/utils/errorUtils.ts:): Record<string, any> {
 src/utils/circuitBreaker.ts:  isFailure?: (error: any) => boolean;
 src/utils/retry.ts:  retryIf?: (error: any) => boolean;
 src/utils/retry.ts:  onRetry?: (error: any, attempt: number) => void;
@@ -68,21 +69,22 @@ src/services/enhancedApiKeyService.ts:export async function getApiKeyById(id: st
 src/services/enhancedApiKeyService.ts:): Promise<any> { // ANY AUDIT [2023-05-19]: Return type varies based on updated API key structure
 src/services/enhancedApiKeyService.ts:    // ANY AUDIT [2023-05-19]: Using 'any' for update data as structure varies by update type
 src/services/enhancedApiKeyService.ts:    const updateData: any = { // ANY AUDIT [2023-05-19]: Dynamic update object needs flexibility
+src/services/dbHealthCheck.ts:      if ((db as any).pool && typeof (db as any).pool.getStats === 'function') {
+src/services/dbHealthCheck.ts:        poolStatus = (db as any).pool.getStats();
 src/services/stepHandlers.d.ts:  export const stepHandlers: Record<string, (config: Record<string, any>, context: Record<string, any>) => Promise<unknown>>;
 src/services/performanceMonitor.ts:  appMetrics: any,
 src/services/performanceMonitor.ts:  cacheStats: any
 src/services/awsKmsService.ts:  details?: Record<string, any>,
 src/services/insightGenerator.ts:  metrics: Record<string, any>;
-src/services/bullmqService.standardized.ts:  options?: Record<string, any>
-src/services/bullmqService.standardized.ts:  processor: (job: any) => Promise<any>,
-src/services/bullmqService.standardized.ts:  options?: Record<string, any>
-src/services/bullmqService.standardized.ts:  options?: Record<string, any>
-src/services/bullmqService.standardized.ts:  options?: Record<string, any>
 src/services/securityMonitoringService.ts:    // Alert if any IP address exceeds the threshold
 src/services/securityMonitoringService.ts:    // Alert if any user exceeds the threshold
 src/services/securityMonitoringService.ts:    // Alert if any user exceeds the threshold
 src/services/bullmqService.ts:  options?: any
 src/services/bullmqService.ts:  options?: any
+src/services/environmentSafetyService.ts:  details?: Record<string, any>;
+src/services/environmentSafetyService.ts:  details: Record<string, any> = {},
+src/services/environmentSafetyService.ts:  details: Record<string, any> = {}
+src/services/environmentSafetyService.ts:  details: Record<string, any> = {}
 src/services/apiKeyService.ts:): Promise<any> {
 src/services/apiKeyService.ts:export async function getApiKeys(userId: string, service?: string): Promise<any[]> {
 src/services/apiKeyService.ts:export async function getApiKeyById(id: string, userId: string): Promise<any> {
@@ -95,11 +97,7 @@ src/services/queueManager.ts:      let queue: Queue<any> | null = null;
 src/services/queueManager.ts:      taskId: (data as any).taskId || null,
 src/services/sentryService.ts:export function captureError(err: unknown, context: Record<string, any> = {}): string {
 src/services/sentryService.ts:  context: Record<string, any> = {}
-src/services/healthService.ts:  details?: Record<string, any>;
-src/services/healthService.ts:  details?: Record<string, any>;
-src/services/healthService.ts:      } as any); // @ts-ignore - Ensuring all required properties are provided;
-src/services/healthService.ts:    } as any); // @ts-ignore - Ensuring all required properties are provided;
-src/services/healthService.ts:    // Check if there are any active schedules
+src/services/healthService.ts:  // Check if any service is not healthy
 src/services/emailTemplateService.ts:  tableRows?: any[][];
 src/services/emailTemplateService.ts:  [key: string]: any;
 src/services/emailTemplateService.ts:export async function sendTemplatedEmail(options: EmailOptions): Promise<any> {
@@ -124,8 +122,6 @@ src/services/jobQueue.ts:      ) as any;
 src/services/jobQueue.ts:      ;(jobQueue as any).on('completed', (job: { id: string | number | undefined }) => {
 src/services/jobQueue.ts:      ;(jobQueue as any).on('failed', (job: { id: string | number | undefined } | undefined, err: Error) => {
 src/services/jobQueue.ts:    await (jobQueue as any)?.clean(0, 0, 'completed');
-src/services/monitoringService.ts:  context: Record<string, any> = {},
-src/services/monitoringService.ts:      ? (error as any).isOperational
 src/services/mailerService.ts:  attachments?: any[];
 src/services/mailerService.ts:    const message: any = {
 src/services/emailTemplateEngine.ts:  [key: string]: any;
@@ -139,7 +135,6 @@ src/services/resultsPersistence.ts:    const reportMetadata = report.metadata as
 src/services/resultsPersistence.ts:  metadata?: Record<string, any>;
 src/services/resultsPersistence.ts:  metadata?: Record<string, any>;
 src/services/resultsPersistence.ts:    metadata?: Record<string, any>;
-src/services/jobQueue.standardized.ts:      taskQueue = bullmqService.createQueue(TASK_PROCESSOR_QUEUE as any, {
 src/services/credentialVault.ts:): Promise<{ credential: any; data: CredentialData } | null> {
 src/services/credentialVault.ts:): Promise<any | null> {
 src/services/credentialVault.ts:): Promise<Array<{ credential: any; data: CredentialData }>> {
@@ -147,12 +142,16 @@ src/services/taskParser.ts:  parameters?: Record<string, any>; // ANY AUDIT [202
 src/services/taskParser.ts:  metadata?: Record<string, any>; // ANY AUDIT [2023-05-19]: Metadata varies by task source and integration
 src/services/taskParser.ts:  context?: Record<string, any>; // ANY AUDIT [2023-05-19]: Context contains dynamic data from various sources
 src/services/taskParser.ts:  executionPlan?: any; // ANY AUDIT [2023-05-19]: Execution plans have dynamic structure based on task type
+src/services/notificationService.ts:  details: Record<string, any> = {},
 src/middleware/monitoringMiddleware.ts:  res.end = function(chunk?: any, encoding?: BufferEncoding, callback?: () => void): Response {
 src/middleware/monitoringMiddleware.ts:export function registerMonitoringMiddleware(app: any) {
+src/middleware/rbac.ts:      [key: string]: any;
+src/middleware/rbac.ts:    [key: string]: any;
 src/middleware/cache.ts:export function getCacheStats(): any {
 src/middleware/performance.ts:  res.end = function(chunk?: any, encoding?: BufferEncoding, callback?: () => void): Response {
 src/middleware/dbContextMiddleware.ts:      [key: string]: any;
 src/middleware/dbContextMiddleware.ts:    [key: string]: any;
+src/middleware/environmentSafetyMiddleware.ts:        userId: (req as any).user?.id,
 src/core/ai/openai.ts:          response_format: responseFormat as any,
 src/core/ai/openai.ts:    rawResponse?: any;
 src/core/ai/index.ts:  variables: Record<string, any>,
@@ -166,12 +165,26 @@ src/core/ai/promptTemplate.ts:  // ANY AUDIT [2023-05-19]: Using 'any' for parse
 src/core/ai/promptTemplate.ts:  let data: any; // ANY AUDIT [2023-05-19]: Template data structure cannot be known at compile time
 src/core/ai/promptTemplate.ts:  variables: Record<string, any> // ANY AUDIT [2023-05-19]: Template variables can be of any type depending on the prompt
 src/core/ai/promptTemplate.ts:    // ANY AUDIT [2023-05-19]: Object.entries returns [string, any] pairs for dynamic objects
+src/tools/extractCleanContent.ts:  parameters: any;
+src/tools/extractCleanContent.ts:  handler: (args: any) => Promise<any>;
+src/tools/extractCleanContent.ts:      } catch (error: any) {
+src/tools/archived/extractCleanContent.ts:  parameters: any;
+src/tools/archived/extractCleanContent.ts:  handler: (args: any) => Promise<any>;
+src/tools/archived/extractCleanContent.ts:      } catch (error: any) {
+src/tools/archived/summarizeText.ts:      } catch (error: any) {
+src/tools/summarizeText.ts:      } catch (error: any) {
 src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
 src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
 src/tests/healthCheckScheduler.test.ts:      expect.any(Function),
 src/tests/healthCheckScheduler.test.ts:    vi.mocked(cron.schedule).mockReturnValueOnce({ stop: mockStop } as any);
-src/api/server.ts:        userId: (req as any).user?.claims?.sub,
-src/api/server.ts:        userId: (req as any).user?.claims?.sub,
+src/api/server.ts:const errorHandlerMiddleware = (err: any, _req: any, res: any, _next: any) => {
+src/api/server.ts:    async (_req: any, res: any) => {
+src/api/server.ts:    async (req: any, res: any) => {
+src/api/server.ts:    async (_req: any, res: any) => {
+src/api/server.ts:    async (_req: any, res: any) => {
+src/api/server.ts:    async (_req: any, res: any) => {
+src/api/server.ts:  app.post('/api/tasks', rateLimiters.taskSubmission, async (req: any, res: any) => {
+src/api/server.ts:  app.post('/submit-task', rateLimiters.taskSubmission, async (req: any, res: any) => {
 src/shared/logger.ts:function writeToLogFile(filePath: string, level: LogLevel, message: string, meta?: any): void {
 src/shared/logger.ts:  [key: string]: any;
 src/shared/errorTypes.ts:  public readonly context: Record<string, any>;
@@ -192,12 +205,6 @@ src/shared/errorTypes.ts:    context: Record<string, any> = {}
 src/shared/errorTypes.ts:    context: Record<string, any> = {}
 src/shared/errorTypes.ts:export function isAppError(error: any): error is CodedError {
 src/shared/errorTypes.ts:  const context: Record<string, any> = {
-src/shared/middleware/rateLimiter.ts:    message: config.message || 'Too many requests, please try again later.',
-src/shared/middleware/rateLimiter.ts:    handler: (req: Request, res: Response, _next: NextFunction, options: any) => {
-src/shared/middleware/rateLimiter.ts:    message: 'Too many API requests, please try again after 15 minutes',
-src/shared/middleware/rateLimiter.ts:    message: 'Too many authentication attempts, please try again after 1 minute',
-src/shared/middleware/rateLimiter.ts:    message: 'Too many task submissions, please try again after 1 minute',
-src/shared/middleware/rateLimiter.ts:    message: 'Too many health check requests, please try again after 1 minute',
 src/shared/middleware/rbacMiddleware.ts:      [key: string]: any;
 src/shared/middleware/rbacMiddleware.ts:    [key: string]: any;
 src/shared/outputStorage.ts:  result: any,
@@ -207,6 +214,9 @@ src/shared/errorHandler.ts:  context: Record<string, any> = {},
 src/shared/errorHandler.ts:    retryCondition?: (error: any) => boolean;
 src/shared/errorHandler.ts:    context?: Record<string, any>;
 src/shared/schema.ts:  config: Record<string, any>;
+src/features/api/services/apiIngestService.ts:export async function ingestFromGoogleAdsApi(userId: string, apiKeyId: string, options: Record<string, any> = {}) {
+src/features/api/services/apiIngestService.ts: * Ingest data from any API
+src/features/api/services/apiIngestService.ts:export async function ingestFromApi(userId: string, apiKeyId: string, platform: string, options: Record<string, any> = {}) {
 src/features/workflow/services/attachmentParsers.ts:export const BaseRecordSchema = z.record(z.string(), z.any());
 src/features/workflow/services/attachmentParsers.ts:  records: Record<string, any>[];
 src/features/workflow/services/attachmentParsers.ts:    [key: string]: any;
@@ -275,7 +285,6 @@ src/server/routes/apiKeys.ts:router.get('/:id', async (req: any, res) => {
 src/server/routes/apiKeys.ts:router.post('/', rateLimiters.apiKeyCreation, async (req: any, res) => {
 src/server/routes/apiKeys.ts:router.put('/:id', async (req: any, res) => {
 src/server/routes/apiKeys.ts:router.delete('/:id', async (req: any, res) => {
-src/server/routes/monitoring.ts:export function registerMonitoringRoutes(app: any) {
 src/server/routes/auth.ts:      [key: string]: any;
 src/server/routes/auth.ts:    [key: string]: any;
 src/types/global.d.ts:  export const stepHandlers: Record<string, (config: Record<string, any>, context: Record<string, any>) => Promise<unknown>>;
@@ -283,6 +292,8 @@ src/types/attachmentParsers.d.ts:    records: Record<string, any>[];
 src/types/attachmentParsers.d.ts:      [key: string]: any;
 src/types/attachmentParsers.d.ts:    schema?: any;
 src/types/attachmentParsers.d.ts:    [key: string]: any;
+src/types/index.d.ts:        [key: string]: any;
+src/types/index.d.ts:      [key: string]: any;
 src/types/bullmq-service.d.ts:  export function createWorker(name: string, processor: (job: any) => Promise<void>, options?: any): Worker;
 src/types/healthService.d.ts:    details?: Record<string, any>;
 src/types/healthService.d.ts:    details?: Record<string, any>;
@@ -347,3 +358,8 @@ src/parsers/errors/ParserError.ts:  constructor(message: string, context: Record
 src/parsers/errors/ParserError.ts:  constructor(fileHash: string, context: Record<string, any> = {}) {
 src/prompts/index.ts:  dataPoints?: Record<string, any>; // Optional additional structured data
 src/prompts/index.ts:  contextInfo?: Record<string, any>; // Optional additional context
+src/prompts/insightPromptEngine.ts:    public outputSchema: Record<string, any> | null,
+src/prompts/insightPromptEngine.ts:): { prompt: string; schema: Record<string, any> | null } {
+src/prompts/insightPromptEngine.ts: * @returns Whether the output is valid and any error message
+src/prompts/insightPromptEngine.ts:  schema: Record<string, any> | null
+src/prompts/insightPromptEngine.ts:): { prompt: string; schema: Record<string, any> | null } {

@@ -2,8 +2,8 @@
  * Simplified error handling utilities
  * This module provides a cleaner, more consistent approach to error handling
  */
-import { isError, isErrorWithMessage, toErrorWithMessage } from './errorUtils.js';
-import { debug, info, warn, error } from '../index.js';
+import { isError, isErrorWithMessage, toErrorWithMessage } from './errorUtils.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 /**
  * Get a clean error message from any error type
@@ -11,11 +11,11 @@ import { debug, info, warn, error } from '../index.js';
  */
 export function getErrorMessage(error: unknown): string {
   if (isError(error)) {
-    return error.message;
+    return error?.message;
   }
   
   if (isErrorWithMessage(error)) {
-    return error.message;
+    return error?.message;
   }
   
   return String(error);

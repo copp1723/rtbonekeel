@@ -7,13 +7,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../index.js';
-import { fetchEmailsWithAttachments } from '../index.js';
-import { parseByExtension } from '../index.js';
-import { storeResults } from '../index.js';
-import { generateInsights } from '../index.js';
-import { sendAdminAlert } from '../index.js';
-import { isError } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js';
+import { fetchEmailsWithAttachments } from '../index.js.js';
+import { parseByExtension } from '../index.js.js';
+import { storeResults } from '../index.js.js';
+import { generateInsights } from '../index.js.js';
+import { sendAdminAlert } from '../index.js.js';
+import { isError } from '../index.js.js';
 // Types
 export interface EmailIngestOptions {
   intent?: string;
@@ -129,7 +129,7 @@ export async function ingestReportFromEmail(
             success: false,
             platform,
             filePaths: [filePath],
-            error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)) : String(error),
+            error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error)) : String(error),
           });
           // Send alert for processing errors
           await sendAdminAlert(
@@ -141,7 +141,7 @@ export async function ingestReportFromEmail(
               details: {
                 platform,
                 file: path.basename(filePath),
-                error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)) : String(error),
+                error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error)) : String(error),
               },
             }
           );
@@ -170,7 +170,7 @@ export async function ingestReportFromEmail(
           component: 'Email Ingestion',
           details: {
             platform,
-            error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)) : String(error),
+            error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error)) : String(error),
             elapsed: `${(Date.now() - startTime) / 1000} seconds`,
           },
         }
@@ -180,7 +180,7 @@ export async function ingestReportFromEmail(
       success: false,
       platform,
       filePaths: [],
-      error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)) : String(error),
+      error: isError(error) ? (error instanceof Error ? (error instanceof Error ? error?.message : String(error)) : String(error)) : String(error),
     };
   }
 }

@@ -4,7 +4,7 @@
  * Provides integration with OpenAI API for AI completions and embeddings
  * TODO: Replace with real implementation
  */
-import { info, warn, error } from '../index.js';
+import { info, warn, error } from '../index.js.js.js';
 
 /**
  * Completion parameters
@@ -91,7 +91,7 @@ export function initializeOpenAI(apiKey?: string): boolean {
   } catch (err) {
     // Log the error
     error('Failed to initialize OpenAI service', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Return failure
@@ -134,7 +134,7 @@ export async function runOpenAICompletion(
   } catch (err) {
     // Log the error
     error('Failed to run OpenAI completion', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -180,7 +180,7 @@ export async function runOpenAIChatCompletion(
   } catch (err) {
     // Log the error
     error('Failed to run OpenAI chat completion', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -214,7 +214,7 @@ export async function generateEmbeddings(
   } catch (err) {
     // Log the error
     error('Failed to generate embeddings', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error

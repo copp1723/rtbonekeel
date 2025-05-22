@@ -33,7 +33,7 @@ export async function startAllHealthChecks(cronExpression = '*/5 * * * *') {
     }
 
     // Import runAllHealthChecks function
-    const healthService = await import('./healthService');
+    const healthService = await import('./healthService.js.js.js');
     const { runAllHealthChecks } = healthService;
 
     // Schedule health checks
@@ -79,7 +79,7 @@ export async function startHealthCheck(checkName, cronExpression) {
     }
 
     // Import runHealthCheck function
-    const healthService = await import('./healthService');
+    const healthService = await import('./healthService.js.js.js');
     const { runHealthCheck } = healthService;
 
     // Schedule health check

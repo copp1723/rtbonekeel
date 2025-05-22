@@ -3,12 +3,12 @@
  *
  * Provides role-based access control for API keys
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { db } from '../index.js';
-import { apiKeys, SelectApiKey } from '../index.js'; // Added SelectApiKey
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
+import { apiKeys, SelectApiKey } from '../index.js.js.js'; // Added SelectApiKey
 import { eq, and } from 'drizzle-orm';
-import { logSecurityEvent } from './awsKmsService.js'; // Corrected import path
+import { logSecurityEvent } from './awsKmsService.js.js.js'; // Corrected import path
 
 // Define role hierarchy
 const roleHierarchy: Record<string, string[]> = {
@@ -157,7 +157,7 @@ export async function checkApiKeyPermission(
     }
     return permitted;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error(`Failed to check API key permission: ${errorMessage}`, {
       event: 'api_key_permission_check_error',
       error: errorMessage,
@@ -226,7 +226,7 @@ export async function updateApiKeyPermissions(
     });
     return true;
   } catch (err) {
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     error(
       `Failed to update API key permissions: ${errorMessage}`,
       {

@@ -11,7 +11,7 @@ const logger = {
 const info = (message) => console.info(message);
 const warn = (message) => console.warn(message);
 const error = (message) => console.error(message);
-const getErrorMessage = (err) => err instanceof Error ? err.message : String(err);
+const getErrorMessage = (err) => err instanceof Error ? err?.message : String(err);
 
 // Mock configuration
 const config = {
@@ -37,7 +37,7 @@ const performanceMonitoring = (_req, _res, next) => next();
 const setDbContext = (_req, _res, next) => next();
 const errorHandlerMiddleware = (err: any, _req: any, res: any, _next: any) => {
   console.error(err);
-  res.status(500).json({ error: err.message });
+  res.status(500).json({ error: err?.message });
 };
 
 // Mock service functions
@@ -119,14 +119,14 @@ async function startServer() {
   const app = express.default();
   
   // Dynamically import health and monitoring routes
-  const healthRoutesModule = await import('./routes/healthRoutes');
+  const healthRoutesModule = await import('./routes/healthRoutes.js.js');
   healthRoutes = healthRoutesModule.default;
   
-  const monitoringRoutesModule = await import('./routes/monitoringRoutes');
+  const monitoringRoutesModule = await import('./routes/monitoringRoutes.js.js');
   monitoringRoutes = monitoringRoutesModule.default;
   
   // Import health check scheduler
-  const healthCheckSchedulerModule = await import('../services/healthCheckScheduler');
+  const healthCheckSchedulerModule = await import('../.js.js');
   startAllHealthChecks = healthCheckSchedulerModule.startAllHealthChecks;
   
   app.use(express.json());
@@ -195,9 +195,9 @@ async function startServer() {
       info('Authentication routes registered successfully');
 
       // Import job queue and database dependencies
-      const { default: jobsRouter } = await import('./routes/jobsRouter');
-      const { default: workflowsRouter } = await import('./routes/workflowsRouter');
-      const { default: apiIngestRoutes } = await import('./routes/apiIngestRoutes');
+      const { default: jobsRouter } = await import('./routes/jobsRouter.js.js');
+      const { default: workflowsRouter } = await import('./routes/workflowsRouter.js.js');
+      const { default: apiIngestRoutes } = await import('./routes/apiIngestRoutes.js.js');
 
       // Register job management routes
       app.use('/api/jobs', jobsRouter);
@@ -230,7 +230,7 @@ async function startServer() {
     async (_req: any, res: any) => {
       try {
         // Import health service functions
-        const healthServiceModule = await import('../services/healthService');
+        const healthServiceModule = await import('../.js.js');
         const { getHealthSummary, getLatestHealthChecks } = healthServiceModule;
         const summary = await getHealthSummary();
         const checks = await getLatestHealthChecks();
@@ -289,7 +289,7 @@ async function startServer() {
     async (_req: any, res: any) => {
       try {
         // Dynamically import monitoring service
-        const monitoringServiceModule = await import('../services/monitoringService');
+        const monitoringServiceModule = await import('../.js.js');
         const { getPerformanceMetrics, getSystemMetrics, getMetricsHistory } = monitoringServiceModule;
         
         const performanceMetrics = getPerformanceMetrics();

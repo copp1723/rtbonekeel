@@ -1,6 +1,6 @@
-import type { Workflow } from '../index.js';
+import type { Workflow } from '../index.js.js.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info } from '../index.js';
+import { debug, info } from '../index.js.js.js';
 
 export const emailService = {
   /**
@@ -13,7 +13,7 @@ export const emailService = {
       // Implementation would go here
       return { success: true };
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
+      const message = err instanceof Error ? err?.message : 'Unknown error';
       return { success: false, message };
     }
   }

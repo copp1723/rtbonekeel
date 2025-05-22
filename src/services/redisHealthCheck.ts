@@ -3,12 +3,12 @@
  *
  * This service provides health check functionality for Redis.
  */
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 import { v4 as uuidv4 } from 'uuid';
-import { HealthCheckResult } from './healthService.js';
+import { HealthCheckResult } from './healthService.js.js.js';
 
 // Import Redis client - assuming it's exported from redisService.js
-import { getClient } from './redisService.js';
+import { getClient } from './redisService.js.js.js';
 
 /**
  * Check Redis health
@@ -82,7 +82,7 @@ export async function checkRedisHealth(): Promise<HealthCheckResult> {
       },
     };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err?.message : String(err);
     return {
       id,
       name,

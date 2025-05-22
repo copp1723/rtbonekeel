@@ -9,10 +9,10 @@ import { Queue, Worker, QueueScheduler } from 'bullmq';
 import type { ConnectionOptions, JobsOptions } from 'bullmq';
 import IORedis from 'ioredis';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { isError } from '../index.js';
-import { QUEUE_NAMES } from '../index.js';
+import { isError } from '../index.js.js.js';
+import { QUEUE_NAMES } from '../index.js.js.js';
 import type {
   BaseJobData,
   QueueRegistry,
@@ -21,7 +21,7 @@ import type {
   WorkflowJobData,
   ReportJobData,
   TaskJobData
-} from '../index.js';
+} from '../index.js.js.js';
 
 // Redis client instance
 let redisClient: IORedis | null = null;
@@ -101,9 +101,9 @@ export async function initializeRedis(options?: ConnectionOptions): Promise<IORe
     redisClient.on('error', (err: Error) => {
       error({
         event: 'redis_connection_error',
-        errorMessage: err.message,
+        errorMessage: err?.message,
         timestamp: new Date().toISOString(),
-      }, `Redis connection error: ${err.message}`);
+      }, `Redis connection error: ${err?.message}`);
     });
 
     await redisClient.ping();
@@ -117,7 +117,7 @@ export async function initializeRedis(options?: ConnectionOptions): Promise<IORe
   } catch (err) {
     warn({
       event: 'redis_connection_failed',
-      errorMessage: isError(err) ? err.message : String(err),
+      errorMessage: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date().toISOString(),
     }, 'Redis connection failed, using in-memory mode');
@@ -254,7 +254,7 @@ export async function closeConnections(): Promise<void> {
   } catch (err) {
     error({
       event: 'close_connections_error',
-      errorMessage: isError(err) ? err.message : String(err),
+      errorMessage: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       timestamp: new Date().toISOString(),
     }, 'Error closing connections');

@@ -4,10 +4,10 @@
  * This script seeds the staging database with representative, non-production test data.
  * It should only be run in the staging environment.
  */
-import { db } from '../index.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -50,7 +50,7 @@ async function seedUsers(): Promise<boolean> {
   } catch (err) {
     error({
       event: 'seed_users_error',
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, 'Failed to seed users');
     return false;
@@ -107,7 +107,7 @@ async function seedApiKeys(): Promise<boolean> {
   } catch (err) {
     error({
       event: 'seed_api_keys_error',
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, 'Failed to seed API keys');
     return false;
@@ -169,7 +169,7 @@ async function configureTestIntegrations(): Promise<boolean> {
   } catch (err) {
     error({
       event: 'configure_integrations_error',
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, 'Failed to configure third-party integrations');
     return false;
@@ -212,7 +212,7 @@ async function seedStagingDatabase(): Promise<void> {
     error({
       event: 'staging_db_seed_failed',
       timestamp: new Date().toISOString(),
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, '❌ Staging database seed failed');
     process.exit(1);
@@ -228,7 +228,7 @@ if (require.main === module) {
     })
     .catch((err) => {
       error('Seed process failed', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       process.exit(1);

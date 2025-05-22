@@ -4,10 +4,10 @@
  * This module provides functionality to run database migrations during application startup.
  * It integrates with the MigrationService to ensure all migrations are applied in the correct order.
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { migrationService, Migration } from '../index.js';
-import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { migrationService, Migration } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import migrations
-import addApiKeySecurityFields from './add-api-key-security-fields.js';
+import addApiKeySecurityFields from './add-api-key-security-fields.js.js.js';
 
 // List of migrations to register
 const migrations: Migration[] = [
@@ -71,7 +71,7 @@ export async function initializeMigrations(): Promise<void> {
       event: 'db_migration_system_initialization_error',
       timestamp: new Date().toISOString(),
       durationMs: totalDuration,
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, '❌ Failed to initialize migration system');
 
@@ -169,7 +169,7 @@ export async function runPendingMigrations(): Promise<MigrationResult[]> {
       event: 'db_migrations_error',
       timestamp: new Date().toISOString(),
       durationMs: totalDuration,
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, '❌ Failed to run migrations');
 
@@ -252,7 +252,7 @@ export async function runRlsMigration(): Promise<void> {
           timestamp: new Date().toISOString(),
           statementIndex: index,
           durationMs: statementDuration,
-          error: isError(err) ? err.message : String(err),
+          error: isError(err) ? err?.message : String(err),
           stack: err instanceof Error ? err.stack : undefined,
           statementPreview: statement.substring(0, 100) + (statement.length > 100 ? '...' : ''),
         }, `❌ Error executing SQL statement ${index + 1}/${statements.length}`);
@@ -279,7 +279,7 @@ export async function runRlsMigration(): Promise<void> {
       event: 'db_rls_migration_error',
       timestamp: new Date().toISOString(),
       durationMs: totalDuration,
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     }, '❌ Error running RLS migration');
 
@@ -359,7 +359,7 @@ export async function migrateDatabase(): Promise<void> {
       event: 'db_migration_failed',
       timestamp: new Date().toISOString(),
       durationMs: totalDuration,
-      error: isError(err) ? err.message : String(err),
+      error: isError(err) ? err?.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
       environment: process.env.NODE_ENV || 'development',
     }, '❌ Database migration failed');
@@ -388,7 +388,7 @@ if (require.main === module) {
     })
     .catch((err) => {
       error('Migration process failed', {
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
       process.exit(1);

@@ -12,7 +12,7 @@ const router = express.Router();
  * GET /api/monitoring/metrics
  * Returns current system metrics
  */
-router.get('/metrics', async (_req: Request, res: Response) => {
+router.get('/metrics', async (_req: Request, res: Response): Promise<void> => {
   try {
     // Mock implementation
     const metrics = {
@@ -35,7 +35,7 @@ router.get('/metrics', async (_req: Request, res: Response) => {
  * GET /api/monitoring/logs
  * Returns recent system logs
  */
-router.get('/logs', async (req: Request, res: Response) => {
+router.get('/logs', async (req: Request, res: Response): Promise<void> => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
     
@@ -58,7 +58,7 @@ router.get('/logs', async (req: Request, res: Response) => {
  * GET /api/monitoring/alerts
  * Returns active system alerts
  */
-router.get('/alerts', async (_req: Request, res: Response) => {
+router.get('/alerts', async (_req: Request, res: Response): Promise<void> => {
   try {
     // Mock implementation
     const alerts = [];

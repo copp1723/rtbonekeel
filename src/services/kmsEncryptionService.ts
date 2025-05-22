@@ -5,7 +5,7 @@
  * TODO: Replace with real implementation
  */
 // [2025-05-19] Updated to match actual file extension (.ts) per audit; see PR #[TBD]
-import { info, warn, error } from '../index.js';
+import { info, warn, error } from '../index.js.js.js';
 
 /**
  * Encryption options
@@ -42,7 +42,7 @@ export async function initializeKmsEncryption(
   } catch (err) {
     // Log the error
     error('Failed to initialize KMS encryption service', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Return failure
@@ -76,7 +76,7 @@ export async function encrypt(
   } catch (err) {
     // Log the error
     error('Failed to encrypt data', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -110,7 +110,7 @@ export async function decrypt(
   } catch (err) {
     // Log the error
     error('Failed to decrypt data', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -147,7 +147,7 @@ export async function generateDataKey(
   } catch (err) {
     // Log the error
     error('Failed to generate data key', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -184,7 +184,7 @@ export async function reEncrypt(
   } catch (err) {
     // Log the error
     error('Failed to re-encrypt data', {
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error

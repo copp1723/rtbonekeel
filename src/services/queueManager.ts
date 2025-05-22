@@ -5,11 +5,11 @@
  * Handles job scheduling, tracking, and persistence
  */
 import { JobsOptions } from 'bullmq';
-import { getErrorMessage } from '../index.js';
+import { getErrorMessage } from '../index.js.js.js';
 import { v4 as uuidv4 } from 'uuid';
-import { info, error } from '../index.js';
-import { db } from '../index.js';
-import { jobs } from '../index.js';
+import { info, error } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
+import { jobs } from '../index.js.js.js';
 import { eq } from 'drizzle-orm';
 import {
   initializeRedis,
@@ -18,7 +18,7 @@ import {
   QUEUE_NAMES,
   JOB_TYPES,
   defaultJobOptions,
-} from './bullmqService.js';
+} from './bullmqService.js.js.js';
 
 // Import the centralized BullMQ types
 import {
@@ -32,7 +32,7 @@ import {
   ReportJobData,
   WorkflowJobData,
   BaseJobData
-} from '../index.js';
+} from '../index.js.js.js';
 
 // Queue instances with proper typing
 let ingestionQueue: Queue<ReportJobData> | null = null;

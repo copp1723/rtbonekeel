@@ -3,8 +3,8 @@
  * Handles email sending functionality using SendGrid
  */
 import { MailService } from '...';
-import { isError } from '../index.js';
-import { db } from '../index.js';
+import { isError } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
 import { emailLogs } from '...';
 import { v4 as uuidv4 } from 'uuid';
 import { eq } from 'drizzle-orm';
@@ -111,13 +111,13 @@ export async function sendEmail(options: EmailSendOptions): Promise<EmailLog> {
     return updatedLog;
   } catch (error) {
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
       // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error);
+      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error);
     // Use type-safe error handling
     const errorMessage = isError(error)
       ? error instanceof Error
-        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error)
+        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
         : String(error)
       : String(error);
     // Use type-safe error handling
@@ -125,7 +125,7 @@ export async function sendEmail(options: EmailSendOptions): Promise<EmailLog> {
       ? error instanceof Error
         ? isError(error)
           ? error instanceof Error
-            ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error)
+            ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
             : String(error)
           : String(error)
         : String(error)
@@ -139,7 +139,7 @@ export async function sendEmail(options: EmailSendOptions): Promise<EmailLog> {
           ? error instanceof Error
             ? isError(error)
               ? error instanceof Error
-                ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error.message : String(error)) : String(error) : String(error)) : String(error)
+                ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
                 : String(error)
               : String(error)
             : String(error)

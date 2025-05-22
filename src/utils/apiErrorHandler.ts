@@ -1,13 +1,13 @@
-import { logError } from '../index.js';
+import { logError } from '../index.js.js.js';
 import { 
   isAppError, 
   toAppError, 
   AppError
-} from '../index.js';
+} from '../index.js.js.js';
 import {
   ERROR_CODES,
   type ErrorCode
-} from '../index.js';
+} from '../index.js.js.js';
 
 /**
  * Options for handling API errors

@@ -1,6 +1,18 @@
 // Main entry point for the AI Agent API server
 import dotenv from 'dotenv';
-import { startServer } from './api/server';
+import { startServer } from './api/server.js.js';
+
+// Re-export from modules
+export * from './api/index.js.js.js';
+export * from './services/index.js.js.js';
+export * from './utils/index.js.js.js';
+export * from './types/index.js.js.js';
+
+// Export logger functions for other modules
+export const info = (message) => console.info(message);
+export const warn = (message) => console.warn(message);
+export const error = (message) => console.error(message);
+export const debug = (message) => console.debug(message);
 
 // Load environment variables
 dotenv.config();
@@ -19,14 +31,8 @@ if (hostnameArg) {
   process.env.HOST = hostnameArg.split('=')[1];
 }
 
-// Export logger functions for other modules
-export const info = (message) => console.info(message);
-export const warn = (message) => console.warn(message);
-export const error = (message) => console.error(message);
-export const debug = (message) => console.debug(message);
-
 // Start the server
-startServer().catch((error) => {
+startServer().catch((error: Error) => {
   console.error('Failed to start server:', error);
   process.exit(1);
 });

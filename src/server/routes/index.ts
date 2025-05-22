@@ -3,15 +3,15 @@
  * Combines all route modules into a single router
  */
 import express from 'express';
-import apiKeysRouter from './apiKeys';
-import authRouter from './auth';
-import credentialsRouter from './credentials';
-import emailsRouter from './emails';
-import healthRouter from './health';
-import jobsRouter from './jobs';
-import monitoringRouter from './monitoring';
-import schedulesRouter from './schedules.refactored';
-import workflowsRouter from './workflows.refactored';
+import apiKeysRouter from './apiKeys.js.js';
+import authRouter from './auth.js.js';
+import credentialsRouter from './credentials.js.js';
+import emailsRouter from './emails.js.js';
+import healthRouter from './health.js.js';
+import jobsRouter from './jobs.js.js';
+import monitoringRouter from './monitoring.js.js';
+import schedulesRouter from './schedules.refactored.js.js';
+import workflowsRouter from './workflows.refactored.js.js';
 
 const router = express.Router();
 

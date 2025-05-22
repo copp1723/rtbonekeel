@@ -4,7 +4,7 @@
  * Provides functionality to generate insights from parsed data
  * TODO: Replace with real implementation
  */
-import { info, warn, error } from '../index.js';
+import { info, warn, error } from '../index.js.js.js';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -83,7 +83,7 @@ export async function generateInsights(
     // Log the error
     error('Failed to generate insights', {
       reportId,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -131,7 +131,7 @@ export async function getInsights(reportId: string): Promise<InsightResult[]> {
     // Log the error
     error('Failed to get insights', {
       reportId,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error
@@ -161,7 +161,7 @@ export async function deleteInsights(reportId: string): Promise<boolean> {
     // Log the error
     error('Failed to delete insights', {
       reportId,
-      error: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err?.message : String(err),
     });
 
     // Rethrow the error

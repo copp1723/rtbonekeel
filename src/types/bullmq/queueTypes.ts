@@ -10,8 +10,8 @@ import {
   WorkflowJobData, 
   ReportJobData, 
   TaskJobData 
-} from './jobTypes.js';
-import type { Job, JobOptions } from './jobTypes.js';
+} from './jobTypes.js.js';
+import type { Job, JobOptions } from './jobTypes.js.js';
 
 /**
  * Queue registry interface

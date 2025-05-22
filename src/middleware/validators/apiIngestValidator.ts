@@ -3,7 +3,7 @@
  * 
  * This module provides validation middleware for API ingestion requests.
  */
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * Validate API ingestion request

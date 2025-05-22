@@ -1,10 +1,10 @@
 import { sql } from 'drizzle-orm';
-import { isAppError, isError } from '../index.js';
-import { db } from '../index.js';
-import { tasks, jobQueue as jobQueueTable } from '../index.js';
+import { isAppError, isError } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
+import { tasks, jobQueue as jobQueueTable } from '../index.js.js.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 // Import types from bullmq
 import type {
@@ -100,10 +100,10 @@ export async function initializeJobQueue() {
         const IORedis = (await import('ioredis')).default;
         redisClient = new IORedis(redisOptions as RedisOptions);
         redisClient.on('error', (err: Error) => {
-          error('Redis client error: ' + err.message);
+          error('Redis client error: ' + err?.message);
         });
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = err instanceof Error ? err?.message : String(err);
         error('Failed to initialize Redis client: ' + errorMessage);
         throw err;
       }
@@ -127,7 +127,7 @@ export async function initializeJobQueue() {
           connection: redisClient,
         });
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = err instanceof Error ? err?.message : String(err);
         error('Failed to initialize queue scheduler: ' + errorMessage);
         throw err;
       }
@@ -144,7 +144,7 @@ export async function initializeJobQueue() {
     info('BullMQ initialized with Redis connection', { event: 'bullmq_initialized', timestamp: new Date().toISOString() });
     inMemoryMode = false;
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err?.message : String(err);
     const errorStack = err instanceof Error ? err.stack : undefined;
     warn(`Failed to initialize BullMQ, falling back to in-memory queue: ${errorMessage}`, {
       event: 'bullmq_initialization_failed',
@@ -217,10 +217,10 @@ async function setupWorker() {
 
       worker.on('failed', async (job: BullJob<TaskJobData> | undefined, error: Error) => {
         if (job?.id) {
-          await updateJobStatus(job.id, 'failed', error.message);
+          await updateJobStatus(job.id, 'failed', error?.message);
           if (job.opts.attempts > 1) {
             const nextRunAt = new Date(Date.now() + job.opts.backoff.delay);
-            await updateJobForRetry(job.id, error.message, nextRunAt);
+            await updateJobForRetry(job.id, error?.message, nextRunAt);
           }
         }
       });
@@ -228,7 +228,7 @@ async function setupWorker() {
       worker.run();
       info('BullMQ worker initialized with type-safe job processing');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = err instanceof Error ? err?.message : String(err);
       error('Failed to initialize type-safe BullMQ worker', { error: err });
       inMemoryMode = true;
     }
@@ -252,7 +252,7 @@ async function processInMemoryJobs() {
       job.updatedAt = new Date();
     } catch (error) {
       // Get error message
-      const errorMsg = isError(error) ? error.message : String(error);
+      const errorMsg = isError(error) ? error?.message : String(error);
       if (job.attempts >= job.maxAttempts) {
         job.status = 'failed';
         job.lastError = errorMsg;
@@ -292,7 +292,7 @@ async function processJob(_jobId: string, data: TaskJobData) {
     if (task.taskType === 'scheduledWorkflow' && task.taskData) {
       const workflowInfo = task.taskData as { workflowId: string };
       if (workflowInfo.workflowId) {
-        const { executeWorkflowById } = await import('./schedulerService.js');
+        const { executeWorkflowById } = await import('./schedulerService.js.js.js');
         await executeWorkflowById(workflowInfo.workflowId);
         await db.update(tasks).set({
           status: 'completed',
@@ -309,7 +309,7 @@ async function processJob(_jobId: string, data: TaskJobData) {
     }
     return true;
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err?.message : String(err);
     error(`Error in job processor for task ${data.taskId}: ${errorMessage}`, {
       originalError: err,
       taskId: data.taskId
@@ -355,11 +355,11 @@ export async function enqueueJob(taskId: string, priority: number = 1): Promise<
 
       ;(jobQueue as any).on('failed', (job: { id: string | number | undefined } | undefined, err: Error) => {
         const jobId = job?.id?.toString() || 'unknown';
-        error(`Job ${jobId} failed: ${err.message}`, { error: err });
-        updateJobStatus(jobId, 'failed', err.message);
+        error(`Job ${jobId} failed: ${err?.message}`, { error: err });
+        updateJobStatus(jobId, 'failed', err?.message);
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = err instanceof Error ? err?.message : String(err);
       error('Failed to initialize job queue: ' + errorMessage);
       throw err;
     }
@@ -539,7 +539,7 @@ export async function retryJob(jobId: string): Promise<boolean> {
     }
     return true;
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err?.message : String(err);
     const errorStack = err instanceof Error ? err.stack : undefined;
     error(`Error retrying job ${jobId}: ${errorMessage}`, {
       event: 'retry_job_error',
@@ -561,7 +561,7 @@ export async function cleanupCompletedJobs(): Promise<boolean> {
     await (jobQueue as any)?.clean(0, 0, 'completed');
     return true;
   } catch (err) {
-    error('Error cleaning up completed jobs: ' + (err instanceof Error ? err.message : String(err)), {
+    error('Error cleaning up completed jobs: ' + (err instanceof Error ? err?.message : String(err)), {
       event: 'cleanup_completed_jobs_error',
       originalError: err, // Include the original error object
       timestamp: new Date().toISOString(),

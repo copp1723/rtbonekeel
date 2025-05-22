@@ -8,8 +8,8 @@ import {
   getWorkflows,
   resetWorkflow,
   configureWorkflowNotifications,
-} from '../index.js';
-import { isAuthenticated } from '../index.js';
+} from '../index.js.js';
+import { isAuthenticated } from '../index.js.js';
 const router = express.Router();
 /**
  * Get all workflows (or filter by status)

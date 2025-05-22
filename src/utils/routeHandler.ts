@@ -4,7 +4,7 @@
  * Provides consistent response handling for Express route handlers
  */
 import type { Request, Response, NextFunction } from 'express';
-import { sendSuccess, sendError } from './apiResponse.js';
+import { sendSuccess, sendError } from './apiResponse.js.js.js';
 
 /**
  * Standard API response format

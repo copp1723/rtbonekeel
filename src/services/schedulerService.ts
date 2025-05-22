@@ -2,15 +2,15 @@
  * Scheduler Service
  * Manages and executes scheduled workflows based on cron expressions
  */
-import { db } from '../index.js';
-import { getErrorMessage } from '../index.js';
-import { schedules, taskLogs } from '../index.js';
-import { runWorkflow, getWorkflow } from './workflowService.js';
+import { db } from '../index.js.js.js';
+import { getErrorMessage } from '../index.js.js.js';
+import { schedules, taskLogs } from '../index.js.js.js';
+import { runWorkflow, getWorkflow } from './workflowService.js.js.js';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import cron from 'node-cron';
-import { enqueueJob } from './jobQueue.js';
-import { info, warn, error } from '../index.js';
+import { enqueueJob } from './jobQueue.js.js.js';
+import { info, warn, error } from '../index.js.js.js';
 
 // Define Schedule type based on the database schema
 export interface Schedule {

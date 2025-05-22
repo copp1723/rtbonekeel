@@ -5,9 +5,9 @@
  * reconnection logic, and graceful degradation when Redis is unavailable.
  */
 import type { Redis as RedisClient } from 'ioredis';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import loadConfig from '../index.js'; // Changed import path
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import loadConfig from '../index.js.js.js'; // Changed import path
 import { EventEmitter } from 'events'; // Added import
 
 // Redis connection options
@@ -162,7 +162,7 @@ export class RedisService extends EventEmitter {
         event: 'redis_service_init_error',
         timestamp: new Date().toISOString(),
         durationMs,
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: isError(err) ? err.stack : undefined,
       });
       return false;
@@ -265,7 +265,7 @@ export class RedisService extends EventEmitter {
         durationMs: totalDuration,
         host: this.options.host,
         port: this.options.port,
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: isError(err) ? err.stack : undefined,
       });
 
@@ -325,7 +325,7 @@ export class RedisService extends EventEmitter {
         timestamp: new Date().toISOString(),
         host: this.options.host,
         port: this.options.port,
-        error: err.message,
+        error: err?.message,
         stack: err.stack,
       });
     }
@@ -403,7 +403,7 @@ export class RedisService extends EventEmitter {
           durationMs: delay,
           host: this.options.host,
           port: this.options.port,
-          error: isError(err) ? err.message : String(err),
+          error: isError(err) ? err?.message : String(err),
           attempt: this.reconnectAttempts,
         });
       });
@@ -473,7 +473,7 @@ export class RedisService extends EventEmitter {
         timestamp: new Date().toISOString(),
         host: this.options.host,
         port: this.options.port,
-        error: isError(err) ? err.message : String(err),
+        error: isError(err) ? err?.message : String(err),
         stack: isError(err) ? err.stack : undefined,
       });
 
@@ -549,7 +549,7 @@ export class RedisService extends EventEmitter {
         }
       } catch (err: unknown) {
         error('Error closing Redis connection', {
-          error: isError(err) ? err.message : String(err),
+          error: isError(err) ? err?.message : String(err),
           stack: isError(err) ? err.stack : undefined,
         });
       } finally {

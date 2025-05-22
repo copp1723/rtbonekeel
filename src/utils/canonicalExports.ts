@@ -47,11 +47,11 @@
  * import { z } from 'zod';
  * 
  * // Internal modules (from other directories)
- * import { logger } from '../shared/logger.js';
- * import type { User } from '../types/user.js';
+ * import { logger } from '../index.js.js.js';
+ * import type { User } from '../index.js.js.js';
  * 
  * // Local modules (same directory)
- * import { validateInput } from './validation.js';
+ * import { validateInput } from './validation.js.js.js';
  */
 
 /**

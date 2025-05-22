@@ -4,8 +4,8 @@
  * This module provides utility functions for working with errors,
  * including type guards, error transformation, and error enrichment.
  */
-import { BaseError, ErrorCode } from '../index.js';
-import { InternalError } from '../index.js';
+import { BaseError, ErrorCode } from '../index.js.js';
+import { InternalError } from '../index.js.js';
 
 /**
  * Interface for objects with a message property
@@ -76,11 +76,11 @@ export function toErrorWithMessage(value: unknown): ErrorWithMessage {
  */
 export function getErrorMessage(error: unknown): string {
   if (isError(error)) {
-    return error.message;
+    return error?.message;
   }
   
   if (isErrorWithMessage(error)) {
-    return error.message;
+    return error?.message;
   }
   
   return String(error);
@@ -125,7 +125,7 @@ export function toBaseError(
   // If it's a standard Error, convert it
   if (isError(error)) {
     return new InternalError(
-      error.message || defaultMessage,
+      error?.message || defaultMessage,
       {},
       error
     );
@@ -134,7 +134,7 @@ export function toBaseError(
   // If it has a message property, use that
   if (isErrorWithMessage(error)) {
     return new InternalError(
-      error.message,
+      error?.message,
       {},
       error
     );

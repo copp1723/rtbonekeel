@@ -4,11 +4,11 @@
  * This service provides functions for monitoring and analyzing application performance.
  */
 import os from 'os';
-import { debug, info, warn, error } from '../index.js';
-import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { db } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
-import { getPerformanceMetrics } from '../index.js';
-import { getCacheStats } from '../index.js';
+import { getPerformanceMetrics } from '../index.js.js.js';
+import { getCacheStats } from '../index.js.js.js';
 
 // Performance metrics table name
 const PERFORMANCE_METRICS_TABLE = 'performance_metrics';

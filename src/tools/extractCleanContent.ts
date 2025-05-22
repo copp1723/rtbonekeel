@@ -124,7 +124,7 @@ export function extractCleanContent(): EkoTool {
         console.error('Error in extractCleanContent tool:', error);
         return {
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: error instanceof Error ? error?.message : String(error),
           url: args.url,
         };
       }

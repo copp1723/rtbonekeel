@@ -3,11 +3,11 @@
  * Securely stores and manages API keys for integrations
  */
 import { eq, and } from 'drizzle-orm';
-import { db } from '../index.js';
-import { apiKeys } from '../index.js';
-import { encryptData, decryptData, isEncryptionConfigured } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { db } from '../index.js.js.js';
+import { apiKeys } from '../index.js.js.js';
+import { encryptData, decryptData, isEncryptionConfigured } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
 
 /**
  * API Key data interface
@@ -76,7 +76,7 @@ export async function addApiKey(
   } catch (err) {
     const errorMessage = isError(err)
       ? err instanceof Error
-        ? err.message
+        ? err?.message
         : String(err)
       : String(err);
 
@@ -120,7 +120,7 @@ export async function getApiKeys(userId: string, service?: string): Promise<any[
   } catch (err) {
     const errorMessage = isError(err)
       ? err instanceof Error
-        ? err.message
+        ? err?.message
         : String(err)
       : String(err);
 
@@ -160,7 +160,7 @@ export async function getApiKeyById(id: string, userId: string): Promise<any> {
   } catch (err) {
     const errorMessage = isError(err)
       ? err instanceof Error
-        ? err.message
+        ? err?.message
         : String(err)
       : String(err);
 
@@ -240,7 +240,7 @@ export async function updateApiKey(
   } catch (err) {
     const errorMessage = isError(err)
       ? err instanceof Error
-        ? err.message
+        ? err?.message
         : String(err)
       : String(err);
 
@@ -266,7 +266,7 @@ export async function deleteApiKey(id: string, userId: string): Promise<boolean>
   } catch (err) {
     const errorMessage = isError(err)
       ? err instanceof Error
-        ? err.message
+        ? err?.message
         : String(err)
       : String(err);
 

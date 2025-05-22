@@ -8,10 +8,10 @@
 import {
   automotiveAnalystSystemPrompt,
   promptVersion as autoPromptVersion,
-} from './automotiveAnalystPrompt.js';
+} from './automotiveAnalystPrompt.js.js';
 import {
   AUTOMOTIVE_ANALYST_SYSTEM_PROMPT,
-} from './insightPromptEngine.js';
+} from './insightPromptEngine.js.js';
 /**
  * Tracks the version of the prompt router itself
  */

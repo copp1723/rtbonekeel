@@ -4,8 +4,8 @@
  * This module provides utility functions for working with different environments
  * and ensuring proper separation between them.
  */
-import { getCurrentEnvironment, isProduction, isStaging } from '../services/environmentService.js';
-import { debug, info, warn, error } from '../index.js';
+import { getCurrentEnvironment, isProduction, isStaging } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 
 /**
  * Get a visual indicator for the current environment (for UI display)

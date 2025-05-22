@@ -4,12 +4,12 @@
  * This service provides functionality for sending notifications through various channels
  * with environment-specific configurations for staging and production environments.
  */
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
-import { sendAdminAlert, sendImmediateAdminAlert, AlertSeverity } from './alertMailer.js';
-import * as sentryService from './sentryService.js';
-import * as datadogService from './datadogService.js';
-import { getCurrentEnvironment, isProduction, isStaging, getEnvConfig } from './environmentService.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from '../index.js.js.js';
+import { sendAdminAlert, sendImmediateAdminAlert, AlertSeverity } from './alertMailer.js.js.js';
+import * as sentryService from './sentryService.js.js.js';
+import * as datadogService from './datadogService.js.js.js';
+import { getCurrentEnvironment, isProduction, isStaging, getEnvConfig } from './environmentService.js.js.js';
 
 // Notification channel types
 export type NotificationChannel = 'email' | 'slack' | 'sentry' | 'datadog' | 'console';
@@ -363,7 +363,7 @@ export async function sendNotification(
       }
     }
   } catch (err) {
-    error(`Failed to send notification: ${isError(err) ? err.message : String(err)}`);
+    error(`Failed to send notification: ${isError(err) ? err?.message : String(err)}`);
   }
 }
 

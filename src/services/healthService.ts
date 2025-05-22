@@ -58,10 +58,10 @@ export async function runAllHealthChecks() {
       results.push({
         name: checkName,
         status: 'error',
-        message: err instanceof Error ? err.message : String(err),
+        message: err instanceof Error ? err?.message : String(err),
         responseTime: 0,
         lastChecked: new Date().toISOString(),
-        details: { error: err instanceof Error ? err.message : String(err) }
+        details: { error: err instanceof Error ? err?.message : String(err) }
       });
     }
   }

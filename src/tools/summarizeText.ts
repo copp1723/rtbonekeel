@@ -4,7 +4,7 @@
  * A tool that uses LLM to create concise summaries of provided text content.
  */
 import OpenAI from 'openai';
-import type { EkoTool } from './extractCleanContent.js';
+import type { EkoTool } from './extractCleanContent.js.js.js';
 
 // Define the interface for the tool's arguments
 export interface SummarizeTextArgs {
@@ -87,7 +87,7 @@ export function summarizeText(apiKey?: string): EkoTool {
       } catch (error: any) {
         console.error(
           '❌ Error summarizing text:',
-          error instanceof Error ? error.message : String(error)
+          error instanceof Error ? error?.message : String(error)
         );
         
         // Provide a more descriptive error for debugging
@@ -99,7 +99,7 @@ export function summarizeText(apiKey?: string): EkoTool {
         }
         
         throw new Error(
-          `Failed to summarize text: ${error instanceof Error ? error.message : String(error)}`
+          `Failed to summarize text: ${error instanceof Error ? error?.message : String(error)}`
         );
       }
     },

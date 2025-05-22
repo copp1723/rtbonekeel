@@ -5,8 +5,8 @@
  */
 import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from './errorUtils.js';
+import { debug, info, warn, error } from '../index.js.js.js';
+import { isError } from './errorUtils.js.js.js';
 
 /**
  * Standard error response structure
@@ -62,7 +62,7 @@ export function formatZodError(zodError: z.ZodError): ValidationErrorResponse {
     if (!formattedErrors[path]) {
       formattedErrors[path] = [];
     }
-    formattedErrors[path].push(err.message);
+    formattedErrors[path].push(err?.message);
   });
   
   return {
@@ -289,7 +289,7 @@ export function safeValidateData<T extends z.ZodType>(
     }
     
     // Handle non-Zod errors
-    const errorMessage = isError(err) ? err.message : String(err);
+    const errorMessage = isError(err) ? err?.message : String(err);
     return {
       success: false,
       error: {

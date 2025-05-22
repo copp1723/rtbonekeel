@@ -4,10 +4,10 @@
  * Exposes endpoints for log access with RBAC protection
  */
 import express, { Request, Response } from 'express';
-import { isAuthenticated } from '../auth.js';
-import { requireAccess } from '../../middleware/rbac.js';
-import { debug, error as logError } from '../../shared/logger.js';
-import { isError } from '../../utils/errorUtils.js';
+import { isAuthenticated } from '../index.js.js';
+import { requireAccess } from '../index.js.js';
+import { debug, error as logError } from '../index.js.js';
+import { isError } from '../index.js.js';
 
 const router = express.Router();
 
@@ -59,7 +59,7 @@ router.get('/',
         }
       });
     } catch (err) {
-      logError('Failed to fetch logs:', isError(err) ? err.message : String(err));
+      logError('Failed to fetch logs:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to fetch logs'
@@ -144,7 +144,7 @@ router.get('/:id',
         data: log
       });
     } catch (err) {
-      logError('Failed to fetch log details:', isError(err) ? err.message : String(err));
+      logError('Failed to fetch log details:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to fetch log details'
@@ -194,7 +194,7 @@ router.get('/download',
       res.setHeader('Content-Disposition', 'attachment; filename=logs.json');
       res.send(logData);
     } catch (err) {
-      logError('Failed to download logs:', isError(err) ? err.message : String(err));
+      logError('Failed to download logs:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to download logs'
@@ -232,7 +232,7 @@ router.delete('/',
         }
       });
     } catch (err) {
-      logError('Failed to delete logs:', isError(err) ? err.message : String(err));
+      logError('Failed to delete logs:', isError(err) ? err?.message : String(err));
       res.status(500).json({
         status: 'error',
         message: 'Failed to delete logs'

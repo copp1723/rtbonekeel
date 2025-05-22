@@ -23,7 +23,7 @@ export function isError(value: unknown): boolean {
  */
 export function getErrorMessage(err: unknown): string {
   if (err instanceof Error) {
-    return err.message;
+    return err?.message;
   }
   return String(err);
 }

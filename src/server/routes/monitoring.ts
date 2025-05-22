@@ -4,18 +4,18 @@
  * Exposes endpoints for monitoring dashboards and alerts with RBAC protection.
  */
 import express, { Request, Response, Application } from 'express';
-import { isAuthenticated } from '../auth.js';
-import { requireAccess } from '../../middleware/rbac.js';
-import { isError } from '../../utils/errorUtils.js';
-import { debug, info, warn, error as logError } from '../../shared/logger.js';
-import * as dashboardService from '../../services/dashboardService.js';
+import { isAuthenticated } from '../index.js.js';
+import { requireAccess } from '../index.js.js';
+import { isError } from '../index.js.js';
+import { debug, info, warn, error as logError } from '../index.js.js';
+import * as dashboardService from '../index.js.js';
 import {
   runAllHealthChecks,
   runHealthCheck,
   getLatestHealthChecks,
   getHealthLogs,
   getHealthSummary,
-} from '../../services/healthService.js';
+} from '../index.js.js';
 
 const router = express.Router();
 
@@ -32,12 +32,12 @@ router.get('/health/summary',
       res.json(summary);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get health summary');
       
       res.status(500).json({
         error: 'Failed to get health summary',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -56,12 +56,12 @@ router.get('/health/checks',
       res.json(checks);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get health checks');
       
       res.status(500).json({
         error: 'Failed to get health checks',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -80,12 +80,12 @@ router.post('/health/checks/run',
       res.json(results);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to run health checks');
       
       res.status(500).json({
         error: 'Failed to run health checks',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -113,12 +113,12 @@ router.post('/health/checks/:id/run',
       res.json(result);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to run health check');
       
       res.status(500).json({
         error: 'Failed to run health check',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -140,12 +140,12 @@ router.get('/health/logs/:id',
       res.json(logs);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get health logs');
       
       res.status(500).json({
         error: 'Failed to get health logs',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -165,12 +165,12 @@ router.get('/dashboard/error-rates',
       res.json(data);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get error rate data');
       
       res.status(500).json({
         error: 'Failed to get error rate data',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -190,12 +190,12 @@ router.get('/dashboard/performance',
       res.json(data);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get performance metrics');
       
       res.status(500).json({
         error: 'Failed to get performance metrics',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -215,12 +215,12 @@ router.get('/dashboard/database',
       res.json(data);
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to get database performance metrics');
       
       res.status(500).json({
         error: 'Failed to get database performance metrics',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -250,12 +250,12 @@ router.post('/settings',
       });
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to update monitoring settings');
       
       res.status(500).json({
         error: 'Failed to update monitoring settings',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }
@@ -297,12 +297,12 @@ router.post('/alerts',
       });
     } catch (err) {
       logError({
-        error: isError(err) ? err.message : String(err)
+        error: isError(err) ? err?.message : String(err)
       }, 'Failed to create alert');
       
       res.status(500).json({
         error: 'Failed to create alert',
-        message: isError(err) ? err.message : String(err),
+        message: isError(err) ? err?.message : String(err),
       });
     }
   }

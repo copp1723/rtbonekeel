@@ -6,21 +6,21 @@
  */
 import type { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { isAuthenticated } from '../index.js';
-import { debug, info, warn, error } from '../index.js';
-import { isError } from '../index.js';
+import { isAuthenticated } from '../index.js.js';
+import { debug, info, warn, error } from '../index.js.js';
+import { isError } from '../index.js.js';
 import {
   validateBody,
   validateParams,
   validateQuery
-} from '../index.js';
+} from '../index.js.js';
 import {
   getCredentialById,
   getCredentials,
   addCredential,
   updateCredential,
   deleteCredential
-} from '../index.js';
+} from '../index.js.js';
 
 const router = Router();
 
@@ -337,7 +337,7 @@ function maskSensitiveData(data: any): any {
  * Handle errors in a consistent way
  */
 function handleError(err: unknown, res: Response, defaultMessage: string): void {
-  const errorMessage = isError(err) ? err.message : String(err);
+  const errorMessage = isError(err) ? err?.message : String(err);
 
   error(`${defaultMessage}: ${errorMessage}`);
 

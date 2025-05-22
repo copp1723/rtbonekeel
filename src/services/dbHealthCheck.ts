@@ -3,11 +3,11 @@
  *
  * This service provides health check functionality for the database.
  */
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 import { sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
-import { HealthCheckResult } from './healthService.js';
-import { db } from '../index.js';
+import { HealthCheckResult } from './healthService.js.js.js';
+import { db } from '../index.js.js.js';
 
 /**
  * Check database health
@@ -60,7 +60,7 @@ export async function checkDatabaseHealth(): Promise<HealthCheckResult> {
       },
     };
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+    const errorMessage = err instanceof Error ? err?.message : String(err);
     return {
       id,
       name,

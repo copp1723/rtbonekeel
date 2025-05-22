@@ -4,7 +4,7 @@
  * This utility provides a simple in-memory rate limiter for controlling
  * the rate of operations like API calls or IMAP requests.
  */
-import { debug, info, warn, error } from '../index.js';
+import { debug, info, warn, error } from '../index.js.js.js';
 /**
  * Rate limiter options
  */

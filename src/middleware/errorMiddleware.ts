@@ -2,8 +2,8 @@
  * Error handling middleware for Express
  */
 import type { Request, Response, NextFunction } from 'express';
-import { sendError } from '../utils/apiResponse.js';
-import logger from '../shared/logger.js';
+import { sendError } from '../index.js.js.js';
+import logger from '../index.js.js.js';
 
 /**
  * Custom error class for application errors
@@ -38,7 +38,7 @@ export function errorHandler(
 ): void {
   // Log the error
   logger.error('Error occurred', {
-    error: err.message,
+    error: err?.message,
     stack: err.stack,
     path: req.path,
     method: req.method
