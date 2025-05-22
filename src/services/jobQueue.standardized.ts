@@ -5,16 +5,15 @@
  * Uses BullMQ for Redis-based queues with fallback to in-memory queues.
  */
 
-import { sql, and, eq, isNull } from '../index.js';
-import { isAppError, isError } from '../index.js';
+import { sql, eq } from '../index.js';
+import { isError } from '../index.js';
 import { db } from '../index.js';
 import { jobs as jobQueueTable, taskLogs as tasks } from '../index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../index.js';
+import { info, error } from '../index.js';
 
 // Import BullMQ types from their individual files
-import type { Queue, Worker, JobsOptions, Job, QueueScheduler } from 'bullmq';
-import type { Redis } from 'ioredis';
+import type { Queue, Worker, Job, QueueScheduler } from 'bullmq';
 
 // Import standardized BullMQ service
 import * as bullmqService from '../index.js';
@@ -161,7 +160,13 @@ async function setupWorker(): Promise<void> {
           await updateJobStatus(job.id, 'failed', jobError);
           
           if (job.attemptsMade < (job.opts?.attempts || 0)) {
-            const nextRunAt = new Date(Date.now() + calculateBackoff(job.attemptsMade, job.opts || { type: 'exponential', delay: 1000 }));
+            const nextRunAt = new Date(
+              Date.now() +
+                calculateBackoff(
+                  job.attemptsMade,
+                  job.opts?.backoff ?? { type: 'exponential', delay: 1000 },
+                ),
+            );
             await updateJobForRetry(job.id, jobError, nextRunAt);
           }
         }
@@ -187,10 +192,14 @@ async function setupWorker(): Promise<void> {
 /**
  * Calculate backoff delay based on attempts and options
  */
-function calculateBackoff(attemptsMade: number, opts: { type?: string, delay?: number }): number {
-  const type = opts.type || 'exponential';
-  const delay = opts.delay || 1000;
-  
+function calculateBackoff(
+  attemptsMade: number,
+  backoff: BackoffOptions | number | undefined,
+): number {
+  if (typeof backoff === 'number' || backoff === undefined) {
+    return (backoff ?? 1000) * (attemptsMade + 1);
+  }
+  const { type = 'exponential', delay = 1000 } = backoff;
   if (type === 'exponential') {
     return Math.pow(2, attemptsMade) * delay;
   }
@@ -345,7 +354,8 @@ export async function updateJobForRetry(jobId: string, error: string, nextRunAt:
     .update(jobQueueTable)
     .set({
       status: 'pending',
-      attempts: sql`${jobQueueTable.attempts} + 1`,
+      // Drizzle SQL tagged template keeps proper typing
+      attempts: sql<number>`${jobQueueTable.attempts} + 1`,
       lastError: error,
       nextRunAt,
       updatedAt: new Date(),
