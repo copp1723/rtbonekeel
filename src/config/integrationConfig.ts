@@ -5,10 +5,10 @@
  * with environment-specific settings (production, staging, development).
  * For staging, it uses test/mock endpoints instead of production ones.
  */
-import { db } from '../index.js.js.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 
 // Integration configuration interface
 export interface IntegrationConfig {

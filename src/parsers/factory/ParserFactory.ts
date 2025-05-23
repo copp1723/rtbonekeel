@@ -10,15 +10,15 @@ import crypto from 'crypto';
 import fs from 'fs';
 import { createReadStream } from 'fs';
 
-import type { FileType } from '../index.js.js';
-import { IParser } from '../index.js.js';
-import type { UnsupportedFileTypeError, DuplicateFileError } from '../index.js.js';
-import { debug, info, warn, error } from '../index.js.js';
-import { recordDuplicate } from '../index.js.js';
+import type { FileType } from '../index.js';
+import { IParser } from '../index.js';
+import type { UnsupportedFileTypeError, DuplicateFileError } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { recordDuplicate } from '../index.js';
 
 // Import database connection for deduplication
 // This will need to be created or imported
-import { db } from '../index.js.js';
+import { db } from '../index.js';
 
 /**
  * Factory for creating parser instances

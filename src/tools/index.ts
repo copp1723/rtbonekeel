@@ -6,5 +6,5 @@
  */
 
 // Re-export all tools using the canonical pattern
-export * from './extractCleanContent.js.js.js';
-export * from './summarizeText.js.js.js';
+export * from './extractCleanContent.js';
+export * from './summarizeText.js';

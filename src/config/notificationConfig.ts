@@ -5,8 +5,8 @@
  * with different settings for development, staging, and production environments.
  */
 import { z } from 'zod';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { getCurrentEnvironment } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
+import { getCurrentEnvironment } from '../index.js';
 
 // Notification channel configuration schema
 export const NotificationChannelSchema = z.object({

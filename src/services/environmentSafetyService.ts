@@ -5,13 +5,13 @@
  * from test or staging environments. It implements checks and validations
  * to ensure that operations are only performed in the appropriate environment.
  */
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
-import { getCurrentEnvironment, isProduction, isStaging, isDevelopment } from './environmentService.js.js.js';
-import { sendNotification } from './notificationService.js.js.js';
+import { debug, info, warn, error } from '../index';
+import { isError } from '../index';
+import { getCurrentEnvironment, isProduction, isStaging, isDevelopment } from './environmentService';
+import { sendNotification } from './notificationService';
 
 // Define operation types that require environment safety checks
-export type SafetyCheckOperation = 
+export type SafetyCheckOperation =
   | 'database_migration'
   | 'data_deletion'
   | 'mass_email'
@@ -123,10 +123,10 @@ export function isOperationAllowed(
 ): boolean {
   const currentEnv = getCurrentEnvironment();
   const restriction = operationRestrictions[operation];
-  
+
   // Use custom allowed environments if provided
   const allowedEnvironments = customAllowedEnvironments || restriction.allowedEnvironments;
-  
+
   return allowedEnvironments.includes(currentEnv);
 }
 
@@ -155,7 +155,7 @@ export async function performSafetyCheck(
   const currentEnv = getCurrentEnvironment();
   const allowed = isOperationAllowed(operation, customAllowedEnvironments);
   const restriction = operationRestrictions[operation];
-  
+
   // Log the operation attempt
   operationLog.push({
     operation,
@@ -164,11 +164,11 @@ export async function performSafetyCheck(
     allowed,
     details,
   });
-  
+
   // If not allowed, send notification and throw error
   if (!allowed) {
     const message = `Operation "${restriction.description}" is not allowed in ${currentEnv} environment`;
-    
+
     // Send notification
     await sendNotification(
       message,
@@ -180,10 +180,10 @@ export async function performSafetyCheck(
         details,
       }
     );
-    
+
     throw new Error(message);
   }
-  
+
   // If allowed but requires audit, log it
   if (restriction.requiresAudit) {
     info({
@@ -194,7 +194,7 @@ export async function performSafetyCheck(
       details,
     }, `Operation "${restriction.description}" allowed in ${currentEnv} environment`);
   }
-  
+
   return true;
 }
 
@@ -214,11 +214,11 @@ export async function verifyCrossEnvironmentSafety(
   details: Record<string, any> = {}
 ): Promise<boolean> {
   const currentEnv = getCurrentEnvironment();
-  
+
   // Verify that we're running in the source environment
   if (currentEnv !== sourceEnv) {
     const message = `Cross-environment operation must be initiated from ${sourceEnv} environment, but current environment is ${currentEnv}`;
-    
+
     await sendNotification(
       message,
       'error',
@@ -230,14 +230,14 @@ export async function verifyCrossEnvironmentSafety(
         details,
       }
     );
-    
+
     throw new Error(message);
   }
-  
+
   // Check for dangerous operations
   if (targetEnv === 'production' && sourceEnv !== 'staging') {
     const message = `Production operations can only be initiated from staging environment`;
-    
+
     await sendNotification(
       message,
       'error',
@@ -248,10 +248,10 @@ export async function verifyCrossEnvironmentSafety(
         details,
       }
     );
-    
+
     throw new Error(message);
   }
-  
+
   // Log the cross-environment operation
   info({
     event: 'cross_environment_operation',
@@ -260,7 +260,7 @@ export async function verifyCrossEnvironmentSafety(
     targetEnv,
     details,
   }, `Cross-environment operation "${operationRestrictions[operation].description}" from ${sourceEnv} to ${targetEnv}`);
-  
+
   return true;
 }
 
@@ -276,22 +276,22 @@ export async function preventProductionImpact(
   details: Record<string, any> = {}
 ): Promise<boolean> {
   const currentEnv = getCurrentEnvironment();
-  
+
   // If we're in production, no need for this check
   if (isProduction()) {
     return true;
   }
-  
+
   // Check if the operation could impact production
   const couldImpactProduction = details.targetEnvironment === 'production' ||
     details.affectsProduction === true ||
     details.productionEndpoint ||
     details.productionDatabase ||
     details.productionResources;
-  
+
   if (couldImpactProduction) {
     const message = `Operation "${operationRestrictions[operation].description}" in ${currentEnv} environment could impact production`;
-    
+
     await sendNotification(
       message,
       'critical',
@@ -301,10 +301,10 @@ export async function preventProductionImpact(
         details,
       }
     );
-    
+
     throw new Error(message);
   }
-  
+
   return true;
 }
 

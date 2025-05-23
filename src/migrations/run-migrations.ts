@@ -3,9 +3,9 @@
  * 
  * This script runs database migrations in sequence
  */
-import { db } from '../index.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
+import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
 import { sql } from 'drizzle-orm';
 import dotenv from 'dotenv';
 
@@ -13,7 +13,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import migrations
-import addApiKeySecurityFields from './add-api-key-security-fields.js.js.js';
+import addApiKeySecurityFields from './add-api-key-security-fields.js';
 
 // List of migrations to run in order
 const migrations = [

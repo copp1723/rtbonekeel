@@ -1,10 +1,10 @@
 /**
  * API Response Formatter
- * 
+ *
  * Provides consistent response formatting for API endpoints
  */
 import type { Response } from 'express';
-import { getErrorMessage } from './errorHandling.js.js.js';
+import { getErrorMessage } from './errorHandling';
 
 /**
  * Standard success response
@@ -19,7 +19,7 @@ export function sendSuccess<T>(
   } = {}
 ): void {
   const { message = 'Success', statusCode = 200, meta = {} } = options;
-  
+
   res.status(statusCode).json({
     status: 'success',
     message,
@@ -41,25 +41,25 @@ export function sendError(
     meta?: Record<string, any>;
   } = {}
 ): void {
-  const { 
-    statusCode = 500, 
+  const {
+    statusCode = 500,
     defaultMessage = 'An error occurred',
     includeStack = process.env.NODE_ENV === 'development',
     meta = {}
   } = options;
-  
+
   const errorMessage = getErrorMessage(error) || defaultMessage;
   const errorResponse: Record<string, any> = {
     status: 'error',
     message: errorMessage,
     ...meta,
   };
-  
+
   // Include stack trace in development
   if (includeStack && error instanceof Error && error.stack) {
     errorResponse.stack = error.stack;
   }
-  
+
   res.status(statusCode).json(errorResponse);
 }
 
@@ -134,19 +134,19 @@ export function createRouteHandler<Req, Res>(
   return async (req: Req, res: Response): Promise<void> => {
     try {
       const result = await handler(req, res);
-      
+
       // If the response has already been sent, don't send again
       if (res.headersSent) {
         return;
       }
-      
+
       sendSuccess(res, result);
     } catch (error) {
       // If the response has already been sent, don't send again
       if (res.headersSent) {
         return;
       }
-      
+
       sendError(res, error);
     }
   };

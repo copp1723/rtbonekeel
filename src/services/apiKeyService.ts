@@ -3,11 +3,11 @@
  * Securely stores and manages API keys for integrations
  */
 import { eq, and } from 'drizzle-orm';
-import { db } from '../index.js.js.js';
-import { apiKeys } from '../index.js.js.js';
-import { encryptData, decryptData, isEncryptionConfigured } from '../index.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
+import { db } from '../index';
+import { apiKeys } from '../index';
+import { encryptData, decryptData, isEncryptionConfigured } from '../index';
+import { debug, info, warn, error } from '../index';
+import { isError } from '../index';
 
 /**
  * API Key data interface

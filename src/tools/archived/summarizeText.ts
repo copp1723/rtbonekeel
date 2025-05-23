@@ -6,7 +6,7 @@
  */
 
 // Summarize text tool implementation
-import { EkoTool } from './extractCleanContent.js.js.js';
+import { EkoTool } from './extractCleanContent.js';
 import OpenAI from 'openai';
 interface SummarizeTextArgs {
   text: string;

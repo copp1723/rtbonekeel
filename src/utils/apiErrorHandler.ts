@@ -1,13 +1,13 @@
-import { logError } from '../index.js.js.js';
+import { logError } from '../index.js';
 import { 
   isAppError, 
   toAppError, 
   AppError
-} from '../index.js.js.js';
+} from '../index.js';
 import {
   ERROR_CODES,
   type ErrorCode
-} from '../index.js.js.js';
+} from '../index.js';
 
 /**
  * Options for handling API errors
@@ -60,11 +60,11 @@ export function handleApiError(
   // Convert to AppError if it's not already
   const appError = isAppError(error) 
     ? error 
-    : toAppError(error, defaultMessage);
+    : toAppError(error, defaultCode);
   
-  // Set default code if not set
-  if (!appError.code || appError.code === 'UNEXPECTED_ERROR') {
-    appError.code = defaultCode;
+  // Set message if not already set
+  if (!appError.message) {
+    appError.message = defaultMessage;
   }
   
   // Add context if provided

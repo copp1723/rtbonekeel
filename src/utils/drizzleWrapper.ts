@@ -1,7 +1,7 @@
-import { db } from '../index.js.js.js';
-import type { PgTable } from './drizzleImports.js.js.js';
+import { db } from '../index.js';
+import type { PgTable } from './drizzleImports.js';
 import type { QueryResultRow } from 'pg';
-import { sql } from '../index.js.js.js';
+import { sql } from '../index.js';
 
 // Export QueryCondition type for use in other files
 export type QueryCondition = {

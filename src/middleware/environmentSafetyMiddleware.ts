@@ -5,11 +5,11 @@
  * preventing accidental production impact from test/staging environments.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
-import { getCurrentEnvironment, isProduction, isStaging } from '../index.js.js.js';
-import { sendNotification } from '../index.js.js.js';
-import { SafetyCheckOperation, performSafetyCheck } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { getCurrentEnvironment, isProduction, isStaging } from '../index.js';
+import { sendNotification } from '../index.js';
+import { SafetyCheckOperation, performSafetyCheck } from '../index.js';
 
 // Interface for route protection options
 interface ProtectRouteOptions {

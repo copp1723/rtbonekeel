@@ -5,11 +5,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { startAllHealthChecks, stopAllHealthChecks, getHealthCheckSchedule } from '../services/healthCheckScheduler.js.js.js';
-import * as healthService from '../services/healthService.js.js.js';
+import { startAllHealthChecks, stopAllHealthChecks, getHealthCheckSchedule } from '../services/healthCheckScheduler.js';
+import * as healthService from '../services/healthService.js';
 import cron from 'node-cron';
 import type { ScheduledTask } from 'node-cron';
-import { info, warn, error } from '../shared/logger.js.js.js';
+import { info, warn, error } from '../shared/logger.js';
 
 // Mock logger functions
 vi.mock('../shared/logger', () => ({

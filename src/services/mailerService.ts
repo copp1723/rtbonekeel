@@ -110,41 +110,11 @@ export async function sendEmail(options: EmailSendOptions): Promise<EmailLog> {
       .where(eq(emailLogs.id, logId.toString()));
     return updatedLog;
   } catch (error) {
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error);
     // Use type-safe error handling
-    const errorMessage = isError(error)
-      ? error instanceof Error
-        ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-        : String(error)
-      : String(error);
-    // Use type-safe error handling
-    const errorMessage = isError(error)
-      ? error instanceof Error
-        ? isError(error)
-          ? error instanceof Error
-            ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-            : String(error)
-          : String(error)
-        : String(error)
-      : String(error);
+    const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
     // Handle error
     console.error('Failed to send email:', error);
     status = 'failed';
-    errorMessage =
-      error instanceof Error
-        ? isError(error)
-          ? error instanceof Error
-            ? isError(error)
-              ? error instanceof Error
-                ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-                : String(error)
-              : String(error)
-            : String(error)
-          : String(error)
-        : String(error);
     // Update log with failure
     await db
       .update(emailLogs)

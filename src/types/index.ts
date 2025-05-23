@@ -1,5 +1,5 @@
 // Types barrel exports
-export * from './bullmq/index.js.js';
+export * from './bullmq/index';
 
 // Database types
 export interface SelectApiKey {

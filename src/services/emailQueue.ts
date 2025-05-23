@@ -1,11 +1,11 @@
-import { db } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
-import { emailQueue as emailQueueTable } from '../index.js.js.js';
+import { db } from '../index';
+import { isError } from '../index';
+import { emailQueue as emailQueueTable } from '../index';
 import { eq } from 'drizzle-orm';
-import { EmailSendOptions, sendEmail as sendEmailService } from './mailerService.js.js.js';
+import { EmailSendOptions, sendEmail as sendEmailService } from './mailerService';
 import { v4 as uuidv4 } from 'uuid';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { formatError } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index';
+import { formatError } from '../index';
 interface EmailQueueOptions {
   maxRetries?: number;
   retryDelay?: number;
@@ -99,24 +99,6 @@ class EmailQueueService {
         } catch (error) {
       // Use type-safe error handling
       const errorMessage = isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error);
-      // Use type-safe error handling
-      const errorMessage = isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error);
-          // Use type-safe error handling
-          const errorMessage = isError(error)
-            ? error instanceof Error
-              ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-              : String(error)
-            : String(error);
-          // Use type-safe error handling
-          const errorMessage = isError(error)
-            ? error instanceof Error
-              ? isError(error)
-                ? error instanceof Error
-                  ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-                  : String(error)
-                : String(error)
-              : String(error)
-            : String(error);
           const attempts = (email.attempts ?? 0) + 1;
           const status = attempts >= (email.maxAttempts ?? this.maxRetries) ? 'failed' : 'pending';
           // Calculate exponential backoff delay
@@ -126,18 +108,7 @@ class EmailQueueService {
             .set({
               status,
               attempts,
-              lastError:
-                error instanceof Error
-                  ? isError(error)
-                    ? error instanceof Error
-                      ? isError(error)
-                        ? error instanceof Error
-                          ? isError(error) ? (error instanceof Error ? isError(error) ? (error instanceof Error ? error?.message : String(error)) : String(error) : String(error)) : String(error)
-                          : String(error)
-                        : String(error)
-                      : String(error)
-                    : String(error)
-                  : String(error),
+              lastError: errorMessage,
               updatedAt: new Date(),
               processAfter: status === 'pending' ? new Date(Date.now() + retryDelay) : null,
             })

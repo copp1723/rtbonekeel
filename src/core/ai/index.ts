@@ -4,7 +4,7 @@
  * This module exports the AI core functionality, including OpenAI integration,
  * prompt templates, audit logging, and model fallback.
  */
-import { OpenAIService, openai } from './openai.js.js.js';
+import { OpenAIService, openai } from './openai.js';
 import {
   initializePromptSystem,
   getPromptTemplate,
@@ -14,20 +14,20 @@ import {
   checkForPromptUpdates,
   type PromptTemplate,
   type PromptMetadata,
-} from './promptTemplate.js.js.js';
+} from './promptTemplate.js';
 import {
   logLLMInteraction,
   getLLMUsageStats,
   getRecentLLMInteractions,
   calculateLLMCost,
   type LLMLogEntry,
-} from './llmAuditLogger.js.js.js';
+} from './llmAuditLogger.js';
 import {
   ModelFallbackManager,
   DEFAULT_MODELS,
   type ModelConfig,
-} from './modelFallback.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
+} from './modelFallback.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Create a model fallback manager with the default OpenAI service
 const modelFallbackManager = new ModelFallbackManager(openai);

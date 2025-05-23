@@ -4,12 +4,12 @@
  * This service provides secure storage and retrieval of credentials
  * with encryption and user isolation.
  */
-import { db } from '../index.js.js.js';
-import { credentials } from '../index.js.js.js';
+import { db } from '../index';
+import { credentials } from '../index';
 import { eq, and } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { encryptData, decryptData, isEncryptionConfigured } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index';
+import { encryptData, decryptData, isEncryptionConfigured } from '../index';
+import { isError } from '../index';
 
 /**
  * Credential data interface

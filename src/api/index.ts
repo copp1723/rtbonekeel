@@ -1,10 +1,10 @@
 // API barrel exports
-export * from './server.js.js';
-export * from './routes/healthRoutes.js.js';
-export * from './routes/monitoringRoutes.js.js';
-export * from './routes/apiIngestRoutes.js.js';
-export * from './routes/jobsRouter.js.js';
-export * from './routes/workflowsRouter.js.js';
+export * from './server';
+export * from './routes/healthRoutes';
+export * from './routes/monitoringRoutes';
+export * from './routes/apiIngestRoutes';
+export * from './routes/jobsRouter';
+export * from './routes/workflowsRouter';
 
 // Common middleware
 export const rateLimiters = {

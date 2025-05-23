@@ -4,7 +4,7 @@
  * A tool that uses LLM to create concise summaries of provided text content.
  */
 import OpenAI from 'openai';
-import type { EkoTool } from './extractCleanContent.js.js.js';
+import type { EkoTool } from './extractCleanContent.js';
 
 // Define the interface for the tool's arguments
 export interface SummarizeTextArgs {

@@ -5,7 +5,7 @@
  * Each job type extends the BaseJobData interface.
  */
 
-import { BaseJobData } from './baseTypes.js.js';
+import { BaseJobData } from './baseTypes.js';
 
 /**
  * Email job data interface

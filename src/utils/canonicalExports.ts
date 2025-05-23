@@ -47,11 +47,11 @@
  * import { z } from 'zod';
  * 
  * // Internal modules (from other directories)
- * import { logger } from '../index.js.js.js';
- * import type { User } from '../index.js.js.js';
+ * import { logger } from '../index.js';
+ * import type { User } from '../index.js';
  * 
  * // Local modules (same directory)
- * import { validateInput } from './validation.js.js.js';
+ * import { validateInput } from './validation.js';
  */
 
 /**
@@ -76,11 +76,8 @@ export function isCanonicalImportPattern(importStatement: string): boolean {
   return true;
 }
 
-// Export all utilities
-export {
-  isCanonicalExportPattern,
-  isCanonicalImportPattern,
-};
+// Export types only - functions are already exported above
+// No need to re-export the functions here
 
 // Export types
 export type CanonicalExportOptions = {

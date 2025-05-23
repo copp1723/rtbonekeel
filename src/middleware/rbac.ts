@@ -4,7 +4,7 @@
  * Provides RBAC functionality for protecting routes based on user roles
  */
 import type { Request, Response, NextFunction } from 'express';
-import { debug, error } from '../index.js.js.js';
+import { debug, error } from '../index.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {

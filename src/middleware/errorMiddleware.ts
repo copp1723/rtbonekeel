@@ -2,8 +2,8 @@
  * Error handling middleware for Express
  */
 import type { Request, Response, NextFunction } from 'express';
-import { sendError } from '../index.js.js.js';
-import logger from '../index.js.js.js';
+import { sendError } from '../index.js';
+import logger from '../index.js';
 
 /**
  * Custom error class for application errors

@@ -4,8 +4,8 @@
  * This script runs the RLS migration to enable Row Level Security
  * on all user-specific tables.
  */
-import { db } from '../index.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
+import { db } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
 import { sql } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';

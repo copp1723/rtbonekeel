@@ -4,7 +4,7 @@
  * This middleware tracks request performance metrics and logs them.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { debug, info, warn, error } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Performance metrics storage
 interface PerformanceMetrics {

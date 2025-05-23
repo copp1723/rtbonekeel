@@ -5,12 +5,12 @@
  * It handles authentication, error handling, retry logic, and audit logging.
  */
 import { OpenAI } from 'openai';
-import { getCredentialById } from '../index.js.js.js';
-import { db } from '../index.js.js.js';
-import { insightLogs } from '../index.js.js.js';
-import { debug, info, warn, error } from '../index.js.js.js';
-import { createCircuitBreaker } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
+import { getCredentialById } from '../index.js';
+import { db } from '../index.js';
+import { insightLogs } from '../index.js';
+import { debug, info, warn, error } from '../index.js';
+import { createCircuitBreaker } from '../index.js';
+import { isError } from '../index.js';
 
 // Circuit breaker for OpenAI API calls
 const openaiBreaker = createCircuitBreaker('openai-api', {

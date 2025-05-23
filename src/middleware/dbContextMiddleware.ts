@@ -5,9 +5,9 @@
  * for Row Level Security (RLS) policies to use.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { db } from '../index.js.js.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
-import { debug, info, warn, error } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
 
 // Define custom Request interface with user property
 interface AuthRequest extends Request {

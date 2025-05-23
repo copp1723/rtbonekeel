@@ -4,4 +4,4 @@
  * This module exports functionality related to API integrations
  */
 
-export * from './services/apiIngestService.js.js';
+export * from './services/apiIngestService.js';

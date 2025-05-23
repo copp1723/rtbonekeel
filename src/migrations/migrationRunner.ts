@@ -4,10 +4,10 @@
  * This module provides functionality to run database migrations during application startup.
  * It integrates with the MigrationService to ensure all migrations are applied in the correct order.
  */
-import { debug, info, warn, error } from '../index.js.js.js';
-import { isError } from '../index.js.js.js';
-import { migrationService, Migration } from '../index.js.js.js';
-import { db } from '../index.js.js.js';
+import { debug, info, warn, error } from '../index.js';
+import { isError } from '../index.js';
+import { migrationService, Migration } from '../index.js';
+import { db } from '../index.js';
 import { sql } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
@@ -18,7 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import migrations
-import addApiKeySecurityFields from './add-api-key-security-fields.js.js.js';
+import addApiKeySecurityFields from './add-api-key-security-fields.js';
 
 // List of migrations to register
 const migrations: Migration[] = [

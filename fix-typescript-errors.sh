@@ -1,51 +1,22 @@
 #!/bin/bash
-set -e
+
+# Script to fix common TypeScript errors
 
 echo "Fixing TypeScript errors..."
 
-# Fix type-only imports
-echo "Fixing type-only imports..."
-find src -type f -name "*.ts" | xargs sed -i 's/import { \(.*\)Request\(.*\) } from/import type { \1Request\2 } from/g'
-find src -type f -name "*.ts" | xargs sed -i 's/import { \(.*\)Response\(.*\) } from/import type { \1Response\2 } from/g'
-find src -type f -name "*.ts" | xargs sed -i 's/import { \(.*\)NextFunction\(.*\) } from/import type { \1NextFunction\2 } from/g'
-find src -type f -name "*.ts" | xargs sed -i 's/import { InferInsertModel/import type { InferInsertModel/g'
-find src -type f -name "*.ts" | xargs sed -i 's/import { InferSelectModel/import type { InferSelectModel/g'
-find src -type f -name "*.ts" | xargs sed -i 's/import { \(.*\)Sql\(.*\) } from/import type { \1Sql\2 } from/g'
+# 1. Fix duplicate .js extensions in import paths
+echo "1. Fixing duplicate .js extensions in import paths..."
+find ./src -type f -name "*.ts" -o -name "*.js" | xargs sed -i '' -E 's/\.js\.js\.js/\.js/g'
+find ./src -type f -name "*.ts" -o -name "*.js" | xargs sed -i '' -E 's/\.js\.js/\.js/g'
 
-# Fix import paths with .js extension
-echo "Fixing import paths..."
-find src -type f -name "*.ts" | xargs sed -i 's/from \(["'"'"']\)\.\.\/\(.*\)\.js\.js\1/from \1..\\/\2.js\1/g'
-find src -type f -name "*.ts" | xargs sed -i 's/from \(["'"'"']\)\.\/\(.*\)\.js\.js\1/from \1.\\/\2.js\1/g'
-find src -type f -name "*.ts" | xargs sed -i 's/from \(["'"'"']\)\.\.\/\.js\1/from \1..\/index.js\1/g'
-find src -type f -name "*.ts" | xargs sed -i 's/from \(["'"'"']\)\.\/\.js\1/from \1.\/index.js\1/g'
+# 2. Fix missing db export in index.js
+echo "2. Ensuring db is exported from index.js..."
+if ! grep -q "export { db } from './shared/db.js';" ./src/index.ts; then
+  echo "export { db } from './shared/db.js';" >> ./src/index.ts
+fi
 
-# Fix Sentry imports
-echo "Fixing Sentry imports..."
-find src -type f -name "*.ts" | xargs sed -i 's/ProfilingIntegration/nodeProfilingIntegration/g'
-find src -type f -name "*.ts" | xargs sed -i 's/Sentry\.Integrations\.Http/Sentry.httpIntegration/g'
-find src -type f -name "*.ts" | xargs sed -i 's/Sentry\.Integrations\.Express/Sentry.expressIntegration/g'
-find src -type f -name "*.ts" | xargs sed -i 's/Sentry\.Handlers\.requestHandler/Sentry.requestHandler/g'
-find src -type f -name "*.ts" | xargs sed -i 's/Sentry\.Handlers\.errorHandler/Sentry.errorHandler/g'
-find src -type f -name "*.ts" | xargs sed -i 's/Sentry\.getCurrentHub/Sentry.getCurrentHub/g'
+# 3. Fix type errors with unknown values
+echo "3. Fixing type errors with unknown values..."
+# This is handled by the new typeGuards.ts file
 
-# Fix null/undefined checks
-echo "Fixing null/undefined checks..."
-find src -type f -name "*.ts" | xargs sed -i 's/\([a-zA-Z0-9_]*\)\.trim()/\1?.trim()/g'
-find src -type f -name "*.ts" | xargs sed -i 's/\([a-zA-Z0-9_]*\)\.length/\1?.length/g'
-find src -type f -name "*.ts" | xargs sed -i 's/\([a-zA-Z0-9_]*\)\.message/\1?.message/g'
-find src -type f -name "*.ts" | xargs sed -i 's/\([a-zA-Z0-9_]*\)\.stack/\1?.stack/g'
-
-# Fix SQL type issues
-echo "Fixing SQL type issues..."
-find src -type f -name "drizzleUtils.ts" | xargs sed -i 's/SQL<unknown>/unknown/g'
-
-# Fix Buffer.from with potential undefined values
-echo "Fixing Buffer.from with potential undefined values..."
-find src -type f -name "crypto.ts" | xargs sed -i 's/Buffer\.from(\([^,]*\), /Buffer.from(\1 ?? "", /g'
-
-# Fix unknown error types
-echo "Fixing unknown error types..."
-find src -type f -name "*.ts" | xargs sed -i 's/isError(error) ? error\.message/isError(error) ? error?.message/g'
-find src -type f -name "*.ts" | xargs sed -i 's/isError(err) ? err\.message/isError(err) ? err?.message/g'
-
-echo "TypeScript errors fixed! Please run 'npm run type-check' to verify."
+echo "TypeScript errors fixed!"
